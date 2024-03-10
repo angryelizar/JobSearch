@@ -12,7 +12,7 @@ import lombok.*;
 public class WorkExperienceInfo {
     private Long id;
     private Long resumeId;
-    private Byte years;
+    private Integer years;
     private String companyName;
     private String position;
     private String responsibilities;
