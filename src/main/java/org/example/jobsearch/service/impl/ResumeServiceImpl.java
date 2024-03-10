@@ -18,17 +18,7 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     public List<ResumeDto> getResumes() {
         List<Resume> resumes = resumeDao.getResumes();
-        List<ResumeDto> resumeDtos = new ArrayList<>();
-        resumes.forEach(e -> resumeDtos.add(ResumeDto.builder()
-                        .name(e.getName())
-                        .applicantId(e.getApplicantId())
-                        .categoryId(e.getCategoryId())
-                        .salary(e.getSalary())
-                        .isActive(e.getIsActive())
-                        .createdDate(e.getCreatedDate())
-                        .updateTime(e.getUpdateTime())
-                .build()));
-        return resumeDtos;
+        return getResumeDtos(resumes);
     }
 
     @Override
@@ -37,6 +27,19 @@ public class ResumeServiceImpl implements ResumeService {
         if (resumes.isEmpty()){
             throw new ResumeNotFoundException("Резюме в категории нет или категории не существует");
         }
+        return getResumeDtos(resumes);
+    }
+
+    @Override
+    public List<ResumeDto> getResumesByUserId(int id) throws ResumeNotFoundException {
+        List<Resume> resumes = resumeDao.getResumesByUserId(id);
+        if (resumes.isEmpty()){
+            throw new ResumeNotFoundException("Пользователь с этим ID либо не публиковал резюме - либо его нет :(");
+        }
+        return getResumeDtos(resumes);
+    }
+
+    private List<ResumeDto> getResumeDtos(List<Resume> resumes) {
         List<ResumeDto> resumeDtos = new ArrayList<>();
         resumes.forEach(e -> resumeDtos.add(ResumeDto.builder()
                 .name(e.getName())

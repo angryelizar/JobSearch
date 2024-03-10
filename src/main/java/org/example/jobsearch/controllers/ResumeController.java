@@ -34,4 +34,14 @@ public class ResumeController {
         }
     }
 
+    @GetMapping("resumes/user/{id}")
+    public ResponseEntity<?> getResumesByUserId(@PathVariable int id){
+        try {
+            List<ResumeDto> resumes = resumeService.getResumesByUserId(id);
+            return ResponseEntity.ok().body(resumes);
+        } catch (ResumeNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
 }

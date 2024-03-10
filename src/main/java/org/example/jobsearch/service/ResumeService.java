@@ -10,4 +10,6 @@ import java.util.List;
 public interface ResumeService {
     List<ResumeDto> getResumes();
     List<ResumeDto> getResumesByCategoryId(int id) throws ResumeNotFoundException;
+
+    List<ResumeDto> getResumesByUserId(int id)throws ResumeNotFoundException;
 }
