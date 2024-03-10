@@ -32,3 +32,9 @@
 -- values
 --     ((select id from CONTACT_TYPES where TYPE = 'Telegram'), 2, 't.me/angryelizar'),
 --     ((select id from CONTACT_TYPES where TYPE = 'Телефон'), 3, '+996708801562');
+
+-- Создаем опыт работы для двух резюме
+-- insert into WORK_EXPERIENCE_INFO (RESUME_ID, YEARS, COMPANY_NAME, POSITION, RESPONSIBILITIES)
+-- values
+--     (2, 8, 'Интеллика', 'SMM-менеджер', 'Ведение проектов'),
+--     (3, 2, 'Attractor School', 'Junior Java-developer', 'Ассистент преподавателя');
