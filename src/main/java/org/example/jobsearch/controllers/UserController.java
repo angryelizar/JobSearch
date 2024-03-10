@@ -32,4 +32,14 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @GetMapping("users_by_phone/{phone}")
+    public ResponseEntity<?> getUserByPhone(@PathVariable String phone){
+        try {
+            UserDto user = userService.getUserByPhone(phone);
+            return ResponseEntity.ok().body(user);
+        } catch (UserNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 }

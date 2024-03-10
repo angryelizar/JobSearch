@@ -42,4 +42,14 @@ public class UserServiceImpl implements UserService {
                 .build()));
         return userDtos;
     }
+
+    @Override
+    public UserDto getUserByPhone(String phone) throws UserNotFoundException {
+        User user = userDao.getUserByPhone(phone).orElseThrow(() -> new UserNotFoundException("С таким номером пользователей не найдено - " + phone));
+        return UserDto.builder()
+                .name(user.getName())
+                .surname(user.getSurname())
+                .accountType(user.getAccountType())
+                .build();
+    }
 }

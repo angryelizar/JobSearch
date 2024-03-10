@@ -11,4 +11,6 @@ public interface UserService {
     List<UserDto> getUsersByName(String name) throws UserNotFoundException;
 
     List<UserDto> getUsers();
+
+    UserDto getUserByPhone(String phone) throws UserNotFoundException;
 }
