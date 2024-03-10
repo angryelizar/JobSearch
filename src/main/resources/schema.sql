@@ -21,7 +21,8 @@ create table if not exists categories
 (
     id        long primary key auto_increment not null,
     parent_id long,
-    name      text                            not null
+    name      text                            not null,
+    FOREIGN KEY (parent_id)  references categories(id)
 );
 
 create table if not exists vacancies
@@ -36,6 +37,8 @@ create table if not exists vacancies
     is_Active    boolean                         not null,
     author_id    long                            not null,
     created_date datetime                        not null,
-    update_time  datetime                        not null
+    update_time  datetime                        not null,
+    FOREIGN KEY (category_id) REFERENCES categories(id),
+    FOREIGN KEY (author_id) references users(id)
 );
 
