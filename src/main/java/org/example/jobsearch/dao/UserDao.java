@@ -50,4 +50,11 @@ public class UserDao {
                 template.query(sql, new BeanPropertyRowMapper<>(User.class), email)
         ));
     }
+
+    public boolean userIsExists(String email) {
+        String sql = "SELECT COUNT(*) FROM users WHERE email = ?";
+        int count = template.queryForObject(sql, Integer.class, email);
+        return count > 0;
+    }
+
 }

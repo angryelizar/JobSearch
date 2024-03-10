@@ -62,4 +62,10 @@ public class UserServiceImpl implements UserService {
                 .accountType(user.getAccountType())
                 .build();
     }
+
+    @Override
+    public String userIsExists(String email) {
+        boolean result = userDao.userIsExists(email);
+        return result ? "Пользователь существует" : "Пользователя нет в системе";
+    }
 }

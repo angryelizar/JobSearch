@@ -15,4 +15,6 @@ public interface UserService {
     UserDto getUserByPhone(String phone) throws UserNotFoundException;
 
     UserDto getUserByEmail(String email) throws UserNotFoundException;
+
+    String userIsExists(String email);
 }
