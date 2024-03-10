@@ -40,4 +40,14 @@ public class UserDao {
                         template.query(sql, new BeanPropertyRowMapper<>(User.class),
                                 phone)));
     }
+
+    public Optional<User> getUserByEmail(String email) {
+        String sql = """
+                select * from users
+                where EMAIL = ?
+                """;
+        return Optional.ofNullable(DataAccessUtils.singleResult(
+                template.query(sql, new BeanPropertyRowMapper<>(User.class), email)
+        ));
+    }
 }

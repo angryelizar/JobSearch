@@ -13,4 +13,6 @@ public interface UserService {
     List<UserDto> getUsers();
 
     UserDto getUserByPhone(String phone) throws UserNotFoundException;
+
+    UserDto getUserByEmail(String email) throws UserNotFoundException;
 }

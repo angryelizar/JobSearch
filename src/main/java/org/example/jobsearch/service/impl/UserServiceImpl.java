@@ -52,4 +52,14 @@ public class UserServiceImpl implements UserService {
                 .accountType(user.getAccountType())
                 .build();
     }
+
+    @Override
+    public UserDto getUserByEmail(String email) throws UserNotFoundException {
+        User user = userDao.getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("С такой почтой пользователей не найдено - " + email));
+        return UserDto.builder()
+                .name(user.getName())
+                .surname(user.getSurname())
+                .accountType(user.getAccountType())
+                .build();
+    }
 }
