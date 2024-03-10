@@ -38,3 +38,9 @@
 -- values
 --     (2, 8, 'Интеллика', 'SMM-менеджер', 'Ведение проектов'),
 --     (3, 2, 'Attractor School', 'Junior Java-developer', 'Ассистент преподавателя');
+
+-- Создаем места обучения для двух резюме
+-- insert into EDUCATION_INFO (RESUME_ID, INSTITUTION, PROGRAM, START_DATE, END_DATE, DEGREE)
+-- values
+--     (2, 'Bold Brands Education', 'SMM за полгода',  '2015-03-01', '2015-06-01', 'SMM-менеджер'),
+--     (3, 'Attractor School', 'Java за полгода',  '2016-03-01', '2016-06-01', 'Junior Java-developer');
