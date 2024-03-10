@@ -22,7 +22,7 @@ create table if not exists categories
     id        long primary key auto_increment not null,
     parent_id long,
     name      text                            not null,
-    FOREIGN KEY (parent_id)  references categories(id)
+    FOREIGN KEY (parent_id) references categories (id)
 );
 
 create table if not exists vacancies
@@ -38,7 +38,25 @@ create table if not exists vacancies
     author_id    long                            not null,
     created_date datetime                        not null,
     update_time  datetime                        not null,
-    FOREIGN KEY (category_id) REFERENCES categories(id),
-    FOREIGN KEY (author_id) references users(id)
+    FOREIGN KEY (category_id) REFERENCES categories (id),
+    FOREIGN KEY (author_id) references users (id)
 );
+
+create table if not exists resumes
+(
+    id           long primary key auto_increment not null,
+    applicant_id long                            not null,
+    name         text                            not null,
+    category_id  long                            not null,
+    salary       double                          not null,
+    is_Active    boolean                         not null,
+    created_date datetime                        not null,
+    update_time  datetime                        not null,
+    FOREIGN KEY (applicant_id) REFERENCES users (id),
+    FOREIGN KEY (category_id) REFERENCES categories (id)
+);
+
+
+
+
 
