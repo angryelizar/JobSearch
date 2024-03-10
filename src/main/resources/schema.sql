@@ -14,5 +14,12 @@ create table if not exists users
 create table if not exists contact_types
 (
     id long primary key auto_increment not null,
-    type text not null
+    type text not null unique
 );
+
+create table if not exists categories (
+    id long primary key auto_increment not null,
+    parent_id long,
+    name text not null
+)
+
