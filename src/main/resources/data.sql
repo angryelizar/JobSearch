@@ -50,3 +50,9 @@
 -- values
 --     ('SMM-специалист', 'Нам нужен классный SMM-специалист', (select id from CATEGORIES where CATEGORIES.NAME = 'Маркетинг'), 150000, 2, 5, true, 2, '2024-03-01', '2024-03-08'),
 --     ('Java-разработчик', 'Нам нужен классный разработчик', (select id from CATEGORIES where CATEGORIES.NAME = 'IT'), 250000, 1, 2, true, 2, '2024-03-02', '2024-03-09');
+
+-- Добавим записи в таблицу «кто откликнулся», чтобы показать, что соискатель откликнулся на вакансии
+-- insert into RESPONDED_APPLICANTS (RESUME_ID, VACANCY_ID, CONFIRMATION)
+-- values
+--     (2, 1, true),
+--     (3, 2, true);
