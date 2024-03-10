@@ -34,7 +34,7 @@ create table if not exists vacancies
     salary       double                          not null,
     exp_from     integer,
     exp_to       integer,
-    is_Active    boolean                         not null,
+    is_active    boolean                         not null,
     author_id    long                            not null,
     created_date datetime                        not null,
     update_time  datetime                        not null,
@@ -49,7 +49,7 @@ create table if not exists resumes
     name         text                            not null,
     category_id  long                            not null,
     salary       double                          not null,
-    is_Active    boolean                         not null,
+    is_active    boolean                         not null,
     created_date datetime                        not null,
     update_time  datetime                        not null,
     FOREIGN KEY (applicant_id) REFERENCES users (id),
@@ -63,6 +63,18 @@ create table if not exists contacts_info
     resume_id long                            not null,
     value     text                            not null,
     FOREIGN KEY (type_id) REFERENCES contact_types (id),
+    FOREIGN KEY (resume_id) REFERENCES resumes (id)
+);
+
+create table if not exists education_info
+(
+    id          long primary key auto_increment not null,
+    resume_id   long                            not null,
+    institution text                            not null,
+    program     text                            not null,
+    start_date  date                            not null,
+    end_date    date,
+    degree      text                            not null,
     FOREIGN KEY (resume_id) REFERENCES resumes (id)
 );
 
