@@ -56,3 +56,8 @@
 -- values
 --     (2, 1, true),
 --     (3, 2, true);
+
+-- -- Добавим запись в таблицу messages
+-- insert into MESSAGES (RESPONDED_APPLICANTS, CONTENT, "date_time")
+-- values
+--     (1, 'Салам молекулам!', '2024-03-10 16:20:00');
