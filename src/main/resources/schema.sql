@@ -89,6 +89,16 @@ create table if not exists work_experience_info
     FOREIGN KEY (resume_id) REFERENCES resumes (id)
 );
 
+create table if not exists responded_applicants
+(
+    id        long primary key auto_increment not null,
+    resume_id long                            not null,
+    vacancy_id long not null,
+    confirmation boolean not null,
+    FOREIGN KEY (resume_id) REFERENCES resumes (id),
+    FOREIGN KEY (vacancy_id) REFERENCES vacancies(id)
+);
+
 
 
 

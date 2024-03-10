@@ -11,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 public class RespondApplicant {
     private Long id;
-    private Integer resumeId;
-    private Integer vacancyId;
+    private Long resumeId;
+    private Long vacancyId;
     private Boolean confirmation;
 }
