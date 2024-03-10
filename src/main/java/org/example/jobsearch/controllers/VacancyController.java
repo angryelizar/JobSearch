@@ -40,6 +40,17 @@ public class VacancyController {
         }
     }
 
+    @GetMapping("vacancy/getapplicants/{id}")
+    public ResponseEntity<?> getApplicantsByVacancyId(@PathVariable int id){
+        try {
+            List<UserDto> userDtos = vacancyService.getApplicantsByVacancyId(id);
+            return ResponseEntity.ok().body(userDtos);
+        } catch (UserNotFoundException | ResumeNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+
     @GetMapping("vacancies")
     public ResponseEntity<List<VacancyDto>> getVacancies(){
         return ResponseEntity.ok(vacancyService.getVacancies());

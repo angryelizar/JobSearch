@@ -2,9 +2,12 @@ package org.example.jobsearch.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.example.jobsearch.dao.VacancyDao;
+import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.dto.VacancyDto;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
+import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.exceptions.VacancyNotFoundException;
+import org.example.jobsearch.models.User;
 import org.example.jobsearch.models.Vacancy;
 import org.example.jobsearch.service.VacancyService;
 import org.springframework.stereotype.Service;
@@ -39,6 +42,21 @@ public class VacancyServiceImpl implements VacancyService {
             throw new VacancyNotFoundException("Вакансий в данной категории не найдено");
         }
         return getVacancyDtos(vacancies);
+    }
+
+    @Override
+    public List<UserDto> getApplicantsByVacancyId(int id) throws UserNotFoundException, ResumeNotFoundException {
+        List<User> users = vacancyDao.getApplicantsByVacancyId(id);
+        if (users.isEmpty()){
+            throw new UserNotFoundException("На эту вакансию никто не откликался!");
+        }
+        List<UserDto> userDtos = new ArrayList<>();
+        users.forEach(e -> userDtos.add(UserDto.builder()
+                        .name(e.getName())
+                        .surname(e.getSurname())
+                        .accountType(e.getAccountType())
+                .build()));
+        return userDtos;
     }
 
     private List<VacancyDto> getVacancyDtos(List<Vacancy> vacancies) {
