@@ -56,6 +56,16 @@ create table if not exists resumes
     FOREIGN KEY (category_id) REFERENCES categories (id)
 );
 
+create table if not exists contacts_info
+(
+    id        long primary key auto_increment not null,
+    type_id   long                            not null,
+    resume_id long                            not null,
+    value     text                            not null,
+    FOREIGN KEY (type_id) REFERENCES contact_types (id),
+    FOREIGN KEY (resume_id) REFERENCES resumes (id)
+);
+
 
 
 
