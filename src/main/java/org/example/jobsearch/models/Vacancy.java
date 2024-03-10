@@ -15,12 +15,12 @@ public class Vacancy {
     private Long id;
     private String name;
     private String description;
-    private Integer categoryId;
-    private Integer salary;
-    private Byte expFrom;
-    private Byte expTo;
+    private Long categoryId;
+    private Double salary;
+    private Integer expFrom;
+    private Integer expTo;
     private Boolean isActive;
-    private Integer authorId;
+    private Long authorId;
     private LocalDateTime createdTime;
     private LocalDateTime updateTime;
 }
