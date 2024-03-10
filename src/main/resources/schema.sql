@@ -61,7 +61,7 @@ create table if not exists contacts_info
     id        long primary key auto_increment not null,
     type_id   long                            not null,
     resume_id long                            not null,
-    value     text                            not null,
+    "value"     text                            not null,
     FOREIGN KEY (type_id) REFERENCES contact_types (id),
     FOREIGN KEY (resume_id) REFERENCES resumes (id)
 );
@@ -104,7 +104,7 @@ create table if not exists messages
     id                   long primary key auto_increment not null,
     responded_applicants long                            not null,
     content              text                            not null,
-    dateTime             datetime                        not null,
+    "date_time"             datetime                        not null,
     FOREIGN KEY (responded_applicants) REFERENCES responded_applicants (id)
 );
 
