@@ -26,3 +26,9 @@
 --     ( 'Телефон'),
 --     ('Telegram'),
 --     ('WhatsApp');
+
+-- Создаем contact_info для двух резюме
+-- insert into CONTACTS_INFO (TYPE_ID, RESUME_ID, "value")
+-- values
+--     ((select id from CONTACT_TYPES where TYPE = 'Telegram'), 2, 't.me/angryelizar'),
+--     ((select id from CONTACT_TYPES where TYPE = 'Телефон'), 3, '+996708801562');
