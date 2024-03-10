@@ -107,7 +107,3 @@ create table if not exists messages
     "date_time"             datetime                        not null,
     FOREIGN KEY (responded_applicants) REFERENCES responded_applicants (id)
 );
-
-
-
-
