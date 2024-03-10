@@ -30,6 +30,16 @@ public class VacancyController {
         }
     }
 
+    @GetMapping("vacancies/category/{id}")
+    public ResponseEntity<?> getVacanciesByCategoryId(@PathVariable int id){
+        try {
+            List<VacancyDto> vacancyDtos = vacancyService.getVacanciesByCategoryId(id);
+            return ResponseEntity.ok().body(vacancyDtos);
+        } catch (VacancyNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
     @GetMapping("vacancies")
     public ResponseEntity<List<VacancyDto>> getVacancies(){
         return ResponseEntity.ok(vacancyService.getVacancies());

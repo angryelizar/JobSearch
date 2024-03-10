@@ -52,4 +52,12 @@ public class VacancyDao {
                 """;
         return template.query(sql, new BeanPropertyRowMapper<>(Vacancy.class));
     }
+
+    public List<Vacancy> getVacanciesByCategoryId(int id) {
+        String sql = """
+                select * from vacancies
+                where category_id = ?
+                """;
+        return template.query(sql, new BeanPropertyRowMapper<>(Vacancy.class), id);
+    }
 }

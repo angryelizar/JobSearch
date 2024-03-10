@@ -32,6 +32,15 @@ public class VacancyServiceImpl implements VacancyService {
         return getVacancyDtos(vacancies);
     }
 
+    @Override
+    public List<VacancyDto> getVacanciesByCategoryId(int id) throws VacancyNotFoundException {
+        List<Vacancy> vacancies = vacancyDao.getVacanciesByCategoryId(id);
+        if (vacancies.isEmpty()){
+            throw new VacancyNotFoundException("Вакансий в данной категории не найдено");
+        }
+        return getVacancyDtos(vacancies);
+    }
+
     private List<VacancyDto> getVacancyDtos(List<Vacancy> vacancies) {
         List<VacancyDto> vacancyDtos = new ArrayList<>();
         vacancies.forEach(e -> vacancyDtos.add(VacancyDto.builder()

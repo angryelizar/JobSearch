@@ -12,4 +12,6 @@ public interface VacancyService {
     List<VacancyDto> getVacanciesByApplicantId(int id) throws VacancyNotFoundException, ResumeNotFoundException;
 
     List<VacancyDto> getVacancies();
+
+    List<VacancyDto> getVacanciesByCategoryId(int id) throws VacancyNotFoundException;
 }
