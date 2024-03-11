@@ -2,7 +2,7 @@ package org.example.jobsearch.models;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -16,7 +16,7 @@ public class EducationInfo {
     private Long resumeId;
     private String institution;
     private String program;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private String degree;
 }
