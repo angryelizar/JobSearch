@@ -297,7 +297,6 @@ databaseChangeLog:
                   type: text
                   constraints:
                     nullable: false
-
   - changeSet:
       id: 01-create-work-experience-info-table
       author: angryelizar
@@ -339,7 +338,6 @@ databaseChangeLog:
                   type: text
                   constraints:
                     nullable: false
-
   - changeSet:
       id: 01-create-responded-applicants-table
       author: angryelizar
@@ -373,7 +371,6 @@ databaseChangeLog:
                   type: boolean
                   constraints:
                     nullable: false
-
   - changeSet:
       id: 01-create-messages-table
       author: angryelizar
