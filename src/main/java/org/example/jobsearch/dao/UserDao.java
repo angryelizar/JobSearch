@@ -15,6 +15,15 @@ import java.util.Optional;
 public class UserDao {
     private final JdbcTemplate template;
 
+    public Optional<User> getUserById(Long id) {
+        String sql = """
+                select * from users
+                where id = ?
+                """;
+        return Optional.ofNullable(DataAccessUtils.singleResult
+                (template.query(sql, new BeanPropertyRowMapper<>(User.class), id)));
+    }
+
     public List<User> getUsersByName(String name) {
         String sql = """
                 select * from users
