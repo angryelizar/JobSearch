@@ -5,9 +5,14 @@ import org.example.jobsearch.models.User;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -22,6 +27,24 @@ public class UserDao {
                 """;
         return Optional.ofNullable(DataAccessUtils.singleResult
                 (template.query(sql, new BeanPropertyRowMapper<>(User.class), id)));
+    }
+
+    public Long createUser (User user) {
+        String sql = """
+                insert into users (name, surname, email, password, account_type)
+                values (?, ?, ?, ?, ?);
+                """;
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        template.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getSurname());
+            ps.setString(3, user.getEmail());
+            ps.setString(4, user.getPassword());
+            ps.setString(5, user.getAccountType());
+            return ps;
+        }, keyHolder);
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
     public List<User> getUsersByName(String name) {
