@@ -1,6 +1,7 @@
 package org.example.jobsearch.controllers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dto.ResumeDto;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class ResumeController {
     private final ResumeService resumeService;
 
@@ -30,6 +32,7 @@ public class ResumeController {
             List<ResumeDto> resumes = resumeService.getResumesByCategoryId(id);
             return ResponseEntity.ok().body(resumes);
         } catch (ResumeNotFoundException e){
+            log.info("Такой категории нет");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
