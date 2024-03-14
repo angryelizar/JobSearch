@@ -48,4 +48,12 @@ public class ResumeDao {
                 template.query(sql, new BeanPropertyRowMapper<>(Resume.class))
         ));
     }
+
+    public void deleteResumeById(int id) {
+        String sql = """
+                delete from RESUMES
+                where id = ?
+                """;
+        template.execute(sql);
+    }
 }
