@@ -47,6 +47,60 @@ public class UserDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
+    public void changeNameOfUser(String newName, int id){
+        String sql = """
+                update users
+                set name = ?
+                where id = ?
+                """;
+        template.update(sql, newName, id);
+    }
+
+    public void changeSurnameOfUser(String newSurname, int id){
+        String sql = """
+                update users
+                set surname = ?
+                where id = ?
+                """;
+        template.update(sql, newSurname, id);
+    }
+
+    public void changeAgeOfUser(Byte newAge, int id){
+        String sql = """
+                update users
+                set age = ?
+                where id = ?
+                """;
+        template.update(sql, newAge, id);
+    }
+
+    public void changePhoneOfUser(String newPhone, int id){
+        String sql = """
+                update users
+                set PHONE_NUMBER = ?
+                where id = ?
+                """;
+        template.update(sql, newPhone, id);
+    }
+
+    public void changeEmailOfUser(String newEmail, int id){
+        String sql = """
+                update users
+                set EMAIL = ?
+                where id = ?
+                """;
+        template.update(sql, newEmail, id);
+    }
+
+    public void changePasswordOfUser(String newPassword, int id){
+        String sql = """
+                update users
+                set PASSWORD = ?
+                where id = ?
+                """;
+        template.update(sql, newPassword, id);
+    }
+
     public List<User> getUsersByName(String name) {
         String sql = """
                 select * from users
