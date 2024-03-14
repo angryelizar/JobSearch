@@ -5,12 +5,10 @@ import org.example.jobsearch.models.Resume;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.time.LocalDateTime;
@@ -20,8 +18,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ResumeDao {
     private final JdbcTemplate template;
-    private final DataSource dataSource;
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 
     public List<Resume> getResumes() {
         String sql = """
@@ -67,61 +63,46 @@ public class ResumeDao {
     public void setNameOfResume(String newName, int resumeId) {
         String sql = """
                 update RESUMES
-                SET NAME = :new_name
-                where id = :resume_id
+                SET NAME = ?
+                where id = ?
                 """;
-        Map<String, Object> params = new HashMap<>();
-        params.put("new_name", newName);
-        params.put("resume_id", resumeId);
-        namedParameterJdbcTemplate.update(sql, params);
+        template.update(sql, newName, resumeId);
     }
 
     public void setCategoryOfResume(Long newCategory, int resumeId) {
         String sql = """
                 update RESUMES
-                SET CATEGORY_ID = :new_category
-                where id = :resume_id
+                SET CATEGORY_ID = ?
+                where id = ?
                 """;
-        Map<String, Object> params = new HashMap<>();
-        params.put("new_category", newCategory);
-        params.put("resume_id", resumeId);
-        namedParameterJdbcTemplate.update(sql, params);
+        template.update(sql, newCategory, resumeId);
     }
 
     public void setSalaryOfResume(int newSalary, int resumeId) {
         String sql = """
                 update RESUMES
-                SET SALARY = :new_salary
-                where id = :resume_id
+                SET SALARY = ?
+                where id = ?
                 """;
-        Map<String, Object> params = new HashMap<>();
-        params.put("new_salary", newSalary);
-        params.put("resume_id", resumeId);
-        namedParameterJdbcTemplate.update(sql, params);
+        template.update(sql, newSalary, resumeId);
     }
 
     public void setIsActiveOfResume(boolean isActive, int resumeId) {
         String sql = """
                 update RESUMES
-                SET IS_ACTIVE = :is_Active
-                where id = :resume_id
+                SET IS_ACTIVE = ?
+                where id = ?
                 """;
-        Map<String, Object> params = new HashMap<>();
-        params.put("is_Active", isActive);
-        params.put("resume_id", resumeId);
-        namedParameterJdbcTemplate.update(sql, params);
+        template.update(sql, isActive, resumeId);
     }
 
     public void setUpdateTime(LocalDateTime updateTime, int resumeId) {
         String sql = """
                 update RESUMES
-                SET UPDATE_TIME = :update_time
-                where id = :resume_id
+                SET UPDATE_TIME = ?
+                where id = ?
                 """;
-        Map<String, Object> params = new HashMap<>();
-        params.put("update_time", updateTime);
-        params.put("resume_id", resumeId);
-        namedParameterJdbcTemplate.update(sql, params);
+        template.update(sql, updateTime, resumeId);
     }
 
     public Long createResume(Resume resume) {

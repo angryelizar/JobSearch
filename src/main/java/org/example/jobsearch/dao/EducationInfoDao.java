@@ -16,7 +16,7 @@ import java.util.Objects;
 public class EducationInfoDao {
     private final JdbcTemplate template;
 
-    public Long createEducationInfo(EducationInfo educationInfo){
+    public Long createEducationInfo(EducationInfo educationInfo) {
         String sql = """
                 insert into EDUCATION_INFO (RESUME_ID, INSTITUTION, PROGRAM, START_DATE, END_DATE, DEGREE)
                 values (?, ?, ?, ?, ?, ?);

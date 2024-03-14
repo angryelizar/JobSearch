@@ -86,7 +86,7 @@ public class VacancyDao {
         template.update(sql, id);
     }
 
-    public Long createVacancy(Vacancy vacancy){
+    public Long createVacancy(Vacancy vacancy) {
         String sql = """
                 insert into VACANCIES (NAME, DESCRIPTION, CATEGORY_ID, SALARY, EXP_FROM, EXP_TO, IS_ACTIVE, AUTHOR_ID, CREATED_TIME,
                                        UPDATE_TIME)
