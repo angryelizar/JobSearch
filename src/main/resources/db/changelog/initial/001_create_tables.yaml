@@ -1,0 +1,404 @@
+databaseChangeLog:
+  - changeSet:
+      id: 01-create-contact-types-table
+      author: angryelizar
+      changes:
+        - createTable:
+            tableName: contact_types
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: type
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+  - changeSet:
+      id: 01-create-categories-table
+      author: angryelizar
+      changes:
+        - createTable:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: parent_id
+                  type: long
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_parent_id
+                    references: categories(id)
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 01-create-user-table
+      author: angryelizar
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: surname
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: phone_number
+                  type: varchar(50)
+                  constraints:
+                    nullable: true
+                    unique: true
+              - column:
+                  name: password
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: avatar
+                  type: text
+                  constraints:
+                    nullable: true
+              - column:
+                  name: age
+                  type: int
+                  constraints:
+                    nullable: true
+              - column:
+                  name: account_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 01-create-vacancies-table
+      author: angryelizar
+      changes:
+        - createTable:
+            tableName: vacancies
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: long
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_category_id_vacancies
+                    references: categories(id)
+              - column:
+                  name: salary
+                  type: double
+                  constraints:
+                    nullable: false
+              - column:
+                  name: exp_from
+                  type: int
+              - column:
+                  name: exp_to
+                  type: int
+              - column:
+                  name: is_active
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: author_id
+                  type: long
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_author_id_vacancies
+                    references: users(id)
+              - column:
+                  name: created_time
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: update_time
+                  type: datetime
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 01-create-resumes-table
+      author: angryelizar
+      changes:
+        - createTable:
+            tableName: resumes
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: applicant_id
+                  type: long
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_applicant_id_resumes
+                    references: users(id)
+              - column:
+                  name: name
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: long
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_category_id_resumes
+                    references: categories(id)
+              - column:
+                  name: salary
+                  type: double
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_active
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_time
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: update_time
+                  type: datetime
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 01-create-contacts-info-table
+      author: angryelizar
+      changes:
+        - createTable:
+            tableName: contacts_info
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: type_id
+                  type: long
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_type_id_contacts_info
+                    references: contact_types(id)
+              - column:
+                  name: resume_id
+                  type: long
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_resume_id_contacts_info
+                    references: resumes(id)
+              - column:
+                  name: content
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 01-create-education-info-table
+      author: angryelizar
+      changes:
+        - createTable:
+            tableName: education_info
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: resume_id
+                  type: long
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_resume_id_education_info
+                    references: resumes(id)
+              - column:
+                  name: institution
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: program
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: start_date
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_date
+                  type: date
+                  constraints:
+                    nullable: true
+              - column:
+                  name: degree
+                  type: text
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 01-create-work-experience-info-table
+      author: angryelizar
+      changes:
+        - createTable:
+            tableName: work_experience_info
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: resume_id
+                  type: long
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_resume_id_work_experience_info
+                    references: resumes(id)
+              - column:
+                  name: years
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: company_name
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: position
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: responsibilities
+                  type: text
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 01-create-responded-applicants-table
+      author: angryelizar
+      changes:
+        - createTable:
+            tableName: responded_applicants
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: resume_id
+                  type: long
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_resume_id_responded_applicants
+                    references: resumes(id)
+              - column:
+                  name: vacancy_id
+                  type: long
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_vacancy_id_responded_applicants
+                    references: vacancies(id)
+              - column:
+                  name: confirmation
+                  type: boolean
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 01-create-messages-table
+      author: angryelizar
+      changes:
+        - createTable:
+            tableName: messages
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: responded_applicants
+                  type: long
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_responded_applicants_messages
+                    references: responded_applicants(id)
+              - column:
+                  name: content
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_time
+                  type: datetime
+                  constraints:
+                    nullable: false

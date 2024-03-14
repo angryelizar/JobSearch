@@ -6,12 +6,19 @@ import org.example.jobsearch.models.RespondApplicant;
 import org.example.jobsearch.models.Resume;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.models.Vacancy;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -19,9 +26,10 @@ public class VacancyDao {
     private final JdbcTemplate template;
     private final ResumeDao resumeDao;
 
+
     public List<Vacancy> getVacanciesByApplicantId(int id) throws ResumeNotFoundException {
         List<Resume> usersResume = resumeDao.getResumesByUserId(id);
-        if (usersResume.isEmpty()){
+        if (usersResume.isEmpty()) {
             throw new ResumeNotFoundException("У данного пользователя нет резюме");
         }
         List<RespondApplicant> respondApplicants = new ArrayList<>();
@@ -60,13 +68,55 @@ public class VacancyDao {
         return template.query(sql, new BeanPropertyRowMapper<>(Vacancy.class), id);
     }
 
+    public Optional<Vacancy> getVacancyById(int id) {
+        String sql = """
+                select * from vacancies
+                where id = ?
+                """;
+        return Optional.ofNullable(DataAccessUtils.singleResult(
+                template.query(sql, new BeanPropertyRowMapper<>(Vacancy.class), id)
+        ));
+    }
+
+    public void deleteVacancyById(int id) {
+        String sql = """
+                delete from VACANCIES
+                where id = ?
+                """;
+        template.update(sql, id);
+    }
+
+    public Long createVacancy(Vacancy vacancy) {
+        String sql = """
+                insert into VACANCIES (NAME, DESCRIPTION, CATEGORY_ID, SALARY, EXP_FROM, EXP_TO, IS_ACTIVE, AUTHOR_ID, CREATED_TIME,
+                                       UPDATE_TIME)
+                values(?,?,?,?,?,?,?,?,?,?);
+                """;
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        template.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, vacancy.getName());
+            ps.setString(2, vacancy.getDescription());
+            ps.setLong(3, vacancy.getCategoryId());
+            ps.setDouble(4, vacancy.getSalary());
+            ps.setInt(5, vacancy.getExpFrom());
+            ps.setInt(6, vacancy.getExpTo());
+            ps.setBoolean(7, vacancy.getIsActive());
+            ps.setLong(8, vacancy.getAuthorId());
+            ps.setObject(9, vacancy.getCreatedTime());
+            ps.setObject(10, vacancy.getUpdateTime());
+            return ps;
+        }, keyHolder);
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
     public List<User> getApplicantsByVacancyId(int id) throws ResumeNotFoundException {
         String sql = """
                 select resume_id from responded_applicants
                 where vacancy_id = ?
                 """;
         List<Long> applicantsResumesByVacancyId = template.queryForList(sql, Long.class, id);
-        if (applicantsResumesByVacancyId.isEmpty()){
+        if (applicantsResumesByVacancyId.isEmpty()) {
             throw new ResumeNotFoundException("Откликов на эту вакансию не найдено!");
         }
         List<Resume> resumes = new ArrayList<>();

@@ -6,6 +6,16 @@ spring:
     username: root
     password: qwerty
     driver-class-name: org.h2.Driver
-#  sql:
-#    init:
-#      mode: always
+  liquibase:
+    change-log: classpath:/db/changelog/master.yaml
+logging:
+  file:
+    name: logs/spring.log
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 5
+  level:
+    root: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"

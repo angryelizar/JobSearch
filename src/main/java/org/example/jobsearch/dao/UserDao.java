@@ -5,15 +5,101 @@ import org.example.jobsearch.models.User;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class UserDao {
     private final JdbcTemplate template;
+
+    public Optional<User> getUserById(Long id) {
+        String sql = """
+                select * from users
+                where id = ?
+                """;
+        return Optional.ofNullable(DataAccessUtils.singleResult
+                (template.query(sql, new BeanPropertyRowMapper<>(User.class), id)));
+    }
+
+    public Long createUser(User user) {
+        String sql = """
+                insert into users (name, surname, email, password, account_type)
+                values (?, ?, ?, ?, ?);
+                """;
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        template.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getSurname());
+            ps.setString(3, user.getEmail());
+            ps.setString(4, user.getPassword());
+            ps.setString(5, user.getAccountType());
+            return ps;
+        }, keyHolder);
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    public void changeNameOfUser(String newName, int id) {
+        String sql = """
+                update users
+                set name = ?
+                where id = ?
+                """;
+        template.update(sql, newName, id);
+    }
+
+    public void changeSurnameOfUser(String newSurname, int id) {
+        String sql = """
+                update users
+                set surname = ?
+                where id = ?
+                """;
+        template.update(sql, newSurname, id);
+    }
+
+    public void changeAgeOfUser(Byte newAge, int id) {
+        String sql = """
+                update users
+                set age = ?
+                where id = ?
+                """;
+        template.update(sql, newAge, id);
+    }
+
+    public void changePhoneOfUser(String newPhone, int id) {
+        String sql = """
+                update users
+                set PHONE_NUMBER = ?
+                where id = ?
+                """;
+        template.update(sql, newPhone, id);
+    }
+
+    public void changeEmailOfUser(String newEmail, int id) {
+        String sql = """
+                update users
+                set EMAIL = ?
+                where id = ?
+                """;
+        template.update(sql, newEmail, id);
+    }
+
+    public void changePasswordOfUser(String newPassword, int id) {
+        String sql = """
+                update users
+                set PASSWORD = ?
+                where id = ?
+                """;
+        template.update(sql, newPassword, id);
+    }
 
     public List<User> getUsersByName(String name) {
         String sql = """
