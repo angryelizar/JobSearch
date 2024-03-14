@@ -17,6 +17,6 @@ public class ResumeDto {
     private Long categoryId;
     private Double salary;
     private Boolean isActive;
-    private LocalDateTime createdDate;
+    private LocalDateTime createdTime;
     private LocalDateTime updateTime;
 }

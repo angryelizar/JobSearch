@@ -1,5 +1,51 @@
 databaseChangeLog:
   - changeSet:
+      id: 01-create-contact-types-table
+      author: angryelizar
+      changes:
+        - createTable:
+            tableName: contact_types
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: type
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+  - changeSet:
+      id: 01-create-categories-table
+      author: angryelizar
+      changes:
+        - createTable:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: parent_id
+                  type: long
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_parent_id
+                    references: categories(id)
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+  - changeSet:
       id: 01-create-user-table
       author: angryelizar
       changes:
@@ -56,52 +102,6 @@ databaseChangeLog:
                   constraints:
                     nullable: false
   - changeSet:
-      id: 01-create-contact-types-table
-      author: angryelizar
-      changes:
-        - createTable:
-            tableName: contact_types
-            columns:
-              - column:
-                  name: id
-                  type: long
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
-                  name: type
-                  type: varchar(100)
-                  constraints:
-                    nullable: false
-                    unique: true
-  - changeSet:
-      id: 01-create-categories-table
-      author: angryelizar
-      changes:
-        - createTable:
-            tableName: categories
-            columns:
-              - column:
-                  name: id
-                  type: long
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
-                  name: parent_id
-                  type: long
-                  constraints:
-                    nullable: true
-                    foreignKeyName: fk_parent_id
-                    references: categories(id)
-              - column:
-                  name: name
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-  - changeSet:
       id: 01-create-vacancies-table
       author: angryelizar
       changes:
@@ -130,7 +130,7 @@ databaseChangeLog:
                   type: long
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_category_id
+                    foreignKeyName: fk_category_id_vacancies
                     references: categories(id)
               - column:
                   name: salary
@@ -153,7 +153,7 @@ databaseChangeLog:
                   type: long
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_author_id
+                    foreignKeyName: fk_author_id_vacancies
                     references: users(id)
               - column:
                   name: created_time
@@ -184,7 +184,7 @@ databaseChangeLog:
                   type: long
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_applicant_id
+                    foreignKeyName: fk_applicant_id_resumes
                     references: users(id)
               - column:
                   name: name
@@ -196,7 +196,7 @@ databaseChangeLog:
                   type: long
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_category_id
+                    foreignKeyName: fk_category_id_resumes
                     references: categories(id)
               - column:
                   name: salary
@@ -237,17 +237,17 @@ databaseChangeLog:
                   type: long
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_type_id
+                    foreignKeyName: fk_type_id_contacts_info
                     references: contact_types(id)
               - column:
                   name: resume_id
                   type: long
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_resume_id
+                    foreignKeyName: fk_resume_id_contacts_info
                     references: resumes(id)
               - column:
-                  name: value
+                  name: content
                   type: varchar(255)
                   constraints:
                     nullable: false
@@ -270,7 +270,7 @@ databaseChangeLog:
                   type: long
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_resume_id
+                    foreignKeyName: fk_resume_id_education_info
                     references: resumes(id)
               - column:
                   name: institution
@@ -316,7 +316,7 @@ databaseChangeLog:
                   type: long
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_resume_id
+                    foreignKeyName: fk_resume_id_work_experience_info
                     references: resumes(id)
               - column:
                   name: years
@@ -357,14 +357,14 @@ databaseChangeLog:
                   type: long
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_resume_id
+                    foreignKeyName: fk_resume_id_responded_applicants
                     references: resumes(id)
               - column:
                   name: vacancy_id
                   type: long
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_vacancy_id
+                    foreignKeyName: fk_vacancy_id_responded_applicants
                     references: vacancies(id)
               - column:
                   name: confirmation
@@ -390,7 +390,7 @@ databaseChangeLog:
                   type: long
                   constraints:
                     nullable: false
-                    foreignKeyName: fk_responded_applicants
+                    foreignKeyName: fk_responded_applicants_messages
                     references: responded_applicants(id)
               - column:
                   name: content
