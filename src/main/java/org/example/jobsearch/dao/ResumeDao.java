@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.example.jobsearch.models.Resume;
 import org.example.jobsearch.models.User;
 import org.springframework.context.annotation.Bean;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -35,5 +37,15 @@ public class ResumeDao {
                 where applicant_id = ?
                 """;
         return template.query(sql, new BeanPropertyRowMapper<>(Resume.class), id);
+    }
+
+    public Optional<Resume> getResumeById(int id) {
+        String sql = """
+                select * from RESUMES
+                where id = ?
+                """;
+        return Optional.ofNullable(DataAccessUtils.singleResult(
+                template.query(sql, new BeanPropertyRowMapper<>(Resume.class))
+        ));
     }
 }
