@@ -6,12 +6,14 @@ import org.example.jobsearch.models.RespondApplicant;
 import org.example.jobsearch.models.Resume;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.models.Vacancy;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -19,9 +21,10 @@ public class VacancyDao {
     private final JdbcTemplate template;
     private final ResumeDao resumeDao;
 
+
     public List<Vacancy> getVacanciesByApplicantId(int id) throws ResumeNotFoundException {
         List<Resume> usersResume = resumeDao.getResumesByUserId(id);
-        if (usersResume.isEmpty()){
+        if (usersResume.isEmpty()) {
             throw new ResumeNotFoundException("У данного пользователя нет резюме");
         }
         List<RespondApplicant> respondApplicants = new ArrayList<>();
@@ -60,13 +63,23 @@ public class VacancyDao {
         return template.query(sql, new BeanPropertyRowMapper<>(Vacancy.class), id);
     }
 
+    public Optional<Vacancy> getVacancyById(int id) {
+        String sql = """
+                select * from vacancies
+                where id = ?
+                """;
+        return Optional.ofNullable(DataAccessUtils.singleResult(
+                template.query(sql, new BeanPropertyRowMapper<>(Vacancy.class), id)
+        ));
+    }
+
     public List<User> getApplicantsByVacancyId(int id) throws ResumeNotFoundException {
         String sql = """
                 select resume_id from responded_applicants
                 where vacancy_id = ?
                 """;
         List<Long> applicantsResumesByVacancyId = template.queryForList(sql, Long.class, id);
-        if (applicantsResumesByVacancyId.isEmpty()){
+        if (applicantsResumesByVacancyId.isEmpty()) {
             throw new ResumeNotFoundException("Откликов на эту вакансию не найдено!");
         }
         List<Resume> resumes = new ArrayList<>();
