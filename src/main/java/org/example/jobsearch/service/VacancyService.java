@@ -21,4 +21,6 @@ public interface VacancyService {
     List<UserDto> getApplicantsByVacancyId(int id) throws UserNotFoundException, ResumeNotFoundException;
 
     void createVacancy(VacancyDto vacancyDto) throws VacancyException;
+
+    VacancyDto getVacancyById(int id) throws VacancyNotFoundException;
 }

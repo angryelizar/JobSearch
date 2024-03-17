@@ -34,6 +34,15 @@ public class VacancyController {
         }
     }
 
+    @GetMapping("{id}")
+    public ResponseEntity<?> getVacancyById (@PathVariable int id){
+        try {
+            return ResponseEntity.ok(vacancyService.getVacancyById(id));
+        } catch (VacancyNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
     @GetMapping("applicant/{id}")
     public ResponseEntity<?> getVacanciesByApplicantId(@PathVariable int id){
         try {

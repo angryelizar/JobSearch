@@ -96,6 +96,15 @@ public class VacancyServiceImpl implements VacancyService {
         vacancyDao.createVacancy(vacancy);
     }
 
+    @Override
+    public VacancyDto getVacancyById(int id) throws VacancyNotFoundException {
+        if (vacancyDao.getVacancyById(id).isEmpty()) {
+            throw new VacancyNotFoundException("Вакансия не найдена");
+        }
+        Vacancy vacancy = vacancyDao.getVacancyById(id).get();
+        return getVacancyDto(vacancy);
+    }
+
     private List<VacancyDto> getVacancyDtos(List<Vacancy> vacancies) {
         List<VacancyDto> vacancyDtos = new ArrayList<>();
         vacancies.forEach(e -> vacancyDtos.add(VacancyDto.builder()
@@ -111,5 +120,20 @@ public class VacancyServiceImpl implements VacancyService {
                 .updateTime(e.getUpdateTime())
                 .build()));
         return vacancyDtos;
+    }
+
+    private VacancyDto getVacancyDto(Vacancy vacancy){
+        VacancyDto vacancyDto = new VacancyDto();
+        vacancyDto.setName(vacancy.getName());
+        vacancyDto.setDescription(vacancy.getDescription());
+        vacancyDto.setCategoryId(vacancy.getCategoryId());
+        vacancyDto.setSalary(vacancy.getSalary());
+        vacancyDto.setExpFrom(vacancy.getExpFrom());
+        vacancyDto.setExpTo(vacancy.getExpTo());
+        vacancyDto.setIsActive(vacancy.getIsActive());
+        vacancyDto.setAuthorId(vacancy.getAuthorId());
+        vacancyDto.setCreatedTime(vacancy.getCreatedTime());
+        vacancyDto.setUpdateTime(vacancy.getUpdateTime());
+        return vacancyDto;
     }
 }
