@@ -46,6 +46,12 @@ public class VacancyController {
         }
     }
 
+    @DeleteMapping("{id}")
+    public HttpStatus deleteVacancyById(@PathVariable int id){
+        vacancyService.deleteVacancyById(id);
+        return HttpStatus.ACCEPTED;
+    }
+
     @GetMapping("{id}")
     public ResponseEntity<?> getVacancyById (@PathVariable int id){
         try {

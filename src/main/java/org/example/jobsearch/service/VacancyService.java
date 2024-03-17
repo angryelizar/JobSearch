@@ -26,4 +26,6 @@ public interface VacancyService {
     VacancyDto getVacancyById(int id) throws VacancyNotFoundException;
 
     void editVacancy(int id, UpdateVacancyDto updateVacancyDto) throws VacancyException;
+
+    void deleteVacancyById(int id);
 }

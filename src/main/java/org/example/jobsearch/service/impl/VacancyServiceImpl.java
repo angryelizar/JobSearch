@@ -1,6 +1,7 @@
 package org.example.jobsearch.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.CategoryDao;
 import org.example.jobsearch.dao.UserDao;
 import org.example.jobsearch.dao.VacancyDao;
@@ -22,6 +23,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class VacancyServiceImpl implements VacancyService {
     private final VacancyDao vacancyDao;
     private final CategoryDao categoryDao;
@@ -102,8 +104,7 @@ public class VacancyServiceImpl implements VacancyService {
         if (vacancyDao.getVacancyById(id).isEmpty()) {
             throw new VacancyNotFoundException("Вакансия не найдена");
         }
-        Vacancy vacancy = vacancyDao.getVacancyById(id).get();
-        return getVacancyDto(vacancy);
+        return getVacancyDto(vacancyDao.getVacancyById(id).get());
     }
 
     @Override
@@ -130,6 +131,11 @@ public class VacancyServiceImpl implements VacancyService {
         vacancy.setIsActive(updateVacancyDto.getIsActive());
         vacancy.setUpdateTime(LocalDateTime.now());
         vacancyDao.editVacancy(id, vacancy);
+    }
+
+    @Override
+    public void deleteVacancyById(int id) {
+        vacancyDao.deleteVacancyById(id);
     }
 
     private List<VacancyDto> getVacancyDtos(List<Vacancy> vacancies) {
