@@ -16,15 +16,16 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
+@RequestMapping("resumes")
 public class ResumeController {
     private final ResumeService resumeService;
 
-    @GetMapping("resumes")
+    @GetMapping()
     public ResponseEntity<List<ResumeDto>> getResumes(){
         return ResponseEntity.ok(resumeService.getResumes());
     }
 
-    @GetMapping("resumes/category/{id}")
+    @GetMapping("category/{id}")
     public ResponseEntity<?> getResumesByCategoryId(@PathVariable int id){
         try {
             List<ResumeDto> resumes = resumeService.getResumesByCategoryId(id);
@@ -34,7 +35,7 @@ public class ResumeController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-    @GetMapping("resumes/user/{id}")
+    @GetMapping("user/{id}")
     public ResponseEntity<?> getResumesByUserId(@PathVariable int id){
         try {
             List<ResumeDto> resumes = resumeService.getResumesByUserId(id);
@@ -43,5 +44,4 @@ public class ResumeController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-
 }
