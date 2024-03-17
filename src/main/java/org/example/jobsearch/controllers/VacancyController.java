@@ -1,26 +1,40 @@
 package org.example.jobsearch.controllers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.dto.VacancyDto;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
 import org.example.jobsearch.exceptions.UserNotFoundException;
+import org.example.jobsearch.exceptions.VacancyException;
 import org.example.jobsearch.exceptions.VacancyNotFoundException;
 import org.example.jobsearch.service.VacancyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("vacancies")
 @RequiredArgsConstructor
+@Slf4j
 public class VacancyController {
     private final VacancyService vacancyService;
 
-    @GetMapping("vacancies/applicant/{id}")
+
+    @PostMapping
+    public HttpStatus createVacancy(@RequestBody VacancyDto vacancyDto){
+        try {
+            vacancyService.createVacancy(vacancyDto);
+            return HttpStatus.CREATED;
+        } catch (VacancyException e){
+            log.info(e.getMessage());
+            return HttpStatus.NO_CONTENT;
+        }
+    }
+
+    @GetMapping("applicant/{id}")
     public ResponseEntity<?> getVacanciesByApplicantId(@PathVariable int id){
         try {
             List<VacancyDto> vacancyDtos = vacancyService.getVacanciesByApplicantId(id);
@@ -30,7 +44,7 @@ public class VacancyController {
         }
     }
 
-    @GetMapping("vacancies/category/{id}")
+    @GetMapping("category/{id}")
     public ResponseEntity<?> getVacanciesByCategoryId(@PathVariable int id){
         try {
             List<VacancyDto> vacancyDtos = vacancyService.getVacanciesByCategoryId(id);
@@ -40,7 +54,7 @@ public class VacancyController {
         }
     }
 
-    @GetMapping("vacancy/getapplicants/{id}")
+    @GetMapping("getapplicants/{id}")
     public ResponseEntity<?> getApplicantsByVacancyId(@PathVariable int id){
         try {
             List<UserDto> userDtos = vacancyService.getApplicantsByVacancyId(id);
@@ -50,8 +64,7 @@ public class VacancyController {
         }
     }
 
-
-    @GetMapping("vacancies")
+    @GetMapping()
     public ResponseEntity<List<VacancyDto>> getVacancies(){
         return ResponseEntity.ok(vacancyService.getVacancies());
     }

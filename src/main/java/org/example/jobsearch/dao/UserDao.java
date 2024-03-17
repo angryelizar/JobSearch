@@ -152,4 +152,17 @@ public class UserDao {
         return count > 0;
     }
 
+    public boolean idIsExists(Long id){
+        String sql = "SELECT COUNT(*) FROM USERS WHERE ID = ?";
+        int count = template.queryForObject(sql, Integer.class, id);
+        return count > 0;
+    }
+
+    public boolean userIsEmployer(Long id){
+        String sql = "SELECT COUNT(*) FROM USERS WHERE ID = ? and ACCOUNT_TYPE = ?";
+        String type = "Работодатель";
+        int count = template.queryForObject(sql, Integer.class, id, type);
+        return count > 0;
+    }
+
 }
