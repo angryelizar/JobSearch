@@ -1,5 +1,6 @@
 package org.example.jobsearch.service;
 
+import org.example.jobsearch.dto.UpdateVacancyDto;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.dto.VacancyDto;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
@@ -23,4 +24,6 @@ public interface VacancyService {
     void createVacancy(VacancyDto vacancyDto) throws VacancyException;
 
     VacancyDto getVacancyById(int id) throws VacancyNotFoundException;
+
+    void editVacancy(int id, UpdateVacancyDto updateVacancyDto) throws VacancyException;
 }

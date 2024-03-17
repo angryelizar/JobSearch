@@ -2,6 +2,7 @@ package org.example.jobsearch.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.jobsearch.dto.UpdateVacancyDto;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.dto.VacancyDto;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
@@ -28,6 +29,17 @@ public class VacancyController {
         try {
             vacancyService.createVacancy(vacancyDto);
             return HttpStatus.CREATED;
+        } catch (VacancyException e){
+            log.info(e.getMessage());
+            return HttpStatus.NO_CONTENT;
+        }
+    }
+
+    @PostMapping("{id}")
+    public HttpStatus editVacancy(@PathVariable int id, @RequestBody UpdateVacancyDto updateVacancyDto){
+        try {
+            vacancyService.editVacancy(id, updateVacancyDto);
+            return HttpStatus.ACCEPTED;
         } catch (VacancyException e){
             log.info(e.getMessage());
             return HttpStatus.NO_CONTENT;

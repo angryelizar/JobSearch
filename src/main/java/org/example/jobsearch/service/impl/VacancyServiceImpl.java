@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.jobsearch.dao.CategoryDao;
 import org.example.jobsearch.dao.UserDao;
 import org.example.jobsearch.dao.VacancyDao;
+import org.example.jobsearch.dto.UpdateVacancyDto;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.dto.VacancyDto;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
@@ -103,6 +104,32 @@ public class VacancyServiceImpl implements VacancyService {
         }
         Vacancy vacancy = vacancyDao.getVacancyById(id).get();
         return getVacancyDto(vacancy);
+    }
+
+    @Override
+    public void editVacancy(int id, UpdateVacancyDto updateVacancyDto) throws VacancyException {
+        if (!vacancyDao.isExists(id)){
+            throw new VacancyException("Такой вакансии нет - нечего редактировать!");
+        }
+        if (Boolean.FALSE.equals(categoryDao.isExists(updateVacancyDto.getCategoryId()))) {
+            throw new VacancyException("Выбранной категории не существует");
+        }
+        if (updateVacancyDto.getSalary() <= 0) {
+            throw new VacancyException("Зарплата не может быть меньше или равна нулю!");
+        }
+        if (updateVacancyDto.getExpFrom() > updateVacancyDto.getExpTo()) {
+            throw new VacancyException("Стартовый опыт работы не может быть больше окончательного!");
+        }
+        Vacancy vacancy = new Vacancy();
+        vacancy.setName(updateVacancyDto.getName());
+        vacancy.setDescription(updateVacancyDto.getDescription());
+        vacancy.setCategoryId(updateVacancyDto.getCategoryId());
+        vacancy.setSalary(updateVacancyDto.getSalary());
+        vacancy.setExpFrom(updateVacancyDto.getExpFrom());
+        vacancy.setExpTo(updateVacancyDto.getExpTo());
+        vacancy.setIsActive(updateVacancyDto.getIsActive());
+        vacancy.setUpdateTime(LocalDateTime.now());
+        vacancyDao.editVacancy(id, vacancy);
     }
 
     private List<VacancyDto> getVacancyDtos(List<Vacancy> vacancies) {

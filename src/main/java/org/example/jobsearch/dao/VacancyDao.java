@@ -139,4 +139,29 @@ public class VacancyDao {
         }
         return users;
     }
+
+    public boolean isExists(int id) {
+        String sql = "SELECT COUNT(*) FROM VACANCIES WHERE ID = ?";
+        int count = template.queryForObject(sql, Integer.class, id);
+        return count > 0;
+    }
+
+    public void editVacancy(int id, Vacancy vacancy) {
+        String sql = """
+                update VACANCIES
+                SET NAME = ?,
+                DESCRIPTION = ?,
+                CATEGORY_ID = ?,
+                SALARY = ?,
+                EXP_FROM = ?,
+                EXP_TO = ?,
+                IS_ACTIVE = ?,
+                UPDATE_TIME = ?
+                where id = ?
+                """;
+        template.update(sql, vacancy.getName(),
+                vacancy.getDescription(), vacancy.getCategoryId(),
+                vacancy.getSalary(), vacancy.getExpFrom(), vacancy.getExpTo(),
+                vacancy.getIsActive(), vacancy.getUpdateTime(), id);
+    }
 }
