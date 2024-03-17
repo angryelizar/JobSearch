@@ -25,6 +25,11 @@ public class ResumeController {
         return ResponseEntity.ok(resumeService.getResumes());
     }
 
+    @GetMapping("search")
+    public ResponseEntity<List<ResumeDto>> getResumesByName(@RequestParam String query){
+        return ResponseEntity.ok(resumeService.getResumesByName(query));
+    }
+
     @GetMapping("category/{id}")
     public ResponseEntity<?> getResumesByCategoryId(@PathVariable int id){
         try {
@@ -44,4 +49,5 @@ public class ResumeController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
 }
