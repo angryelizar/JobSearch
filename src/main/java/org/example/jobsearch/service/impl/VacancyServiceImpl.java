@@ -11,10 +11,7 @@ import org.example.jobsearch.exceptions.ResumeNotFoundException;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.exceptions.VacancyException;
 import org.example.jobsearch.exceptions.VacancyNotFoundException;
-import org.example.jobsearch.models.RespondApplicant;
-import org.example.jobsearch.models.Resume;
-import org.example.jobsearch.models.User;
-import org.example.jobsearch.models.Vacancy;
+import org.example.jobsearch.models.*;
 import org.example.jobsearch.service.VacancyService;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +28,8 @@ public class VacancyServiceImpl implements VacancyService {
     private final UserDao userDao;
     private final RespondedApplicantDao respondedApplicantDao;
     private final ResumeDao resumeDao;
+    private final EducationInfoDao educationInfoDao;
+    private final WorkExperienceInfoDao workExperienceInfoDao;
 
     @Override
     public List<VacancyDto> getVacanciesByApplicantId(int id) throws VacancyNotFoundException, ResumeNotFoundException {
@@ -157,6 +156,8 @@ public class VacancyServiceImpl implements VacancyService {
                             .isActive(resume.getIsActive())
                             .createdTime(resume.getCreatedTime())
                             .updateTime(resume.getUpdateTime())
+                            .educationInfos(educationInfoDao.getEducationInfoByResumeId(resume.getId()))
+                            .workExperienceInfos(workExperienceInfoDao.getWorkExperienceByResumeId(resume.getId()))
                             .build()
             );
         }

@@ -4,8 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.jobsearch.models.EducationInfo;
+import org.example.jobsearch.models.WorkExperienceInfo;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -19,4 +22,6 @@ public class ResumeDto {
     private Boolean isActive;
     private LocalDateTime createdTime;
     private LocalDateTime updateTime;
+    private List<EducationInfo> educationInfos;
+    private List<WorkExperienceInfo> workExperienceInfos;
 }
