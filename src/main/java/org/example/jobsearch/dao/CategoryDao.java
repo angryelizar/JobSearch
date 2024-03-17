@@ -14,4 +14,12 @@ public class CategoryDao {
         int count = template.queryForObject(sql, Integer.class, id);
         return count > 0;
     }
+
+    public String getCategoryNameById (Long id) {
+        String sql = """
+                select name from CATEGORIES
+                where id = ?
+                """;
+        return template.queryForObject(sql, String.class, id);
+    }
 }

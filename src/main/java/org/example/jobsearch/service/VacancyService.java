@@ -1,5 +1,6 @@
 package org.example.jobsearch.service;
 
+import org.example.jobsearch.dto.RespondedResumeDto;
 import org.example.jobsearch.dto.UpdateVacancyDto;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.dto.VacancyDto;
@@ -28,4 +29,6 @@ public interface VacancyService {
     void editVacancy(int id, UpdateVacancyDto updateVacancyDto) throws VacancyException;
 
     void deleteVacancyById(int id);
+
+    List<RespondedResumeDto> getRespondedResumesByVacancyId(int id);
 }

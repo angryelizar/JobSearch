@@ -2,6 +2,8 @@ package org.example.jobsearch.dao;
 
 import lombok.RequiredArgsConstructor;
 import org.example.jobsearch.models.EducationInfo;
+import org.example.jobsearch.models.WorkExperienceInfo;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -33,5 +36,13 @@ public class EducationInfoDao {
             return ps;
         }, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    public List<EducationInfo> getEducationInfoByResumeId(Long id) {
+        String sql = """
+                select * from EDUCATION_INFO
+                where RESUME_ID = ?
+                """;
+        return template.query(sql, new BeanPropertyRowMapper<>(EducationInfo.class), id);
     }
 }

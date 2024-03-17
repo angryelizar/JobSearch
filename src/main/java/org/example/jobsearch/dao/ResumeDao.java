@@ -1,7 +1,6 @@
 package org.example.jobsearch.dao;
 
 import lombok.RequiredArgsConstructor;
-import org.example.jobsearch.dto.ResumeDto;
 import org.example.jobsearch.models.Resume;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -43,7 +42,7 @@ public class ResumeDao {
         return template.query(sql, new BeanPropertyRowMapper<>(Resume.class), id);
     }
 
-    public Optional<Resume> getResumeById(int id) {
+    public Optional<Resume> getResumeById(Long id) {
         String sql = """
                 select * from RESUMES
                 where id = ?

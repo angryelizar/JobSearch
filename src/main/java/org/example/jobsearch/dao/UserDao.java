@@ -20,6 +20,22 @@ import java.util.Optional;
 public class UserDao {
     private final JdbcTemplate template;
 
+    public String getUserNameById(Long id) {
+        String sql = """
+                select name from USERS
+                where id = ?;
+                """;
+        return template.queryForObject(sql, String.class, id);
+    }
+    public String getSurnameNameById(Long id) {
+        String sql = """
+                select surname from USERS
+                where id = ?;
+                """;
+        return template.queryForObject(sql, String.class, id);
+    }
+
+
     public Optional<User> getUserById(Long id) {
         String sql = """
                 select * from users
@@ -146,19 +162,19 @@ public class UserDao {
         return count > 0;
     }
 
-    public boolean phoneIsExists(String phone){
+    public boolean phoneIsExists(String phone) {
         String sql = "SELECT COUNT(*) FROM USERS WHERE PHONE_NUMBER = ?";
         int count = template.queryForObject(sql, Integer.class, phone);
         return count > 0;
     }
 
-    public boolean idIsExists(Long id){
+    public boolean idIsExists(Long id) {
         String sql = "SELECT COUNT(*) FROM USERS WHERE ID = ?";
         int count = template.queryForObject(sql, Integer.class, id);
         return count > 0;
     }
 
-    public boolean userIsEmployer(Long id){
+    public boolean userIsEmployer(Long id) {
         String sql = "SELECT COUNT(*) FROM USERS WHERE ID = ? and ACCOUNT_TYPE = ?";
         String type = "Работодатель";
         int count = template.queryForObject(sql, Integer.class, id, type);

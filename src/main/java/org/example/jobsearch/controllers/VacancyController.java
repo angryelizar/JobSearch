@@ -2,6 +2,7 @@ package org.example.jobsearch.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.jobsearch.dto.RespondedResumeDto;
 import org.example.jobsearch.dto.UpdateVacancyDto;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.dto.VacancyDto;
@@ -81,7 +82,12 @@ public class VacancyController {
         }
     }
 
-    @GetMapping("getapplicants/{id}")
+    @GetMapping("{id}/responded-applicants")
+    public ResponseEntity<List<RespondedResumeDto>> getRespondedResumesByVacancyId (@PathVariable int id){
+        return ResponseEntity.ok(vacancyService.getRespondedResumesByVacancyId(id));
+    }
+
+    @GetMapping("{id}/users")
     public ResponseEntity<?> getApplicantsByVacancyId(@PathVariable int id){
         try {
             List<UserDto> userDtos = vacancyService.getApplicantsByVacancyId(id);

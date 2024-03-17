@@ -2,9 +2,8 @@ package org.example.jobsearch.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.jobsearch.dao.CategoryDao;
-import org.example.jobsearch.dao.UserDao;
-import org.example.jobsearch.dao.VacancyDao;
+import org.example.jobsearch.dao.*;
+import org.example.jobsearch.dto.RespondedResumeDto;
 import org.example.jobsearch.dto.UpdateVacancyDto;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.dto.VacancyDto;
@@ -12,6 +11,8 @@ import org.example.jobsearch.exceptions.ResumeNotFoundException;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.exceptions.VacancyException;
 import org.example.jobsearch.exceptions.VacancyNotFoundException;
+import org.example.jobsearch.models.RespondApplicant;
+import org.example.jobsearch.models.Resume;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.models.Vacancy;
 import org.example.jobsearch.service.VacancyService;
@@ -28,6 +29,8 @@ public class VacancyServiceImpl implements VacancyService {
     private final VacancyDao vacancyDao;
     private final CategoryDao categoryDao;
     private final UserDao userDao;
+    private final RespondedApplicantDao respondedApplicantDao;
+    private final ResumeDao resumeDao;
 
     @Override
     public List<VacancyDto> getVacanciesByApplicantId(int id) throws VacancyNotFoundException, ResumeNotFoundException {
@@ -136,6 +139,28 @@ public class VacancyServiceImpl implements VacancyService {
     @Override
     public void deleteVacancyById(int id) {
         vacancyDao.deleteVacancyById(id);
+    }
+
+    @Override
+    public List<RespondedResumeDto> getRespondedResumesByVacancyId(int id) {
+        List<RespondApplicant> respondedApplicants = new ArrayList<>(respondedApplicantDao.getRespondedApplicantsByVacancyId(id));
+        List<RespondedResumeDto> respondedResumeDtos = new ArrayList<>();
+        for (RespondApplicant respondedApplicant : respondedApplicants) {
+            Resume resume = resumeDao.getResumeById(respondedApplicant.getResumeId()).get();
+            respondedResumeDtos.add(
+                    RespondedResumeDto.builder()
+                            .name(resume.getName())
+                            .applicantName(userDao.getUserNameById(resume.getApplicantId()))
+                            .applicantSurname(userDao.getSurnameNameById(resume.getApplicantId()))
+                            .category(categoryDao.getCategoryNameById(resume.getCategoryId()))
+                            .salary(resume.getSalary())
+                            .isActive(resume.getIsActive())
+                            .createdTime(resume.getCreatedTime())
+                            .updateTime(resume.getUpdateTime())
+                            .build()
+            );
+        }
+        return respondedResumeDtos;
     }
 
     private List<VacancyDto> getVacancyDtos(List<Vacancy> vacancies) {
