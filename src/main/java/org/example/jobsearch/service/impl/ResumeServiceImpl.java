@@ -3,10 +3,13 @@ package org.example.jobsearch.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.example.jobsearch.dao.EducationInfoDao;
 import org.example.jobsearch.dao.ResumeDao;
+import org.example.jobsearch.dao.UserDao;
 import org.example.jobsearch.dao.WorkExperienceInfoDao;
+import org.example.jobsearch.dto.ProfileAndResumesDto;
 import org.example.jobsearch.dto.ResumeDto;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
 import org.example.jobsearch.models.Resume;
+import org.example.jobsearch.models.User;
 import org.example.jobsearch.service.ResumeService;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ResumeServiceImpl implements ResumeService {
     private final ResumeDao resumeDao;
+    private final UserDao userDao;
     private final WorkExperienceInfoDao workExperienceInfoDao;
     private final EducationInfoDao educationInfoDao;
     @Override
@@ -47,6 +51,25 @@ public class ResumeServiceImpl implements ResumeService {
     public List<ResumeDto> getResumesByName(String query) {
         List<Resume>  resumes = resumeDao.getResumesByName(query);
         return getResumeDtos(resumes);
+    }
+
+    @Override
+    public List<ProfileAndResumesDto> getResumesByApplicantName(String user) throws ResumeNotFoundException {
+        List<User> users = new ArrayList<>(userDao.getUsersByName(user));
+        List<ProfileAndResumesDto> resAndUsers = new ArrayList<>();
+        for (int i = 0; i < users.size(); i++) {
+            User currUsr = users.get(i);
+            resAndUsers.add(
+                    ProfileAndResumesDto.builder()
+                            .name(currUsr.getName())
+                            .surname(currUsr.getSurname())
+                            .age(currUsr.getAge())
+                            .email(currUsr.getEmail())
+                            .resumeDtos(getResumesByUserId(Math.toIntExact(currUsr.getId())))
+                            .build()
+            );
+        }
+        return resAndUsers;
     }
 
     private List<ResumeDto> getResumeDtos(List<Resume> resumes) {

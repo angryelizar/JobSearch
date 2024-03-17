@@ -2,10 +2,9 @@ package org.example.jobsearch.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.jobsearch.dto.ProfileAndResumesDto;
 import org.example.jobsearch.dto.ResumeDto;
-import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
-import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.service.ResumeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +25,13 @@ public class ResumeController {
     }
 
     @GetMapping("search")
-    public ResponseEntity<List<ResumeDto>> getResumesByName(@RequestParam String query){
-        return ResponseEntity.ok(resumeService.getResumesByName(query));
+    public ResponseEntity<List<ResumeDto>> getResumesByName(@RequestParam String name){
+        return ResponseEntity.ok(resumeService.getResumesByName(name));
+    }
+
+    @GetMapping("search/applicants")
+    public ResponseEntity<List<ProfileAndResumesDto>> getResumesByApplicantName (@RequestParam String user) throws ResumeNotFoundException {
+        return ResponseEntity.ok(resumeService.getResumesByApplicantName(user));
     }
 
     @GetMapping("category/{id}")
