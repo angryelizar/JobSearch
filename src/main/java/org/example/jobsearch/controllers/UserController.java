@@ -1,28 +1,31 @@
 package org.example.jobsearch.controllers;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dto.UserDto;
+import org.example.jobsearch.exceptions.UserAlreadyRegisteredException;
+import org.example.jobsearch.exceptions.UserHaveTooLowAge;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("users")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("users")
+    @GetMapping()
     public ResponseEntity<List<UserDto>> getUsers(){
         return ResponseEntity.ok().body(userService.getUsers());
     }
 
-    @GetMapping("users_by_name/{name}")
+    @GetMapping("name/{name}")
     public ResponseEntity<?> getUserByName(@PathVariable String name){
         try {
             List<UserDto> users = userService.getUsersByName(name);
@@ -32,7 +35,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("users_by_phone/{phone}")
+    @GetMapping("phone/{phone}")
     public ResponseEntity<?> getUserByPhone(@PathVariable String phone){
         try {
             UserDto user = userService.getUserByPhone(phone);
@@ -42,7 +45,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("users_by_email/{email}")
+    @GetMapping("email/{email}")
     public ResponseEntity<?> getUserByEmail(@PathVariable String email){
         try {
             UserDto user = userService.getUserByEmail(email);
@@ -52,8 +55,20 @@ public class UserController {
         }
     }
 
-    @GetMapping("user_exists/{email}")
+    @GetMapping("exists/{email}")
     public ResponseEntity<String> userIsExists(@PathVariable String email){
         return ResponseEntity.ok(userService.userIsExists(email));
+    }
+
+    @PostMapping()
+    public HttpStatus createUser(@RequestBody UserDto userDto){
+        try {
+            userService.createUser(userDto);
+            return HttpStatus.CREATED;
+        } catch (UserAlreadyRegisteredException | UserHaveTooLowAge e){
+            log.info("Пользователь либо существует, либо он слишком молод!");
+            return HttpStatus.NO_CONTENT;
+        }
+
     }
 }

@@ -31,17 +31,20 @@ public class UserDao {
 
     public Long createUser(User user) {
         String sql = """
-                insert into users (name, surname, email, password, account_type)
-                values (?, ?, ?, ?, ?);
+                insert into users (name, surname, age, email, password, phone_number, avatar, account_type)
+                values (?, ?, ?, ?, ?, ?, ?, ?);
                 """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, user.getName());
             ps.setString(2, user.getSurname());
-            ps.setString(3, user.getEmail());
-            ps.setString(4, user.getPassword());
-            ps.setString(5, user.getAccountType());
+            ps.setByte(3, user.getAge());
+            ps.setString(4, user.getEmail());
+            ps.setString(5, user.getPassword());
+            ps.setString(6, user.getPhoneNumber());
+            ps.setString(7, user.getAvatar());
+            ps.setString(8, user.getAccountType());
             return ps;
         }, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
@@ -137,9 +140,15 @@ public class UserDao {
         ));
     }
 
-    public boolean userIsExists(String email) {
+    public boolean emailIsExists(String email) {
         String sql = "SELECT COUNT(*) FROM users WHERE email = ?";
         int count = template.queryForObject(sql, Integer.class, email);
+        return count > 0;
+    }
+
+    public boolean phoneIsExists(String phone){
+        String sql = "SELECT COUNT(*) FROM USERS WHERE PHONE_NUMBER = ?";
+        int count = template.queryForObject(sql, Integer.class, phone);
         return count > 0;
     }
 
