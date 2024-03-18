@@ -2,6 +2,8 @@ package org.example.jobsearch.dao;
 
 import lombok.RequiredArgsConstructor;
 import org.example.jobsearch.models.WorkExperienceInfo;
+import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -32,5 +35,34 @@ public class WorkExperienceInfoDao {
             return ps;
         }, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    public List<WorkExperienceInfo> getWorkExperienceByResumeId(Long id) {
+        String sql = """
+                select * from WORK_EXPERIENCE_INFO
+                where RESUME_ID = ?
+                """;
+        return template.query(sql, new BeanPropertyRowMapper<>(WorkExperienceInfo.class), id);
+    }
+
+    public void editWorkExperienceInfo(WorkExperienceInfo workExperienceInfo, Long id) {
+        String sql = """
+                UPDATE WORK_EXPERIENCE_INFO
+                SET YEARS = ?,
+                COMPANY_NAME = ?,
+                POSITION = ?,
+                RESPONSIBILITIES = ?
+                where id = ?
+                """;
+        template.update(sql, workExperienceInfo.getYears(), workExperienceInfo.getCompanyName(),
+                workExperienceInfo.getPosition(), workExperienceInfo.getResponsibilities(), id);
+    }
+
+    public void deleteWorkExperienceInfoByResumeId(int id) {
+        String sql = """
+                delete from WORK_EXPERIENCE_INFO
+                where RESUME_ID = ?
+                """;
+        template.update(sql, id);
     }
 }

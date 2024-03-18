@@ -1,6 +1,7 @@
 package org.example.jobsearch.dao;
 
 import lombok.RequiredArgsConstructor;
+import org.example.jobsearch.dto.VacancyDto;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
 import org.example.jobsearch.models.RespondApplicant;
 import org.example.jobsearch.models.Resume;
@@ -138,5 +139,47 @@ public class VacancyDao {
             users.add(template.queryForObject(query, new BeanPropertyRowMapper<>(User.class), applicantId));
         }
         return users;
+    }
+
+    public boolean isExists(int id) {
+        String sql = "SELECT COUNT(*) FROM VACANCIES WHERE ID = ?";
+        int count = template.queryForObject(sql, Integer.class, id);
+        return count > 0;
+    }
+
+    public void editVacancy(int id, Vacancy vacancy) {
+        String sql = """
+                update VACANCIES
+                SET NAME = ?,
+                DESCRIPTION = ?,
+                CATEGORY_ID = ?,
+                SALARY = ?,
+                EXP_FROM = ?,
+                EXP_TO = ?,
+                IS_ACTIVE = ?,
+                UPDATE_TIME = ?
+                where id = ?
+                """;
+        template.update(sql, vacancy.getName(),
+                vacancy.getDescription(), vacancy.getCategoryId(),
+                vacancy.getSalary(), vacancy.getExpFrom(), vacancy.getExpTo(),
+                vacancy.getIsActive(), vacancy.getUpdateTime(), id);
+    }
+
+    public List<Vacancy> getVacanciesByQuery(String query) {
+        String sql = """
+                select * from VACANCIES
+                where NAME like ? or DESCRIPTION like ?
+                """;
+        String searchWord = "%" + query + "%";
+        return template.query(sql, new BeanPropertyRowMapper<>(Vacancy.class), searchWord, searchWord);
+    }
+
+    public List<Vacancy> getVacanciesByAuthorId(Long id) {
+        String sql = """
+                select * from VACANCIES
+                where AUTHOR_ID = ?
+                """;
+        return template.query(sql, new BeanPropertyRowMapper<>(Vacancy.class), id);
     }
 }

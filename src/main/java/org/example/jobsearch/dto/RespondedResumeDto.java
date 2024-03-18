@@ -14,14 +14,15 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResumeDto {
-    private Long applicantId;
+public class RespondedResumeDto {
+    private String applicantName;
+    private String applicantSurname;
     private String name;
-    private Long categoryId;
+    private String category;
     private Double salary;
     private Boolean isActive;
     private LocalDateTime createdTime;
     private LocalDateTime updateTime;
-    private List<EducationInfoDto> educationInfos;
-    private List<WorkExperienceInfoDto> workExperienceInfos;
+    private List<EducationInfo> educationInfos;
+    private List<WorkExperienceInfo> workExperienceInfos;
 }

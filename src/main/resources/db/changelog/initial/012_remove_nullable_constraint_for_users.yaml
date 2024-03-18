@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: drop_no_null_constraint_for users
+      author: angryelizar
+      changes:
+        - dropNotNullConstraint:
+            tableName: users
+            columnName: surname

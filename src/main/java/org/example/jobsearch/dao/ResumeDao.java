@@ -42,7 +42,7 @@ public class ResumeDao {
         return template.query(sql, new BeanPropertyRowMapper<>(Resume.class), id);
     }
 
-    public Optional<Resume> getResumeById(int id) {
+    public Optional<Resume> getResumeById(Long id) {
         String sql = """
                 select * from RESUMES
                 where id = ?
@@ -123,6 +123,35 @@ public class ResumeDao {
             return ps;
         }, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    public void editResume(Resume resume, Long id){
+        String sql = """
+                update RESUMES
+                SET NAME = ?,
+                CATEGORY_ID = ?,
+                SALARY = ?,
+                IS_ACTIVE = ?,
+                UPDATE_TIME = ?
+                where id = ?
+                """;
+        template.update(sql, resume.getName(), resume.getCategoryId(), resume.getSalary(),
+                resume.getIsActive(), resume.getUpdateTime(), id);
+    }
+
+    public List<Resume> getResumesByName(String query) {
+        String sql = """
+                select * from RESUMES
+                where NAME like ?
+                """;
+        String param = "%" + query + "%";
+        return template.query(sql, new BeanPropertyRowMapper<>(Resume.class), param);
+    }
+
+    public boolean idIsExists(Long id) {
+        String sql = "SELECT COUNT(*) FROM RESUMES WHERE ID = ?";
+        int count = template.queryForObject(sql, Integer.class, id);
+        return count > 0;
     }
 
 }

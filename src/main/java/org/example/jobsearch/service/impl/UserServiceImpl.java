@@ -1,8 +1,12 @@
 package org.example.jobsearch.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.UserDao;
 import org.example.jobsearch.dto.UserDto;
+import org.example.jobsearch.exceptions.UserAlreadyRegisteredException;
+import org.example.jobsearch.exceptions.UserException;
+import org.example.jobsearch.exceptions.UserHaveTooLowAge;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.service.UserService;
@@ -11,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -59,13 +64,34 @@ public class UserServiceImpl implements UserService {
         return UserDto.builder()
                 .name(user.getName())
                 .surname(user.getSurname())
+                .age(user.getAge())
                 .accountType(user.getAccountType())
                 .build();
     }
 
     @Override
     public String userIsExists(String email) {
-        boolean result = userDao.userIsExists(email);
+        boolean result = userDao.emailIsExists(email);
         return result ? "Пользователь существует" : "Пользователя нет в системе";
+    }
+
+    @Override
+    public void createUser(UserDto userDto) throws UserAlreadyRegisteredException, UserHaveTooLowAge {
+        if (userDao.emailIsExists(userDto.getEmail()) || userDao.phoneIsExists(userDto.getPhoneNumber())){
+            throw new UserAlreadyRegisteredException("Пользователь уже зарегистрирован");
+        }
+        if (userDto.getAge() < 18){
+            throw new UserHaveTooLowAge("Пользователь слишком молод!");
+        }
+        User user = new User();
+        user.setName(userDto.getName());
+        user.setSurname(userDto.getSurname());
+        user.setAge(userDto.getAge());
+        user.setEmail(userDto.getEmail());
+        user.setPhoneNumber(userDto.getPhoneNumber());
+        user.setPassword(userDto.getPassword());
+        user.setAvatar(userDto.getAvatar());
+        user.setAccountType(userDto.getAccountType());
+        userDao.createUser(user);
     }
 }

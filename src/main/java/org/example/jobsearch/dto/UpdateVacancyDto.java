@@ -4,24 +4,20 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.jobsearch.models.EducationInfo;
-import org.example.jobsearch.models.WorkExperienceInfo;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResumeDto {
-    private Long applicantId;
+public class UpdateVacancyDto {
     private String name;
+    private String description;
     private Long categoryId;
     private Double salary;
+    private Integer expFrom;
+    private Integer expTo;
     private Boolean isActive;
-    private LocalDateTime createdTime;
     private LocalDateTime updateTime;
-    private List<EducationInfoDto> educationInfos;
-    private List<WorkExperienceInfoDto> workExperienceInfos;
 }
