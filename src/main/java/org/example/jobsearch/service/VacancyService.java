@@ -1,13 +1,7 @@
 package org.example.jobsearch.service;
 
-import org.example.jobsearch.dto.RespondedResumeDto;
-import org.example.jobsearch.dto.UpdateVacancyDto;
-import org.example.jobsearch.dto.UserDto;
-import org.example.jobsearch.dto.VacancyDto;
-import org.example.jobsearch.exceptions.ResumeNotFoundException;
-import org.example.jobsearch.exceptions.UserNotFoundException;
-import org.example.jobsearch.exceptions.VacancyException;
-import org.example.jobsearch.exceptions.VacancyNotFoundException;
+import org.example.jobsearch.dto.*;
+import org.example.jobsearch.exceptions.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,4 +27,6 @@ public interface VacancyService {
     List<RespondedResumeDto> getRespondedResumesByVacancyId(int id);
 
     List<VacancyDto> getVacanciesByQuery(String query);
+
+    void respondToVacancy(RespondedApplicantDto respondedApplicantDto) throws ResumeException, VacancyException;
 }

@@ -3,14 +3,8 @@ package org.example.jobsearch.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.*;
-import org.example.jobsearch.dto.RespondedResumeDto;
-import org.example.jobsearch.dto.UpdateVacancyDto;
-import org.example.jobsearch.dto.UserDto;
-import org.example.jobsearch.dto.VacancyDto;
-import org.example.jobsearch.exceptions.ResumeNotFoundException;
-import org.example.jobsearch.exceptions.UserNotFoundException;
-import org.example.jobsearch.exceptions.VacancyException;
-import org.example.jobsearch.exceptions.VacancyNotFoundException;
+import org.example.jobsearch.dto.*;
+import org.example.jobsearch.exceptions.*;
 import org.example.jobsearch.models.*;
 import org.example.jobsearch.service.VacancyService;
 import org.springframework.stereotype.Service;
@@ -111,7 +105,7 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public void editVacancy(int id, UpdateVacancyDto updateVacancyDto) throws VacancyException {
-        if (!vacancyDao.isExists(id)){
+        if (!vacancyDao.isExists(id)) {
             throw new VacancyException("Такой вакансии нет - нечего редактировать!");
         }
         if (Boolean.FALSE.equals(categoryDao.isExists(updateVacancyDto.getCategoryId()))) {
@@ -169,6 +163,20 @@ public class VacancyServiceImpl implements VacancyService {
         return getVacancyDtos(vacancyDao.getVacanciesByQuery(query));
     }
 
+    @Override
+    public void respondToVacancy(RespondedApplicantDto respondedApplicantDto) throws ResumeException, VacancyException {
+        if (!resumeDao.idIsExists(respondedApplicantDto.getResumeId())) {
+            throw new ResumeException("Резюме не существует!");
+        }
+        if (!vacancyDao.isExists(Math.toIntExact(respondedApplicantDto.getVacancyId()))) {
+            throw new VacancyException("Вакансии не существует!");
+        }
+        if (respondedApplicantDao.isExists(respondedApplicantDto.getResumeId(), respondedApplicantDto.getVacancyId())){
+            throw new VacancyException("Соискатель уже откликался на эту вакансию!");
+        }
+        respondedApplicantDao.respondToVacancy(respondedApplicantDto.getResumeId(), respondedApplicantDto.getVacancyId());
+    }
+
     private List<VacancyDto> getVacancyDtos(List<Vacancy> vacancies) {
         List<VacancyDto> vacancyDtos = new ArrayList<>();
         vacancies.forEach(e -> vacancyDtos.add(VacancyDto.builder()
@@ -186,7 +194,7 @@ public class VacancyServiceImpl implements VacancyService {
         return vacancyDtos;
     }
 
-    private VacancyDto getVacancyDto(Vacancy vacancy){
+    private VacancyDto getVacancyDto(Vacancy vacancy) {
         VacancyDto vacancyDto = new VacancyDto();
         vacancyDto.setName(vacancy.getName());
         vacancyDto.setDescription(vacancy.getDescription());

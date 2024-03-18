@@ -2,14 +2,8 @@ package org.example.jobsearch.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.jobsearch.dto.RespondedResumeDto;
-import org.example.jobsearch.dto.UpdateVacancyDto;
-import org.example.jobsearch.dto.UserDto;
-import org.example.jobsearch.dto.VacancyDto;
-import org.example.jobsearch.exceptions.ResumeNotFoundException;
-import org.example.jobsearch.exceptions.UserNotFoundException;
-import org.example.jobsearch.exceptions.VacancyException;
-import org.example.jobsearch.exceptions.VacancyNotFoundException;
+import org.example.jobsearch.dto.*;
+import org.example.jobsearch.exceptions.*;
 import org.example.jobsearch.service.VacancyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +34,17 @@ public class VacancyController {
         } catch (VacancyException e){
             log.info(e.getMessage());
             return HttpStatus.NO_CONTENT;
+        }
+    }
+
+    @PostMapping("responded-applicant")
+    public HttpStatus respondToVacancy(@RequestBody RespondedApplicantDto respondedApplicantDto){
+        try {
+            vacancyService.respondToVacancy(respondedApplicantDto);
+            return HttpStatus.ACCEPTED;
+        } catch (VacancyException | ResumeException e){
+            log.info(e.getMessage());
+            return HttpStatus.NOT_FOUND;
         }
     }
 

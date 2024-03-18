@@ -147,4 +147,11 @@ public class ResumeDao {
         String param = "%" + query + "%";
         return template.query(sql, new BeanPropertyRowMapper<>(Resume.class), param);
     }
+
+    public boolean idIsExists(Long id) {
+        String sql = "SELECT COUNT(*) FROM RESUMES WHERE ID = ?";
+        int count = template.queryForObject(sql, Integer.class, id);
+        return count > 0;
+    }
+
 }
