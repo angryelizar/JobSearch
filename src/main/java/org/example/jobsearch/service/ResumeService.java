@@ -2,6 +2,8 @@ package org.example.jobsearch.service;
 
 import org.example.jobsearch.dto.ProfileAndResumesDto;
 import org.example.jobsearch.dto.ResumeDto;
+import org.example.jobsearch.dto.UpdateResumeDto;
+import org.example.jobsearch.exceptions.ResumeException;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -19,4 +21,6 @@ public interface ResumeService {
     List<ProfileAndResumesDto> getResumesByApplicantName(String user) throws ResumeNotFoundException;
 
     void createResume(ResumeDto resumeDto);
+
+    void editResume(Long id, UpdateResumeDto updateResumeDto) throws ResumeException;
 }

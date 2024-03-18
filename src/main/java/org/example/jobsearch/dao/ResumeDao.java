@@ -125,6 +125,20 @@ public class ResumeDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
+    public void editResume(Resume resume, Long id){
+        String sql = """
+                update RESUMES
+                SET NAME = ?,
+                CATEGORY_ID = ?,
+                SALARY = ?,
+                IS_ACTIVE = ?,
+                UPDATE_TIME = ?
+                where id = ?
+                """;
+        template.update(sql, resume.getName(), resume.getCategoryId(), resume.getSalary(),
+                resume.getIsActive(), resume.getUpdateTime(), id);
+    }
+
     public List<Resume> getResumesByName(String query) {
         String sql = """
                 select * from RESUMES

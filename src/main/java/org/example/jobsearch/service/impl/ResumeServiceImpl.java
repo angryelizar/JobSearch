@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.*;
 import org.example.jobsearch.dto.ProfileAndResumesDto;
 import org.example.jobsearch.dto.ResumeDto;
+import org.example.jobsearch.dto.UpdateResumeDto;
 import org.example.jobsearch.exceptions.ResumeException;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
 import org.example.jobsearch.models.EducationInfo;
@@ -134,6 +135,52 @@ public class ResumeServiceImpl implements ResumeService {
                             .position(e.getPosition())
                             .responsibilities(e.getResponsibilities())
                             .build()
+            ));
+        }
+    }
+
+    @Override
+    public void editResume(Long id, UpdateResumeDto updateResumeDto) throws ResumeException {
+        if (Boolean.FALSE.equals(categoryDao.isExists(updateResumeDto.getCategoryId()))) {
+            throw new ResumeException("Выбранной вами категории не существует");
+        }
+        if (updateResumeDto.getSalary() <= 0) {
+            throw new ResumeException("Зарплата не может быть меньше или равна нулю");
+        }
+        boolean educationIsValid = true;
+        boolean workExperienceIsValid = true;
+        if (!updateResumeDto.getWorkExperienceInfos().isEmpty()) {
+            workExperienceIsValid = workExperienceInfoService.isValid(updateResumeDto.getWorkExperienceInfos(), id);
+        }
+        if (!updateResumeDto.getEducationInfos().isEmpty()) {
+            educationIsValid = educationInfoService.isValid(updateResumeDto.getEducationInfos(), id);
+        }
+        resumeDao.editResume(Resume.builder()
+                        .name(updateResumeDto.getName())
+                        .categoryId(updateResumeDto.getCategoryId())
+                        .salary(updateResumeDto.getSalary())
+                        .isActive(updateResumeDto.getIsActive())
+                        .updateTime(LocalDateTime.now())
+                .build(), id);
+        if (educationIsValid){
+            updateResumeDto.getEducationInfos().forEach(e -> educationInfoDao.editEducationInfo(
+                    EducationInfo.builder()
+                            .institution(e.getInstitution())
+                            .program(e.getProgram())
+                            .startDate(e.getStartDate())
+                            .endDate(e.getEndDate())
+                            .degree(e.getDegree())
+                            .build(), id
+            ));
+        }
+        if (workExperienceIsValid){
+            updateResumeDto.getWorkExperienceInfos().forEach(e -> workExperienceInfoDao.editWorkExperienceInfo(
+                    WorkExperienceInfo.builder()
+                            .years(e.getYears())
+                            .companyName(e.getCompanyName())
+                            .position(e.getPosition())
+                            .responsibilities(e.getResponsibilities())
+                            .build(), id
             ));
         }
     }

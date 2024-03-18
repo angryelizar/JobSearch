@@ -193,7 +193,8 @@ public class UserDao {
 
     public int getUserAge(Long id) {
         String sql = "SELECT AGE FROM USERS WHERE ID = ?";
-        return template.queryForObject(sql, Integer.class, id);
+        Integer age =  template.queryForObject(sql, Integer.class, id);
+        return age != null ? age.intValue() : 0;
     }
 
     public String getAvatarByUserId(Long id) {

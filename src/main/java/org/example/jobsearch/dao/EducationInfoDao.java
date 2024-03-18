@@ -45,4 +45,18 @@ public class EducationInfoDao {
                 """;
         return template.query(sql, new BeanPropertyRowMapper<>(EducationInfo.class), id);
     }
+
+    public void editEducationInfo(EducationInfo educationInfo, Long id) {
+        String sql = """
+                UPDATE EDUCATION_INFO
+                SET INSTITUTION = ?,
+                PROGRAM = ?,
+                START_DATE = ?,
+                END_DATE = ?,
+                DEGREE = ?
+                where id = ?
+                """;
+        template.update(sql, educationInfo.getInstitution(), educationInfo.getProgram(),
+                educationInfo.getStartDate(), educationInfo.getEndDate(), educationInfo.getDegree(), id);
+    }
 }

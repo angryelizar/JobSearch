@@ -44,4 +44,17 @@ public class WorkExperienceInfoDao {
                 """;
         return template.query(sql, new BeanPropertyRowMapper<>(WorkExperienceInfo.class), id);
     }
+
+    public void editWorkExperienceInfo(WorkExperienceInfo workExperienceInfo, Long id) {
+        String sql = """
+                UPDATE WORK_EXPERIENCE_INFO
+                SET YEARS = ?,
+                COMPANY_NAME = ?,
+                POSITION = ?,
+                RESPONSIBILITIES = ?
+                where id = ?
+                """;
+        template.update(sql, workExperienceInfo.getYears(), workExperienceInfo.getCompanyName(),
+                workExperienceInfo.getPosition(), workExperienceInfo.getResponsibilities(), id);
+    }
 }
