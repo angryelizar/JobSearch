@@ -32,14 +32,14 @@ public class ResumeController {
         try {
             resumeService.editResume(id, updateResumeDto);
             return HttpStatus.ACCEPTED;
-        } catch (ResumeException e){
+        } catch (ResumeException e) {
             log.info(e.getMessage());
             return HttpStatus.NO_CONTENT;
         }
     }
 
     @DeleteMapping("{id}")
-    public HttpStatus deleteVacancyById(@PathVariable int id){
+    public HttpStatus deleteVacancyById(@PathVariable int id) {
         resumeService.deleteResumeById(id);
         return HttpStatus.ACCEPTED;
     }

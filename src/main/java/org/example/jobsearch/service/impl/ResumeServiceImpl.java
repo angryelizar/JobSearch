@@ -68,8 +68,7 @@ public class ResumeServiceImpl implements ResumeService {
     public List<ProfileAndResumesDto> getResumesByApplicantName(String user) throws ResumeNotFoundException {
         List<User> users = new ArrayList<>(userDao.getUsersByName(user));
         List<ProfileAndResumesDto> resAndUsers = new ArrayList<>();
-        for (int i = 0; i < users.size(); i++) {
-            User currUsr = users.get(i);
+        for (User currUsr : users) {
             resAndUsers.add(
                     ProfileAndResumesDto.builder()
                             .name(currUsr.getName())

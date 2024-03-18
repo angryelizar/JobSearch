@@ -171,10 +171,24 @@ public class VacancyServiceImpl implements VacancyService {
         if (!vacancyDao.isExists(Math.toIntExact(respondedApplicantDto.getVacancyId()))) {
             throw new VacancyException("Вакансии не существует!");
         }
-        if (respondedApplicantDao.isExists(respondedApplicantDto.getResumeId(), respondedApplicantDto.getVacancyId())){
+        if (respondedApplicantDao.isExists(respondedApplicantDto.getResumeId(), respondedApplicantDto.getVacancyId())) {
             throw new VacancyException("Соискатель уже откликался на эту вакансию!");
         }
         respondedApplicantDao.respondToVacancy(respondedApplicantDto.getResumeId(), respondedApplicantDto.getVacancyId());
+    }
+
+    @Override
+    public List<ProfileAndVacancyDto> getVacanciesByEmployerName(String employer) {
+        List<User> users = new ArrayList<>(userDao.getUsersByName(employer));
+        List<ProfileAndVacancyDto> vacAndUsers = new ArrayList<>();
+        for (User currUsr : users) {
+            vacAndUsers.add(ProfileAndVacancyDto.builder()
+                    .name(currUsr.getName())
+                    .surname(currUsr.getSurname())
+                    .vacancyDtos(getVacancyDtos(vacancyDao.getVacanciesByAuthorId(currUsr.getId())))
+                    .build());
+        }
+        return vacAndUsers;
     }
 
     private List<VacancyDto> getVacancyDtos(List<Vacancy> vacancies) {

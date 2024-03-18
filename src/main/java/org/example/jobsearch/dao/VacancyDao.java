@@ -1,6 +1,7 @@
 package org.example.jobsearch.dao;
 
 import lombok.RequiredArgsConstructor;
+import org.example.jobsearch.dto.VacancyDto;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
 import org.example.jobsearch.models.RespondApplicant;
 import org.example.jobsearch.models.Resume;
@@ -172,5 +173,13 @@ public class VacancyDao {
                 """;
         String searchWord = "%" + query + "%";
         return template.query(sql, new BeanPropertyRowMapper<>(Vacancy.class), searchWord, searchWord);
+    }
+
+    public List<Vacancy> getVacanciesByAuthorId(Long id) {
+        String sql = """
+                select * from VACANCIES
+                where AUTHOR_ID = ?
+                """;
+        return template.query(sql, new BeanPropertyRowMapper<>(Vacancy.class), id);
     }
 }

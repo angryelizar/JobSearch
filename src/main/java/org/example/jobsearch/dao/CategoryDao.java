@@ -15,7 +15,7 @@ public class CategoryDao {
         return count > 0;
     }
 
-    public String getCategoryNameById (Long id) {
+    public String getCategoryNameById(Long id) {
         String sql = """
                 select name from CATEGORIES
                 where id = ?
