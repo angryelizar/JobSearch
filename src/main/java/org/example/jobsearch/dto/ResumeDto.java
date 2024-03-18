@@ -22,6 +22,6 @@ public class ResumeDto {
     private Boolean isActive;
     private LocalDateTime createdTime;
     private LocalDateTime updateTime;
-    private List<EducationInfo> educationInfos;
-    private List<WorkExperienceInfo> workExperienceInfos;
+    private List<EducationInfoDto> educationInfos;
+    private List<WorkExperienceInfoDto> workExperienceInfos;
 }

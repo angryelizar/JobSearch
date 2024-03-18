@@ -17,4 +17,6 @@ public interface ResumeService {
     List<ResumeDto> getResumesByName(String query);
 
     List<ProfileAndResumesDto> getResumesByApplicantName(String user) throws ResumeNotFoundException;
+
+    void createResume(ResumeDto resumeDto);
 }

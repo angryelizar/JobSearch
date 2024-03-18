@@ -19,6 +19,12 @@ import java.util.List;
 public class ResumeController {
     private final ResumeService resumeService;
 
+    @PostMapping
+    public HttpStatus createResume(@RequestBody ResumeDto resumeDto){
+        resumeService.createResume(resumeDto);
+      return HttpStatus.ACCEPTED;
+    }
+
     @GetMapping()
     public ResponseEntity<List<ResumeDto>> getResumes(){
         return ResponseEntity.ok(resumeService.getResumes());

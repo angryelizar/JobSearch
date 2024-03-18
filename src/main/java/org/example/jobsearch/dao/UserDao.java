@@ -181,4 +181,9 @@ public class UserDao {
         return count > 0;
     }
 
+    public int getUserAge (Long id) {
+        String sql = "SELECT AGE FROM USERS WHERE ID = ?";
+        return template.queryForObject(sql, Integer.class, id);
+    }
+
 }
