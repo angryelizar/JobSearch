@@ -31,4 +31,6 @@ public interface VacancyService {
     void deleteVacancyById(int id);
 
     List<RespondedResumeDto> getRespondedResumesByVacancyId(int id);
+
+    List<VacancyDto> getVacanciesByQuery(String query);
 }

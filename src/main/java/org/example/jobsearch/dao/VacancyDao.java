@@ -164,4 +164,13 @@ public class VacancyDao {
                 vacancy.getSalary(), vacancy.getExpFrom(), vacancy.getExpTo(),
                 vacancy.getIsActive(), vacancy.getUpdateTime(), id);
     }
+
+    public List<Vacancy> getVacanciesByQuery(String query) {
+        String sql = """
+                select * from VACANCIES
+                where NAME like ? or DESCRIPTION like ?
+                """;
+        String searchWord = "%" + query + "%";
+        return template.query(sql, new BeanPropertyRowMapper<>(Vacancy.class), searchWord, searchWord);
+    }
 }

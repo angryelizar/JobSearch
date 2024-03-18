@@ -164,6 +164,11 @@ public class VacancyServiceImpl implements VacancyService {
         return respondedResumeDtos;
     }
 
+    @Override
+    public List<VacancyDto> getVacanciesByQuery(String query) {
+        return getVacancyDtos(vacancyDao.getVacanciesByQuery(query));
+    }
+
     private List<VacancyDto> getVacancyDtos(List<Vacancy> vacancies) {
         List<VacancyDto> vacancyDtos = new ArrayList<>();
         vacancies.forEach(e -> vacancyDtos.add(VacancyDto.builder()

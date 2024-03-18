@@ -25,6 +25,13 @@ public class VacancyController {
     private final VacancyService vacancyService;
 
 
+
+    @GetMapping("search")
+    public ResponseEntity<List<VacancyDto>> getVacanciesByQuery(@RequestParam String query){
+        return ResponseEntity.ok(vacancyService.getVacanciesByQuery(query));
+    }
+
+
     @PostMapping
     public HttpStatus createVacancy(@RequestBody VacancyDto vacancyDto){
         try {
