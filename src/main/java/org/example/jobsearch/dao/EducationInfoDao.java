@@ -59,4 +59,12 @@ public class EducationInfoDao {
         template.update(sql, educationInfo.getInstitution(), educationInfo.getProgram(),
                 educationInfo.getStartDate(), educationInfo.getEndDate(), educationInfo.getDegree(), id);
     }
+
+    public void deleteEducationInfoByResumeId(int id) {
+        String sql = """
+                delete from EDUCATION_INFO
+                where RESUME_ID = ?
+                """;
+        template.update(sql, id);
+    }
 }

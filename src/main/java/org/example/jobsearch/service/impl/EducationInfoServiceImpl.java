@@ -27,6 +27,7 @@ public class EducationInfoServiceImpl implements EducationInfoService {
                         .program(e.getProgram())
                         .startDate(e.getStartDate())
                         .endDate(e.getEndDate())
+                        .degree(e.getDegree())
                         .build()
         ));
         return result;

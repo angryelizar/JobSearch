@@ -32,6 +32,7 @@ public class ResumeServiceImpl implements ResumeService {
     private final CategoryDao categoryDao;
     private final WorkExperienceInfoService workExperienceInfoService;
     private final EducationInfoService educationInfoService;
+    private final RespondedApplicantDao respondedApplicantDao;
 
     @Override
     public List<ResumeDto> getResumes() {
@@ -183,6 +184,14 @@ public class ResumeServiceImpl implements ResumeService {
                             .build(), id
             ));
         }
+    }
+
+    @Override
+    public void deleteResumeById(int id) {
+        workExperienceInfoDao.deleteWorkExperienceInfoByResumeId(id);
+        educationInfoDao.deleteEducationInfoByResumeId(id);
+        respondedApplicantDao.deleteRespondedApplicantsByResumeId(id);
+        resumeDao.deleteResumeById(id);
     }
 
     private List<ResumeDto> getResumeDtos(List<Resume> resumes) {

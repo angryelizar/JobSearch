@@ -38,6 +38,12 @@ public class ResumeController {
         }
     }
 
+    @DeleteMapping("{id}")
+    public HttpStatus deleteVacancyById(@PathVariable int id){
+        resumeService.deleteResumeById(id);
+        return HttpStatus.ACCEPTED;
+    }
+
     @GetMapping()
     public ResponseEntity<List<ResumeDto>> getResumes() {
         return ResponseEntity.ok(resumeService.getResumes());

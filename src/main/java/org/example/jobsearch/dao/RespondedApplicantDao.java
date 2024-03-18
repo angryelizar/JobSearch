@@ -13,11 +13,19 @@ import java.util.List;
 public class RespondedApplicantDao {
     private final JdbcTemplate template;
 
-    public List<RespondApplicant> getRespondedApplicantsByVacancyId (int id){
+    public List<RespondApplicant> getRespondedApplicantsByVacancyId(int id) {
         String sql = """
                 select * from RESPONDED_APPLICANTS
                 where VACANCY_ID = ?
                 """;
         return template.query(sql, new BeanPropertyRowMapper<>(RespondApplicant.class), id);
+    }
+
+    public void deleteRespondedApplicantsByResumeId(int id) {
+        String sql = """
+                delete from RESPONDED_APPLICANTS
+                where RESUME_ID = ?;
+                """;
+        template.update(sql, id);
     }
 }

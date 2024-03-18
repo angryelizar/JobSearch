@@ -57,4 +57,12 @@ public class WorkExperienceInfoDao {
         template.update(sql, workExperienceInfo.getYears(), workExperienceInfo.getCompanyName(),
                 workExperienceInfo.getPosition(), workExperienceInfo.getResponsibilities(), id);
     }
+
+    public void deleteWorkExperienceInfoByResumeId(int id) {
+        String sql = """
+                delete from WORK_EXPERIENCE_INFO
+                where RESUME_ID = ?
+                """;
+        template.update(sql, id);
+    }
 }
