@@ -20,6 +20,15 @@ import java.util.Optional;
 public class UserDao {
     private final JdbcTemplate template;
 
+    public void setAvatar(Long id, String fileName) {
+        String sql = """
+                update USERS
+                SET AVATAR = ?
+                where id = ?
+                """;
+        template.update(sql, fileName, id);
+    }
+
     public String getUserNameById(Long id) {
         String sql = """
                 select name from USERS
@@ -27,6 +36,7 @@ public class UserDao {
                 """;
         return template.queryForObject(sql, String.class, id);
     }
+
     public String getSurnameNameById(Long id) {
         String sql = """
                 select surname from USERS
@@ -181,9 +191,16 @@ public class UserDao {
         return count > 0;
     }
 
-    public int getUserAge (Long id) {
+    public int getUserAge(Long id) {
         String sql = "SELECT AGE FROM USERS WHERE ID = ?";
         return template.queryForObject(sql, Integer.class, id);
     }
 
+    public String getAvatarByUserId(Long id) {
+        String sql = """
+                SELECT AVATAR FROM USERS
+                WHERE ID = ?
+                """;
+        return template.queryForObject(sql, String.class, id);
+    }
 }
