@@ -187,9 +187,9 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     public void deleteResumeById(int id) {
-        workExperienceInfoDao.deleteWorkExperienceInfoByResumeId(id);
-        educationInfoDao.deleteEducationInfoByResumeId(id);
-        respondedApplicantDao.deleteRespondedApplicantsByResumeId(id);
+//        workExperienceInfoDao.deleteWorkExperienceInfoByResumeId(id);
+//        educationInfoDao.deleteEducationInfoByResumeId(id);
+//        respondedApplicantDao.deleteRespondedApplicantsByResumeId(id);
         resumeDao.deleteResumeById(id);
     }
 
