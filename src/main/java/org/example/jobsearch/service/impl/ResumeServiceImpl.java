@@ -12,6 +12,7 @@ import org.example.jobsearch.models.EducationInfo;
 import org.example.jobsearch.models.Resume;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.models.WorkExperienceInfo;
+import org.example.jobsearch.service.ContactInfoService;
 import org.example.jobsearch.service.EducationInfoService;
 import org.example.jobsearch.service.ResumeService;
 import org.example.jobsearch.service.WorkExperienceInfoService;
@@ -32,6 +33,7 @@ public class ResumeServiceImpl implements ResumeService {
     private final CategoryDao categoryDao;
     private final WorkExperienceInfoService workExperienceInfoService;
     private final EducationInfoService educationInfoService;
+    private final ContactInfoService contactInfoService;
     private final RespondedApplicantDao respondedApplicantDao;
 
     @Override
@@ -126,7 +128,7 @@ public class ResumeServiceImpl implements ResumeService {
                 .createdTime(LocalDateTime.now())
                 .updateTime(LocalDateTime.now())
                 .build());
-        if (educationIsValid){
+        if (educationIsValid) {
             resumeDto.getEducationInfos().forEach(e -> educationInfoDao.createEducationInfo(
                     EducationInfo.builder()
                             .resumeId(resumeId)
@@ -138,7 +140,7 @@ public class ResumeServiceImpl implements ResumeService {
                             .build()
             ));
         }
-        if (workExperienceIsValid){
+        if (workExperienceIsValid) {
             resumeDto.getWorkExperienceInfos().forEach(e -> workExperienceInfoDao.createWorkExperienceInfo(
                     WorkExperienceInfo.builder()
                             .resumeId(resumeId)
@@ -148,6 +150,11 @@ public class ResumeServiceImpl implements ResumeService {
                             .responsibilities(e.getResponsibilities())
                             .build()
             ));
+        }
+        for (int i = 0; i < resumeDto.getContactInfos().size(); i++) {
+            contactInfoService.addContactInfo(
+                    resumeDto.getContactInfos().get(i), resumeId
+            );
         }
     }
 
@@ -168,13 +175,13 @@ public class ResumeServiceImpl implements ResumeService {
             educationIsValid = educationInfoService.isValid(updateResumeDto.getEducationInfos(), id);
         }
         resumeDao.editResume(Resume.builder()
-                        .name(updateResumeDto.getName())
-                        .categoryId(updateResumeDto.getCategoryId())
-                        .salary(updateResumeDto.getSalary())
-                        .isActive(updateResumeDto.getIsActive())
-                        .updateTime(LocalDateTime.now())
+                .name(updateResumeDto.getName())
+                .categoryId(updateResumeDto.getCategoryId())
+                .salary(updateResumeDto.getSalary())
+                .isActive(updateResumeDto.getIsActive())
+                .updateTime(LocalDateTime.now())
                 .build(), id);
-        if (educationIsValid){
+        if (educationIsValid) {
             updateResumeDto.getEducationInfos().forEach(e -> educationInfoDao.editEducationInfo(
                     EducationInfo.builder()
                             .institution(e.getInstitution())
@@ -185,7 +192,7 @@ public class ResumeServiceImpl implements ResumeService {
                             .build(), id
             ));
         }
-        if (workExperienceIsValid){
+        if (workExperienceIsValid) {
             updateResumeDto.getWorkExperienceInfos().forEach(e -> workExperienceInfoDao.editWorkExperienceInfo(
                     WorkExperienceInfo.builder()
                             .years(e.getYears())
@@ -216,6 +223,7 @@ public class ResumeServiceImpl implements ResumeService {
                             .updateTime(rs.getUpdateTime())
                             .educationInfos(educationInfoService.getDtos(educationInfoDao.getEducationInfoByResumeId(rs.getId())))
                             .workExperienceInfos(workExperienceInfoService.getDtos(workExperienceInfoDao.getWorkExperienceByResumeId(rs.getId())))
+                            .contactInfos(contactInfoService.getContactInfosByResumeId(rs.getId()))
                             .build()
             );
         }
