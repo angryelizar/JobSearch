@@ -12,5 +12,4 @@ import lombok.NoArgsConstructor;
 public class RespondedApplicantDto {
     private Long resumeId;
     private Long vacancyId;
-    private Boolean confirmation;
 }
