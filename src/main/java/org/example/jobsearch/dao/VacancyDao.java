@@ -7,6 +7,7 @@ import org.example.jobsearch.models.RespondApplicant;
 import org.example.jobsearch.models.Resume;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.models.Vacancy;
+import org.springframework.context.annotation.Bean;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -181,5 +182,21 @@ public class VacancyDao {
                 where AUTHOR_ID = ?
                 """;
         return template.query(sql, new BeanPropertyRowMapper<>(Vacancy.class), id);
+    }
+
+    public List<Vacancy> getActiveVacancies() {
+        String sql = """
+                select * from VACANCIES
+                where IS_ACTIVE = true;
+                """;
+        return template.query(sql, new BeanPropertyRowMapper<>(Vacancy.class));
+    }
+
+    public List<Vacancy> getInActiveVacancies() {
+        String sql = """
+                select * from VACANCIES
+                where IS_ACTIVE = false;
+                """;
+        return template.query(sql, new BeanPropertyRowMapper<>(Vacancy.class));
     }
 }

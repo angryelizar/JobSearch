@@ -41,6 +41,18 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
+    public List<VacancyDto> getActiveVacancies(){
+        List<Vacancy> vacancies = vacancyDao.getActiveVacancies();
+        return getVacancyDtos(vacancies);
+    }
+
+    @Override
+    public List<VacancyDto> getInActiveVacancies(){
+        List<Vacancy> vacancies = vacancyDao.getInActiveVacancies();
+        return getVacancyDtos(vacancies);
+    }
+
+    @Override
     public List<VacancyDto> getVacanciesByCategoryId(int id) throws VacancyNotFoundException {
         List<Vacancy> vacancies = vacancyDao.getVacanciesByCategoryId(id);
         if (vacancies.isEmpty()) {

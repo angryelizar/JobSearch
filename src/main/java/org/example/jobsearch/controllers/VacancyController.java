@@ -20,7 +20,7 @@ public class VacancyController {
 
 
     @GetMapping("search/employers")
-    public ResponseEntity<List<ProfileAndVacancyDto>> getResumesByApplicantName(@RequestParam String employer) throws VacancyNotFoundException {
+    public ResponseEntity<List<ProfileAndVacancyDto>> getResumesByApplicantName(@RequestParam String employer)  {
         return ResponseEntity.ok(vacancyService.getVacanciesByEmployerName(employer));
     }
 
@@ -116,5 +116,15 @@ public class VacancyController {
     @GetMapping()
     public ResponseEntity<List<VacancyDto>> getVacancies() {
         return ResponseEntity.ok(vacancyService.getVacancies());
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<List<VacancyDto>> getActiveVacancies() {
+        return ResponseEntity.ok(vacancyService.getActiveVacancies());
+    }
+
+    @GetMapping("/inactive")
+    public ResponseEntity<List<VacancyDto>> getInActiveVacancies() {
+        return ResponseEntity.ok(vacancyService.getInActiveVacancies());
     }
 }
