@@ -10,6 +10,7 @@ import org.example.jobsearch.exceptions.UserHaveTooLowAge;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -39,6 +40,30 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> getUsers() {
         List<User> users = userDao.getUsers();
+        List<UserDto> userDtos = new ArrayList<>();
+        users.forEach(e -> userDtos.add(UserDto.builder()
+                .name(e.getName())
+                .surname(e.getSurname())
+                .accountType(e.getAccountType())
+                .build()));
+        return userDtos;
+    }
+
+    @Override
+    public List<UserDto> getApplicantsUsers() {
+        List<User> users = userDao.getApplicantsUsers();
+        List<UserDto> userDtos = new ArrayList<>();
+        users.forEach(e -> userDtos.add(UserDto.builder()
+                .name(e.getName())
+                .surname(e.getSurname())
+                .accountType(e.getAccountType())
+                .build()));
+        return userDtos;
+    }
+
+    @Override
+    public List<UserDto> getEmployersUsers() {
+        List<User> users = userDao.getEmployersUsers();
         List<UserDto> userDtos = new ArrayList<>();
         users.forEach(e -> userDtos.add(UserDto.builder()
                 .name(e.getName())

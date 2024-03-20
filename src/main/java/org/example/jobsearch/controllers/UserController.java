@@ -28,6 +28,19 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getUsers());
     }
 
+    @GetMapping("/applicants")
+    public ResponseEntity<List<UserDto>> getApplicantsUsers() {
+        return ResponseEntity.ok().body(userService.getApplicantsUsers());
+    }
+
+
+    @GetMapping("/employers")
+    public ResponseEntity<List<UserDto>> getEmployersUsers() {
+        return ResponseEntity.ok().body(userService.getEmployersUsers());
+    }
+
+
+
     @GetMapping("name/{name}")
     public ResponseEntity<?> getUserByName(@PathVariable String name) {
         try {
@@ -84,6 +97,5 @@ public class UserController {
     public ResponseEntity<?> downloadAvatar(@PathVariable Long id) {
         return avatarImageService.download(id);
     }
-
 
 }

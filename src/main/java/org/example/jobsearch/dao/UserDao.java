@@ -204,4 +204,20 @@ public class UserDao {
                 """;
         return template.queryForObject(sql, String.class, id);
     }
+
+    public List<User> getApplicantsUsers() {
+        String sql = """
+                select * from users
+                where ACCOUNT_TYPE = ?
+                """;
+        return template.query(sql, new BeanPropertyRowMapper<>(User.class), "Соискатель");
+    }
+
+    public List<User> getEmployersUsers() {
+        String sql = """
+                select * from users
+                where ACCOUNT_TYPE = ?
+                """;
+        return template.query(sql, new BeanPropertyRowMapper<>(User.class), "Работодатель");
+    }
 }
