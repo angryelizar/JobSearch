@@ -125,7 +125,7 @@ public class ResumeDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public void editResume(Resume resume, Long id){
+    public void editResume(Resume resume, Long id) {
         String sql = """
                 update RESUMES
                 SET NAME = ?,
@@ -154,4 +154,19 @@ public class ResumeDao {
         return count > 0;
     }
 
+    public List<Resume> getActiveResumes() {
+        String sql = """
+                SELECT * FROM RESUMES
+                WHERE IS_ACTIVE = TRUE
+                """;
+        return template.query(sql, new BeanPropertyRowMapper<>(Resume.class));
+    }
+
+    public List<Resume> getInActiveResumes() {
+        String sql = """
+                SELECT * FROM RESUMES
+                WHERE IS_ACTIVE = FALSE
+                """;
+        return template.query(sql, new BeanPropertyRowMapper<>(Resume.class));
+    }
 }

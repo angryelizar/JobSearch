@@ -49,6 +49,16 @@ public class ResumeController {
         return ResponseEntity.ok(resumeService.getResumes());
     }
 
+    @GetMapping("/active")
+    public ResponseEntity<List<ResumeDto>> getActiveResumes() {
+        return ResponseEntity.ok(resumeService.getActiveResumes());
+    }
+
+    @GetMapping("/inactive")
+    public ResponseEntity<List<ResumeDto>> getInActiveResumes() {
+        return ResponseEntity.ok(resumeService.getInActiveResumes());
+    }
+
     @GetMapping("search")
     public ResponseEntity<List<ResumeDto>> getResumesByName(@RequestParam String name) {
         return ResponseEntity.ok(resumeService.getResumesByName(name));

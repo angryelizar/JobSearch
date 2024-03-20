@@ -41,6 +41,18 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
+    public List<ResumeDto> getActiveResumes() {
+        List<Resume> resumes = resumeDao.getActiveResumes();
+        return getResumeDtos(resumes);
+    }
+
+    @Override
+    public List<ResumeDto> getInActiveResumes() {
+        List<Resume> resumes = resumeDao.getInActiveResumes();
+        return getResumeDtos(resumes);
+    }
+
+    @Override
     public List<ResumeDto> getResumesByCategoryId(int id) throws ResumeNotFoundException {
         List<Resume> resumes = resumeDao.getResumesByCategoryId(id);
         if (resumes.isEmpty()) {
@@ -187,9 +199,6 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     public void deleteResumeById(int id) {
-//        workExperienceInfoDao.deleteWorkExperienceInfoByResumeId(id);
-//        educationInfoDao.deleteEducationInfoByResumeId(id);
-//        respondedApplicantDao.deleteRespondedApplicantsByResumeId(id);
         resumeDao.deleteResumeById(id);
     }
 

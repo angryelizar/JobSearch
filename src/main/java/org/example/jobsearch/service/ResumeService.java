@@ -12,6 +12,11 @@ import java.util.List;
 @Service
 public interface ResumeService {
     List<ResumeDto> getResumes();
+
+    List<ResumeDto> getActiveResumes();
+
+    List<ResumeDto> getInActiveResumes();
+
     List<ResumeDto> getResumesByCategoryId(int id) throws ResumeNotFoundException;
 
     List<ResumeDto> getResumesByUserId(int id)throws ResumeNotFoundException;
