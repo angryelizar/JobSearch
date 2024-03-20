@@ -53,7 +53,7 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public List<ResumeDto> getResumesByCategoryId(int id) throws ResumeNotFoundException {
+    public List<ResumeDto> getResumesByCategoryId(Long id) throws ResumeNotFoundException {
         List<Resume> resumes = resumeDao.getResumesByCategoryId(id);
         if (resumes.isEmpty()) {
             throw new ResumeNotFoundException("Резюме в категории нет или категории не существует");
@@ -62,7 +62,7 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public List<ResumeDto> getResumesByUserId(int id) throws ResumeNotFoundException {
+    public List<ResumeDto> getResumesByUserId(Long id) throws ResumeNotFoundException {
         List<Resume> resumes = resumeDao.getResumesByUserId(id);
         if (resumes.isEmpty()) {
             throw new ResumeNotFoundException("Пользователь с этим ID либо не публиковал резюме - либо его нет :(");
@@ -87,7 +87,7 @@ public class ResumeServiceImpl implements ResumeService {
                             .surname(currUsr.getSurname())
                             .age(currUsr.getAge())
                             .email(currUsr.getEmail())
-                            .resumeDtos(getResumesByUserId(Math.toIntExact(currUsr.getId())))
+                            .resumeDtos(getResumesByUserId((currUsr.getId())))
                             .build()
             );
         }
@@ -198,7 +198,7 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public void deleteResumeById(int id) {
+    public void deleteResumeById(Long id) {
         resumeDao.deleteResumeById(id);
     }
 

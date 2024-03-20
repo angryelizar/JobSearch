@@ -8,25 +8,28 @@ import java.util.List;
 
 @Service
 public interface VacancyService {
-    List<VacancyDto> getVacanciesByApplicantId(int id) throws VacancyNotFoundException, ResumeNotFoundException;
+
+    List<VacancyDto> getVacanciesByApplicantId(Long id) throws VacancyNotFoundException, ResumeNotFoundException;
 
     List<VacancyDto> getVacancies();
+
     List<VacancyDto> getActiveVacancies();
+
     List<VacancyDto> getInActiveVacancies();
 
-    List<VacancyDto> getVacanciesByCategoryId(int id) throws VacancyNotFoundException;
+    List<VacancyDto> getVacanciesByCategoryId(Long id) throws VacancyNotFoundException;
 
-    List<UserDto> getApplicantsByVacancyId(int id) throws UserNotFoundException, ResumeNotFoundException;
+    List<UserDto> getApplicantsByVacancyId(Long id) throws UserNotFoundException, ResumeNotFoundException;
 
     void createVacancy(VacancyDto vacancyDto) throws VacancyException;
 
-    VacancyDto getVacancyById(int id) throws VacancyNotFoundException;
+    VacancyDto getVacancyById(Long id) throws VacancyNotFoundException;
 
-    void editVacancy(int id, UpdateVacancyDto updateVacancyDto) throws VacancyException;
+    void editVacancy(Long id, UpdateVacancyDto updateVacancyDto) throws VacancyException;
 
-    void deleteVacancyById(int id);
+    void deleteVacancyById(Long id);
 
-    List<RespondedResumeDto> getRespondedResumesByVacancyId(int id);
+    List<RespondedResumeDto> getRespondedResumesByVacancyId(Long id);
 
     List<VacancyDto> getVacanciesByQuery(String query);
 

@@ -53,7 +53,7 @@ public class VacancyController {
     }
 
     @PostMapping("{id}")
-    public HttpStatus editVacancy(@PathVariable int id, @RequestBody UpdateVacancyDto updateVacancyDto) {
+    public HttpStatus editVacancy(@PathVariable Long id, @RequestBody UpdateVacancyDto updateVacancyDto) {
         try {
             vacancyService.editVacancy(id, updateVacancyDto);
             return HttpStatus.ACCEPTED;
@@ -64,13 +64,13 @@ public class VacancyController {
     }
 
     @DeleteMapping("{id}")
-    public HttpStatus deleteVacancyById(@PathVariable int id) {
+    public HttpStatus deleteVacancyById(@PathVariable Long id) {
         vacancyService.deleteVacancyById(id);
         return HttpStatus.ACCEPTED;
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<?> getVacancyById(@PathVariable int id) {
+    public ResponseEntity<?> getVacancyById(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(vacancyService.getVacancyById(id));
         } catch (VacancyNotFoundException e) {
@@ -79,7 +79,7 @@ public class VacancyController {
     }
 
     @GetMapping("applicant/{id}")
-    public ResponseEntity<?> getVacanciesByApplicantId(@PathVariable int id) {
+    public ResponseEntity<?> getVacanciesByApplicantId(@PathVariable Long id) {
         try {
             List<VacancyDto> vacancyDtos = vacancyService.getVacanciesByApplicantId(id);
             return ResponseEntity.ok().body(vacancyDtos);
@@ -89,7 +89,7 @@ public class VacancyController {
     }
 
     @GetMapping("category/{id}")
-    public ResponseEntity<?> getVacanciesByCategoryId(@PathVariable int id) {
+    public ResponseEntity<?> getVacanciesByCategoryId(@PathVariable Long id) {
         try {
             List<VacancyDto> vacancyDtos = vacancyService.getVacanciesByCategoryId(id);
             return ResponseEntity.ok().body(vacancyDtos);
@@ -99,12 +99,12 @@ public class VacancyController {
     }
 
     @GetMapping("{id}/responded-applicants")
-    public ResponseEntity<List<RespondedResumeDto>> getRespondedResumesByVacancyId(@PathVariable int id) {
+    public ResponseEntity<List<RespondedResumeDto>> getRespondedResumesByVacancyId(@PathVariable Long id) {
         return ResponseEntity.ok(vacancyService.getRespondedResumesByVacancyId(id));
     }
 
     @GetMapping("{id}/users")
-    public ResponseEntity<?> getApplicantsByVacancyId(@PathVariable int id) {
+    public ResponseEntity<?> getApplicantsByVacancyId(@PathVariable Long id) {
         try {
             List<UserDto> userDtos = vacancyService.getApplicantsByVacancyId(id);
             return ResponseEntity.ok().body(userDtos);

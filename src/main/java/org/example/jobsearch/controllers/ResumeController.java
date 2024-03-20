@@ -39,7 +39,7 @@ public class ResumeController {
     }
 
     @DeleteMapping("{id}")
-    public HttpStatus deleteVacancyById(@PathVariable int id) {
+    public HttpStatus deleteVacancyById(@PathVariable Long id) {
         resumeService.deleteResumeById(id);
         return HttpStatus.ACCEPTED;
     }
@@ -70,7 +70,7 @@ public class ResumeController {
     }
 
     @GetMapping("category/{id}")
-    public ResponseEntity<?> getResumesByCategoryId(@PathVariable int id) {
+    public ResponseEntity<?> getResumesByCategoryId(@PathVariable Long id) {
         try {
             List<ResumeDto> resumes = resumeService.getResumesByCategoryId(id);
             return ResponseEntity.ok().body(resumes);
@@ -81,7 +81,7 @@ public class ResumeController {
     }
 
     @GetMapping("user/{id}")
-    public ResponseEntity<?> getResumesByUserId(@PathVariable int id) {
+    public ResponseEntity<?> getResumesByUserId(@PathVariable Long id) {
         try {
             List<ResumeDto> resumes = resumeService.getResumesByUserId(id);
             return ResponseEntity.ok().body(resumes);

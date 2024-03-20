@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 14-on-delete-cascade-for resumes
+      id: 14-on-delete-cascade-for_resumes_and_vacancies
       author: angryelizar
       changes:
         - dropForeignKeyConstraint:
@@ -15,6 +15,9 @@ databaseChangeLog:
         - dropForeignKeyConstraint:
             baseTableName: responded_applicants
             constraintName: fk_resume_id_responded_applicants
+        - dropForeignKeyConstraint:
+            baseTableName: responded_applicants
+            constraintName: fk_vacancy_id_responded_applicants
         - dropForeignKeyConstraint:
             baseTableName: messages
             constraintName: fk_responded_applicants_messages
@@ -51,5 +54,12 @@ databaseChangeLog:
             baseColumnNames: responded_applicants
             constraintName: fk_responded_applicants_messages
             referencedTableName: responded_applicants
+            onDelete: CASCADE
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: responded_applicants
+            baseColumnNames: vacancy_id
+            constraintName: fk_vacancy_id_responded_applicants
+            referencedTableName: vacancies
             onDelete: CASCADE
             referencedColumnNames: id

@@ -1,13 +1,11 @@
 package org.example.jobsearch.dao;
 
 import lombok.RequiredArgsConstructor;
-import org.example.jobsearch.dto.VacancyDto;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
 import org.example.jobsearch.models.RespondApplicant;
 import org.example.jobsearch.models.Resume;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.models.Vacancy;
-import org.springframework.context.annotation.Bean;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -29,7 +27,7 @@ public class VacancyDao {
     private final ResumeDao resumeDao;
 
 
-    public List<Vacancy> getVacanciesByApplicantId(int id) throws ResumeNotFoundException {
+    public List<Vacancy> getVacanciesByApplicantId(Long id) throws ResumeNotFoundException {
         List<Resume> usersResume = resumeDao.getResumesByUserId(id);
         if (usersResume.isEmpty()) {
             throw new ResumeNotFoundException("У данного пользователя нет резюме");
@@ -62,7 +60,7 @@ public class VacancyDao {
         return template.query(sql, new BeanPropertyRowMapper<>(Vacancy.class));
     }
 
-    public List<Vacancy> getVacanciesByCategoryId(int id) {
+    public List<Vacancy> getVacanciesByCategoryId(Long id) {
         String sql = """
                 select * from vacancies
                 where category_id = ?
@@ -70,7 +68,7 @@ public class VacancyDao {
         return template.query(sql, new BeanPropertyRowMapper<>(Vacancy.class), id);
     }
 
-    public Optional<Vacancy> getVacancyById(int id) {
+    public Optional<Vacancy> getVacancyById(Long id) {
         String sql = """
                 select * from vacancies
                 where id = ?
@@ -80,7 +78,7 @@ public class VacancyDao {
         ));
     }
 
-    public void deleteVacancyById(int id) {
+    public void deleteVacancyById(Long id) {
         String sql = """
                 delete from VACANCIES
                 where id = ?
@@ -101,8 +99,8 @@ public class VacancyDao {
             ps.setString(2, vacancy.getDescription());
             ps.setLong(3, vacancy.getCategoryId());
             ps.setDouble(4, vacancy.getSalary());
-            ps.setInt(5, vacancy.getExpFrom());
-            ps.setInt(6, vacancy.getExpTo());
+            ps.setLong(5, vacancy.getExpFrom());
+            ps.setLong(6, vacancy.getExpTo());
             ps.setBoolean(7, vacancy.getIsActive());
             ps.setLong(8, vacancy.getAuthorId());
             ps.setObject(9, vacancy.getCreatedTime());
@@ -112,7 +110,7 @@ public class VacancyDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public List<User> getApplicantsByVacancyId(int id) throws ResumeNotFoundException {
+    public List<User> getApplicantsByVacancyId(Long id) throws ResumeNotFoundException {
         String sql = """
                 select resume_id from responded_applicants
                 where vacancy_id = ?
@@ -142,13 +140,13 @@ public class VacancyDao {
         return users;
     }
 
-    public boolean isExists(int id) {
+    public boolean isExists(Long id) {
         String sql = "SELECT COUNT(*) FROM VACANCIES WHERE ID = ?";
-        int count = template.queryForObject(sql, Integer.class, id);
+        Long count = template.queryForObject(sql, Long.class, id);
         return count > 0;
     }
 
-    public void editVacancy(int id, Vacancy vacancy) {
+    public void editVacancy(Long id, Vacancy vacancy) {
         String sql = """
                 update VACANCIES
                 SET NAME = ?,

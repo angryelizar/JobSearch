@@ -17,9 +17,9 @@ public interface ResumeService {
 
     List<ResumeDto> getInActiveResumes();
 
-    List<ResumeDto> getResumesByCategoryId(int id) throws ResumeNotFoundException;
+    List<ResumeDto> getResumesByCategoryId(Long id) throws ResumeNotFoundException;
 
-    List<ResumeDto> getResumesByUserId(int id)throws ResumeNotFoundException;
+    List<ResumeDto> getResumesByUserId(Long id) throws ResumeNotFoundException;
 
     List<ResumeDto> getResumesByName(String query);
 
@@ -29,5 +29,5 @@ public interface ResumeService {
 
     void editResume(Long id, UpdateResumeDto updateResumeDto) throws ResumeException;
 
-    void deleteResumeById(int id);
+    void deleteResumeById(Long id);
 }

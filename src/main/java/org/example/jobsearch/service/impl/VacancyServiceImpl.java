@@ -26,7 +26,7 @@ public class VacancyServiceImpl implements VacancyService {
     private final WorkExperienceInfoDao workExperienceInfoDao;
 
     @Override
-    public List<VacancyDto> getVacanciesByApplicantId(int id) throws VacancyNotFoundException, ResumeNotFoundException {
+    public List<VacancyDto> getVacanciesByApplicantId(Long id) throws VacancyNotFoundException, ResumeNotFoundException {
         List<Vacancy> vacancies = vacancyDao.getVacanciesByApplicantId(id);
         if (vacancies.isEmpty()) {
             throw new VacancyNotFoundException("Пользователь либо не откликался на вакансии - либо его нет :(");
@@ -53,7 +53,7 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public List<VacancyDto> getVacanciesByCategoryId(int id) throws VacancyNotFoundException {
+    public List<VacancyDto> getVacanciesByCategoryId(Long id) throws VacancyNotFoundException {
         List<Vacancy> vacancies = vacancyDao.getVacanciesByCategoryId(id);
         if (vacancies.isEmpty()) {
             throw new VacancyNotFoundException("Вакансий в данной категории не найдено");
@@ -62,7 +62,7 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public List<UserDto> getApplicantsByVacancyId(int id) throws UserNotFoundException, ResumeNotFoundException {
+    public List<UserDto> getApplicantsByVacancyId(Long id) throws UserNotFoundException, ResumeNotFoundException {
         List<User> users = vacancyDao.getApplicantsByVacancyId(id);
         if (users.isEmpty()) {
             throw new UserNotFoundException("На эту вакансию никто не откликался!");
@@ -108,7 +108,7 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public VacancyDto getVacancyById(int id) throws VacancyNotFoundException {
+    public VacancyDto getVacancyById(Long id) throws VacancyNotFoundException {
         if (vacancyDao.getVacancyById(id).isEmpty()) {
             throw new VacancyNotFoundException("Вакансия не найдена");
         }
@@ -116,7 +116,7 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public void editVacancy(int id, UpdateVacancyDto updateVacancyDto) throws VacancyException {
+    public void editVacancy(Long id, UpdateVacancyDto updateVacancyDto) throws VacancyException {
         if (!vacancyDao.isExists(id)) {
             throw new VacancyException("Такой вакансии нет - нечего редактировать!");
         }
@@ -142,12 +142,12 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public void deleteVacancyById(int id) {
+    public void deleteVacancyById(Long id) {
         vacancyDao.deleteVacancyById(id);
     }
 
     @Override
-    public List<RespondedResumeDto> getRespondedResumesByVacancyId(int id) {
+    public List<RespondedResumeDto> getRespondedResumesByVacancyId(Long id) {
         List<RespondApplicant> respondedApplicants = new ArrayList<>(respondedApplicantDao.getRespondedApplicantsByVacancyId(id));
         List<RespondedResumeDto> respondedResumeDtos = new ArrayList<>();
         for (RespondApplicant respondedApplicant : respondedApplicants) {
@@ -180,7 +180,7 @@ public class VacancyServiceImpl implements VacancyService {
         if (!resumeDao.idIsExists(respondedApplicantDto.getResumeId())) {
             throw new ResumeException("Резюме не существует!");
         }
-        if (!vacancyDao.isExists(Math.toIntExact(respondedApplicantDto.getVacancyId()))) {
+        if (!vacancyDao.isExists(respondedApplicantDto.getVacancyId())) {
             throw new VacancyException("Вакансии не существует!");
         }
         if (respondedApplicantDao.isExists(respondedApplicantDto.getResumeId(), respondedApplicantDto.getVacancyId())) {
