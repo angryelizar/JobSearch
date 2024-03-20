@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: drop_no_null_constraint_for users
+      id: 12-drop_no_null_constraint_for users
       author: angryelizar
       changes:
         - dropNotNullConstraint:

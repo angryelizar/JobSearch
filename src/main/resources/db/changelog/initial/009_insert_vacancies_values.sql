@@ -1,3 +1,6 @@
+--liquibase formatted sql
+--changeset angryelizar:09_insert_vacancies_values
+
 insert into VACANCIES (NAME, DESCRIPTION, CATEGORY_ID, SALARY, EXP_FROM, EXP_TO, IS_ACTIVE, AUTHOR_ID, CREATED_TIME,
                        UPDATE_TIME)
 values ('SMM-специалист', 'Нам нужен классный SMM-специалист',
