@@ -12,9 +12,14 @@ import java.util.List;
 @Service
 public interface ResumeService {
     List<ResumeDto> getResumes();
-    List<ResumeDto> getResumesByCategoryId(int id) throws ResumeNotFoundException;
 
-    List<ResumeDto> getResumesByUserId(int id)throws ResumeNotFoundException;
+    List<ResumeDto> getActiveResumes();
+
+    List<ResumeDto> getInActiveResumes();
+
+    List<ResumeDto> getResumesByCategoryId(Long id) throws ResumeNotFoundException;
+
+    List<ResumeDto> getResumesByUserId(Long id) throws ResumeNotFoundException;
 
     List<ResumeDto> getResumesByName(String query);
 
@@ -22,7 +27,7 @@ public interface ResumeService {
 
     void createResume(ResumeDto resumeDto);
 
-    void editResume(Long id, UpdateResumeDto updateResumeDto) throws ResumeException;
+    void editResume(Long id, UpdateResumeDto updateResumeDto);
 
-    void deleteResumeById(int id);
+    void deleteResumeById(Long id);
 }

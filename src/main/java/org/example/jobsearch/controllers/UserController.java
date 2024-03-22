@@ -1,16 +1,18 @@
 package org.example.jobsearch.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dto.AvatarImageDto;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.UserAlreadyRegisteredException;
-import org.example.jobsearch.exceptions.UserHaveTooLowAge;
+import org.example.jobsearch.exceptions.UserHaveTooLowAgeException;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.service.AvatarImageService;
 import org.example.jobsearch.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +29,19 @@ public class UserController {
     public ResponseEntity<List<UserDto>> getUsers() {
         return ResponseEntity.ok().body(userService.getUsers());
     }
+
+    @GetMapping("/applicants")
+    public ResponseEntity<List<UserDto>> getApplicantsUsers() {
+        return ResponseEntity.ok().body(userService.getApplicantsUsers());
+    }
+
+
+    @GetMapping("/employers")
+    public ResponseEntity<List<UserDto>> getEmployersUsers() {
+        return ResponseEntity.ok().body(userService.getEmployersUsers());
+    }
+
+
 
     @GetMapping("name/{name}")
     public ResponseEntity<?> getUserByName(@PathVariable String name) {
@@ -64,14 +79,9 @@ public class UserController {
     }
 
     @PostMapping()
-    public HttpStatus createUser(@RequestBody UserDto userDto) {
-        try {
+    public HttpStatus createUser(@RequestBody @Valid UserDto userDto) {
             userService.createUser(userDto);
             return HttpStatus.CREATED;
-        } catch (UserAlreadyRegisteredException | UserHaveTooLowAge e) {
-            log.info("Пользователь либо существует, либо он слишком молод!");
-            return HttpStatus.NO_CONTENT;
-        }
     }
 
     @PostMapping("{id}/avatar")
@@ -84,6 +94,5 @@ public class UserController {
     public ResponseEntity<?> downloadAvatar(@PathVariable Long id) {
         return avatarImageService.download(id);
     }
-
 
 }

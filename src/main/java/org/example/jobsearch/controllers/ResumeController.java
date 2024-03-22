@@ -1,6 +1,8 @@
 package org.example.jobsearch.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dto.ProfileAndResumesDto;
 import org.example.jobsearch.dto.ResumeDto;
@@ -22,24 +24,19 @@ public class ResumeController {
     private final ResumeService resumeService;
 
     @PostMapping
-    public HttpStatus createResume(@RequestBody ResumeDto resumeDto) {
+    public HttpStatus createResume(@RequestBody @Valid ResumeDto resumeDto) {
         resumeService.createResume(resumeDto);
         return HttpStatus.ACCEPTED;
     }
 
     @PostMapping("{id}")
-    public HttpStatus editResume(@PathVariable Long id, @RequestBody UpdateResumeDto updateResumeDto) {
-        try {
-            resumeService.editResume(id, updateResumeDto);
-            return HttpStatus.ACCEPTED;
-        } catch (ResumeException e) {
-            log.info(e.getMessage());
-            return HttpStatus.NO_CONTENT;
-        }
+    public HttpStatus editResume(@PathVariable Long id, @RequestBody @Valid UpdateResumeDto updateResumeDto) throws ResumeException {
+        resumeService.editResume(id, updateResumeDto);
+        return HttpStatus.ACCEPTED;
     }
 
     @DeleteMapping("{id}")
-    public HttpStatus deleteVacancyById(@PathVariable int id) {
+    public HttpStatus deleteVacancyById(@PathVariable Long id) {
         resumeService.deleteResumeById(id);
         return HttpStatus.ACCEPTED;
     }
@@ -47,6 +44,16 @@ public class ResumeController {
     @GetMapping()
     public ResponseEntity<List<ResumeDto>> getResumes() {
         return ResponseEntity.ok(resumeService.getResumes());
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<List<ResumeDto>> getActiveResumes() {
+        return ResponseEntity.ok(resumeService.getActiveResumes());
+    }
+
+    @GetMapping("/inactive")
+    public ResponseEntity<List<ResumeDto>> getInActiveResumes() {
+        return ResponseEntity.ok(resumeService.getInActiveResumes());
     }
 
     @GetMapping("search")
@@ -60,7 +67,7 @@ public class ResumeController {
     }
 
     @GetMapping("category/{id}")
-    public ResponseEntity<?> getResumesByCategoryId(@PathVariable int id) {
+    public ResponseEntity<?> getResumesByCategoryId(@PathVariable Long id) {
         try {
             List<ResumeDto> resumes = resumeService.getResumesByCategoryId(id);
             return ResponseEntity.ok().body(resumes);
@@ -71,7 +78,7 @@ public class ResumeController {
     }
 
     @GetMapping("user/{id}")
-    public ResponseEntity<?> getResumesByUserId(@PathVariable int id) {
+    public ResponseEntity<?> getResumesByUserId(@PathVariable Long id) {
         try {
             List<ResumeDto> resumes = resumeService.getResumesByUserId(id);
             return ResponseEntity.ok().body(resumes);

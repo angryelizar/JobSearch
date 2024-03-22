@@ -1,12 +1,12 @@
 package org.example.jobsearch.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.UserDao;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.UserAlreadyRegisteredException;
-import org.example.jobsearch.exceptions.UserException;
-import org.example.jobsearch.exceptions.UserHaveTooLowAge;
+import org.example.jobsearch.exceptions.UserHaveTooLowAgeException;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.service.UserService;
@@ -49,6 +49,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserDto> getApplicantsUsers() {
+        List<User> users = userDao.getApplicantsUsers();
+        List<UserDto> userDtos = new ArrayList<>();
+        users.forEach(e -> userDtos.add(UserDto.builder()
+                .name(e.getName())
+                .surname(e.getSurname())
+                .accountType(e.getAccountType())
+                .build()));
+        return userDtos;
+    }
+
+    @Override
+    public List<UserDto> getEmployersUsers() {
+        List<User> users = userDao.getEmployersUsers();
+        List<UserDto> userDtos = new ArrayList<>();
+        users.forEach(e -> userDtos.add(UserDto.builder()
+                .name(e.getName())
+                .surname(e.getSurname())
+                .accountType(e.getAccountType())
+                .build()));
+        return userDtos;
+    }
+
+    @Override
     public UserDto getUserByPhone(String phone) throws UserNotFoundException {
         User user = userDao.getUserByPhone(phone).orElseThrow(() -> new UserNotFoundException("С таким номером пользователей не найдено - " + phone));
         return UserDto.builder()
@@ -76,12 +100,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createUser(UserDto userDto) throws UserAlreadyRegisteredException, UserHaveTooLowAge {
+    @SneakyThrows
+    public void createUser(UserDto userDto) {
         if (userDao.emailIsExists(userDto.getEmail()) || userDao.phoneIsExists(userDto.getPhoneNumber())){
             throw new UserAlreadyRegisteredException("Пользователь уже зарегистрирован");
         }
         if (userDto.getAge() < 18){
-            throw new UserHaveTooLowAge("Пользователь слишком молод!");
+            throw new UserHaveTooLowAgeException("Пользователь слишком молод!");
         }
         User user = new User();
         user.setName(userDto.getName());

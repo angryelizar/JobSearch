@@ -26,7 +26,7 @@ public class ResumeDao {
         return template.query(sql, new BeanPropertyRowMapper<>(Resume.class));
     }
 
-    public List<Resume> getResumesByCategoryId(int id) {
+    public List<Resume> getResumesByCategoryId(Long id) {
         String sql = """
                 select * from RESUMES
                 where category_id = ?
@@ -34,7 +34,7 @@ public class ResumeDao {
         return template.query(sql, new BeanPropertyRowMapper<>(Resume.class), id);
     }
 
-    public List<Resume> getResumesByUserId(int id) {
+    public List<Resume> getResumesByUserId(Long id) {
         String sql = """
                 select * from RESUMES
                 where applicant_id = ?
@@ -52,7 +52,7 @@ public class ResumeDao {
         ));
     }
 
-    public void deleteResumeById(int id) {
+    public void deleteResumeById(Long id) {
         String sql = """
                 delete from RESUMES
                 where id = ?
@@ -125,7 +125,7 @@ public class ResumeDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public void editResume(Resume resume, Long id){
+    public void editResume(Resume resume, Long id) {
         String sql = """
                 update RESUMES
                 SET NAME = ?,
@@ -154,4 +154,19 @@ public class ResumeDao {
         return count > 0;
     }
 
+    public List<Resume> getActiveResumes() {
+        String sql = """
+                SELECT * FROM RESUMES
+                WHERE IS_ACTIVE = TRUE
+                """;
+        return template.query(sql, new BeanPropertyRowMapper<>(Resume.class));
+    }
+
+    public List<Resume> getInActiveResumes() {
+        String sql = """
+                SELECT * FROM RESUMES
+                WHERE IS_ACTIVE = FALSE
+                """;
+        return template.query(sql, new BeanPropertyRowMapper<>(Resume.class));
+    }
 }

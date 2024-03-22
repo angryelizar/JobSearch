@@ -13,7 +13,7 @@ import java.util.List;
 public class RespondedApplicantDao {
     private final JdbcTemplate template;
 
-    public List<RespondApplicant> getRespondedApplicantsByVacancyId(int id) {
+    public List<RespondApplicant> getRespondedApplicantsByVacancyId(Long id) {
         String sql = """
                 select * from RESPONDED_APPLICANTS
                 where VACANCY_ID = ?
@@ -21,7 +21,7 @@ public class RespondedApplicantDao {
         return template.query(sql, new BeanPropertyRowMapper<>(RespondApplicant.class), id);
     }
 
-    public void deleteRespondedApplicantsByResumeId(int id) {
+    public void deleteRespondedApplicantsByResumeId(Long id) {
         String sql = """
                 delete from RESPONDED_APPLICANTS
                 where RESUME_ID = ?;
@@ -31,7 +31,7 @@ public class RespondedApplicantDao {
 
     public boolean isExists(Long resumeId, Long vacancyId) {
         String sql = "SELECT COUNT(*) FROM RESPONDED_APPLICANTS WHERE RESUME_ID = ? and VACANCY_ID = ?";
-        int count = template.queryForObject(sql, Integer.class, resumeId, vacancyId);
+        Long count = template.queryForObject(sql, Long.class, resumeId, vacancyId);
         return count > 0;
     }
 
@@ -39,7 +39,7 @@ public class RespondedApplicantDao {
         String sql = """
                 insert into RESPONDED_APPLICANTS
                 ( RESUME_ID, VACANCY_ID, CONFIRMATION)
-                values ( ?, ?, true )
+                values ( ?, ?, false )
                 """;
         template.update(sql, resumeId, vacancyId);
     }

@@ -1,6 +1,8 @@
 package org.example.jobsearch.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.*;
@@ -20,7 +22,7 @@ public class VacancyController {
 
 
     @GetMapping("search/employers")
-    public ResponseEntity<List<ProfileAndVacancyDto>> getResumesByApplicantName(@RequestParam String employer) throws VacancyNotFoundException {
+    public ResponseEntity<List<ProfileAndVacancyDto>> getResumesByApplicantName(@RequestParam String employer) {
         return ResponseEntity.ok(vacancyService.getVacanciesByEmployerName(employer));
     }
 
@@ -31,46 +33,31 @@ public class VacancyController {
 
 
     @PostMapping
-    public HttpStatus createVacancy(@RequestBody VacancyDto vacancyDto) {
-        try {
-            vacancyService.createVacancy(vacancyDto);
-            return HttpStatus.CREATED;
-        } catch (VacancyException e) {
-            log.info(e.getMessage());
-            return HttpStatus.NO_CONTENT;
-        }
+    public HttpStatus createVacancy(@RequestBody @Valid VacancyDto vacancyDto) {
+        vacancyService.createVacancy(vacancyDto);
+        return HttpStatus.CREATED;
     }
 
     @PostMapping("responded-applicant")
-    public HttpStatus respondToVacancy(@RequestBody RespondedApplicantDto respondedApplicantDto) {
-        try {
-            vacancyService.respondToVacancy(respondedApplicantDto);
-            return HttpStatus.ACCEPTED;
-        } catch (VacancyException | ResumeException e) {
-            log.info(e.getMessage());
-            return HttpStatus.NOT_FOUND;
-        }
+    public HttpStatus respondToVacancy(@RequestBody @Valid RespondedApplicantDto respondedApplicantDto) {
+        vacancyService.respondToVacancy(respondedApplicantDto);
+        return HttpStatus.ACCEPTED;
     }
 
     @PostMapping("{id}")
-    public HttpStatus editVacancy(@PathVariable int id, @RequestBody UpdateVacancyDto updateVacancyDto) {
-        try {
-            vacancyService.editVacancy(id, updateVacancyDto);
-            return HttpStatus.ACCEPTED;
-        } catch (VacancyException e) {
-            log.info(e.getMessage());
-            return HttpStatus.NO_CONTENT;
-        }
+    public HttpStatus editVacancy(@PathVariable Long id, @RequestBody @Valid UpdateVacancyDto updateVacancyDto) {
+        vacancyService.editVacancy(id, updateVacancyDto);
+        return HttpStatus.ACCEPTED;
     }
 
     @DeleteMapping("{id}")
-    public HttpStatus deleteVacancyById(@PathVariable int id) {
+    public HttpStatus deleteVacancyById(@PathVariable Long id) {
         vacancyService.deleteVacancyById(id);
         return HttpStatus.ACCEPTED;
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<?> getVacancyById(@PathVariable int id) {
+    public ResponseEntity<?> getVacancyById(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(vacancyService.getVacancyById(id));
         } catch (VacancyNotFoundException e) {
@@ -79,7 +66,7 @@ public class VacancyController {
     }
 
     @GetMapping("applicant/{id}")
-    public ResponseEntity<?> getVacanciesByApplicantId(@PathVariable int id) {
+    public ResponseEntity<?> getVacanciesByApplicantId(@PathVariable Long id) {
         try {
             List<VacancyDto> vacancyDtos = vacancyService.getVacanciesByApplicantId(id);
             return ResponseEntity.ok().body(vacancyDtos);
@@ -89,7 +76,7 @@ public class VacancyController {
     }
 
     @GetMapping("category/{id}")
-    public ResponseEntity<?> getVacanciesByCategoryId(@PathVariable int id) {
+    public ResponseEntity<?> getVacanciesByCategoryId(@PathVariable Long id) {
         try {
             List<VacancyDto> vacancyDtos = vacancyService.getVacanciesByCategoryId(id);
             return ResponseEntity.ok().body(vacancyDtos);
@@ -99,12 +86,12 @@ public class VacancyController {
     }
 
     @GetMapping("{id}/responded-applicants")
-    public ResponseEntity<List<RespondedResumeDto>> getRespondedResumesByVacancyId(@PathVariable int id) {
+    public ResponseEntity<List<RespondedResumeDto>> getRespondedResumesByVacancyId(@PathVariable Long id) {
         return ResponseEntity.ok(vacancyService.getRespondedResumesByVacancyId(id));
     }
 
     @GetMapping("{id}/users")
-    public ResponseEntity<?> getApplicantsByVacancyId(@PathVariable int id) {
+    public ResponseEntity<?> getApplicantsByVacancyId(@PathVariable Long id) {
         try {
             List<UserDto> userDtos = vacancyService.getApplicantsByVacancyId(id);
             return ResponseEntity.ok().body(userDtos);
@@ -116,5 +103,15 @@ public class VacancyController {
     @GetMapping()
     public ResponseEntity<List<VacancyDto>> getVacancies() {
         return ResponseEntity.ok(vacancyService.getVacancies());
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<List<VacancyDto>> getActiveVacancies() {
+        return ResponseEntity.ok(vacancyService.getActiveVacancies());
+    }
+
+    @GetMapping("/inactive")
+    public ResponseEntity<List<VacancyDto>> getInActiveVacancies() {
+        return ResponseEntity.ok(vacancyService.getInActiveVacancies());
     }
 }
