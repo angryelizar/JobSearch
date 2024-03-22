@@ -2,6 +2,7 @@ package org.example.jobsearch.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dto.ProfileAndResumesDto;
 import org.example.jobsearch.dto.ResumeDto;
@@ -29,14 +30,9 @@ public class ResumeController {
     }
 
     @PostMapping("{id}")
-    public HttpStatus editResume(@PathVariable Long id, @RequestBody UpdateResumeDto updateResumeDto) {
-        try {
-            resumeService.editResume(id, updateResumeDto);
-            return HttpStatus.ACCEPTED;
-        } catch (ResumeException e) {
-            log.info(e.getMessage());
-            return HttpStatus.NO_CONTENT;
-        }
+    public HttpStatus editResume(@PathVariable Long id, @RequestBody @Valid UpdateResumeDto updateResumeDto) throws ResumeException {
+        resumeService.editResume(id, updateResumeDto);
+        return HttpStatus.ACCEPTED;
     }
 
     @DeleteMapping("{id}")

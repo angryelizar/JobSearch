@@ -22,7 +22,7 @@ public class ResumeDto {
     private Long applicantId;
     @NotBlank(message = "Название не может быть пустым")
     @NotNull(message = "Название не может быть пустым")
-    @Size(min = 10, max = 100, message = "Введите полное название")
+    @Size(min = 10, max = 100, message = "Название должно содержать от 10 до 100 символов")
     private String name;
     @NotNull(message = "Категория не может быть пустой")
     private Long categoryId;

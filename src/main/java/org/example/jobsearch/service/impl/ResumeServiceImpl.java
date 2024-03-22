@@ -35,7 +35,6 @@ public class ResumeServiceImpl implements ResumeService {
     private final WorkExperienceInfoService workExperienceInfoService;
     private final EducationInfoService educationInfoService;
     private final ContactInfoService contactInfoService;
-    private final RespondedApplicantDao respondedApplicantDao;
 
     @Override
     public List<ResumeDto> getResumes() {
@@ -149,20 +148,13 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public void editResume(Long id, UpdateResumeDto updateResumeDto) throws ResumeException {
+    @SneakyThrows
+    public void editResume(Long id, UpdateResumeDto updateResumeDto) {
         if (Boolean.FALSE.equals(categoryDao.isExists(updateResumeDto.getCategoryId()))) {
             throw new ResumeException("Выбранной вами категории не существует");
         }
         if (updateResumeDto.getSalary() <= 0) {
             throw new ResumeException("Зарплата не может быть меньше или равна нулю");
-        }
-        boolean educationIsValid = true;
-        boolean workExperienceIsValid = true;
-        if (!updateResumeDto.getWorkExperienceInfos().isEmpty()) {
-            workExperienceIsValid = workExperienceInfoService.isValid(updateResumeDto.getWorkExperienceInfos(), id);
-        }
-        if (!updateResumeDto.getEducationInfos().isEmpty()) {
-            educationIsValid = educationInfoService.isValid(updateResumeDto.getEducationInfos(), id);
         }
         resumeDao.editResume(Resume.builder()
                 .name(updateResumeDto.getName())
@@ -171,7 +163,7 @@ public class ResumeServiceImpl implements ResumeService {
                 .isActive(updateResumeDto.getIsActive())
                 .updateTime(LocalDateTime.now())
                 .build(), id);
-        if (educationIsValid) {
+        if (!updateResumeDto.getEducationInfos().isEmpty()) {
             updateResumeDto.getEducationInfos().forEach(e -> educationInfoDao.editEducationInfo(
                     EducationInfo.builder()
                             .institution(e.getInstitution())
@@ -182,7 +174,7 @@ public class ResumeServiceImpl implements ResumeService {
                             .build(), id
             ));
         }
-        if (workExperienceIsValid) {
+        if (!updateResumeDto.getWorkExperienceInfos().isEmpty()) {
             updateResumeDto.getWorkExperienceInfos().forEach(e -> workExperienceInfoDao.editWorkExperienceInfo(
                     WorkExperienceInfo.builder()
                             .years(e.getYears())
