@@ -1,7 +1,6 @@
 package org.example.jobsearch.service;
 
 import org.example.jobsearch.dto.ContactInfoDto;
-import org.example.jobsearch.models.ContactInfo;
 
 import java.util.List;
 
