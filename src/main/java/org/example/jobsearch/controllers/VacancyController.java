@@ -1,6 +1,8 @@
 package org.example.jobsearch.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.*;
@@ -20,7 +22,7 @@ public class VacancyController {
 
 
     @GetMapping("search/employers")
-    public ResponseEntity<List<ProfileAndVacancyDto>> getResumesByApplicantName(@RequestParam String employer)  {
+    public ResponseEntity<List<ProfileAndVacancyDto>> getResumesByApplicantName(@RequestParam String employer) {
         return ResponseEntity.ok(vacancyService.getVacanciesByEmployerName(employer));
     }
 
@@ -31,14 +33,9 @@ public class VacancyController {
 
 
     @PostMapping
-    public HttpStatus createVacancy(@RequestBody VacancyDto vacancyDto) {
-        try {
-            vacancyService.createVacancy(vacancyDto);
-            return HttpStatus.CREATED;
-        } catch (VacancyException e) {
-            log.info(e.getMessage());
-            return HttpStatus.NO_CONTENT;
-        }
+    public HttpStatus createVacancy(@RequestBody @Valid VacancyDto vacancyDto) {
+        vacancyService.createVacancy(vacancyDto);
+        return HttpStatus.CREATED;
     }
 
     @PostMapping("responded-applicant")

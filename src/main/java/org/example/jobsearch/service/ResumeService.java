@@ -27,7 +27,7 @@ public interface ResumeService {
 
     void createResume(ResumeDto resumeDto);
 
-    void editResume(Long id, UpdateResumeDto updateResumeDto) throws ResumeException;
+    void editResume(Long id, UpdateResumeDto updateResumeDto);
 
     void deleteResumeById(Long id);
 }

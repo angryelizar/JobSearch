@@ -1,6 +1,7 @@
 package org.example.jobsearch.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.*;
 import org.example.jobsearch.dto.*;
@@ -77,7 +78,8 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public void createVacancy(VacancyDto vacancyDto) throws VacancyException {
+    @SneakyThrows
+    public void createVacancy(VacancyDto vacancyDto) {
         if (!userDao.idIsExists(vacancyDto.getAuthorId())) {
             throw new VacancyException("Пользователя не существует!");
         }

@@ -1,10 +1,7 @@
 package org.example.jobsearch.exceptions.handler;
 
 import lombok.RequiredArgsConstructor;
-import org.example.jobsearch.exceptions.ErrorResponseBody;
-import org.example.jobsearch.exceptions.ResumeException;
-import org.example.jobsearch.exceptions.UserAlreadyRegisteredException;
-import org.example.jobsearch.exceptions.UserHaveTooLowAgeException;
+import org.example.jobsearch.exceptions.*;
 import org.example.jobsearch.service.ErrorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +29,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResumeException.class)
     public ResponseEntity<ErrorResponseBody> resumeException(ResumeException exception) {
+        return new ResponseEntity<>(errorService.makeResponse(exception), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(VacancyException.class)
+    public ResponseEntity<ErrorResponseBody> vacancyException(VacancyException exception) {
         return new ResponseEntity<>(errorService.makeResponse(exception), HttpStatus.BAD_REQUEST);
     }
 
