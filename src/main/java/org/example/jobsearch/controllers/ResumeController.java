@@ -1,5 +1,6 @@
 package org.example.jobsearch.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dto.ProfileAndResumesDto;
@@ -22,7 +23,7 @@ public class ResumeController {
     private final ResumeService resumeService;
 
     @PostMapping
-    public HttpStatus createResume(@RequestBody ResumeDto resumeDto) {
+    public HttpStatus createResume(@RequestBody @Valid ResumeDto resumeDto) {
         resumeService.createResume(resumeDto);
         return HttpStatus.ACCEPTED;
     }

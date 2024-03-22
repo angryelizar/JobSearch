@@ -1,6 +1,7 @@
 package org.example.jobsearch.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.*;
 import org.example.jobsearch.dto.ProfileAndResumesDto;
@@ -97,27 +98,16 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
+    @SneakyThrows
     public void createResume(ResumeDto resumeDto) {
-        try {
-            if (userDao.userIsEmployer(resumeDto.getApplicantId()) || !userDao.idIsExists(resumeDto.getApplicantId())) {
-                throw new ResumeException("Пользователь либо работодатель, либо его не существует!");
-            }
-            if (Boolean.FALSE.equals(categoryDao.isExists(resumeDto.getCategoryId()))) {
-                throw new ResumeException("Выбранной вами категории не существует");
-            }
-            if (resumeDto.getSalary() <= 0) {
-                throw new ResumeException("Зарплата не может быть меньше или равна нулю");
-            }
-        } catch (ResumeException e) {
-            log.error(e.getMessage());
+        if (userDao.userIsEmployer(resumeDto.getApplicantId()) || !userDao.idIsExists(resumeDto.getApplicantId())) {
+            throw new ResumeException("Пользователь либо работодатель, либо его не существует!");
         }
-        boolean educationIsValid = true;
-        boolean workExperienceIsValid = true;
-        if (!resumeDto.getWorkExperienceInfos().isEmpty()) {
-            workExperienceIsValid = workExperienceInfoService.isValid(resumeDto.getWorkExperienceInfos(), resumeDto.getApplicantId());
+        if (Boolean.FALSE.equals(categoryDao.isExists(resumeDto.getCategoryId()))) {
+            throw new ResumeException("Выбранной вами категории не существует");
         }
-        if (!resumeDto.getEducationInfos().isEmpty()) {
-            educationIsValid = educationInfoService.isValid(resumeDto.getEducationInfos(), resumeDto.getApplicantId());
+        if (resumeDto.getSalary() <= 0) {
+            throw new ResumeException("Зарплата не может быть меньше или равна нулю");
         }
         Long resumeId = resumeDao.createResume(Resume.builder()
                 .applicantId(resumeDto.getApplicantId())
@@ -128,7 +118,7 @@ public class ResumeServiceImpl implements ResumeService {
                 .createdTime(LocalDateTime.now())
                 .updateTime(LocalDateTime.now())
                 .build());
-        if (educationIsValid) {
+        if (!resumeDto.getEducationInfos().isEmpty()) {
             resumeDto.getEducationInfos().forEach(e -> educationInfoDao.createEducationInfo(
                     EducationInfo.builder()
                             .resumeId(resumeId)
@@ -140,7 +130,7 @@ public class ResumeServiceImpl implements ResumeService {
                             .build()
             ));
         }
-        if (workExperienceIsValid) {
+        if (!resumeDto.getWorkExperienceInfos().isEmpty()) {
             resumeDto.getWorkExperienceInfos().forEach(e -> workExperienceInfoDao.createWorkExperienceInfo(
                     WorkExperienceInfo.builder()
                             .resumeId(resumeId)
