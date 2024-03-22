@@ -118,7 +118,8 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public void editVacancy(Long id, UpdateVacancyDto updateVacancyDto) throws VacancyException {
+    @SneakyThrows
+    public void editVacancy(Long id, UpdateVacancyDto updateVacancyDto) {
         if (!vacancyDao.isExists(id)) {
             throw new VacancyException("Такой вакансии нет - нечего редактировать!");
         }

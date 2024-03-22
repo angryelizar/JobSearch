@@ -50,14 +50,9 @@ public class VacancyController {
     }
 
     @PostMapping("{id}")
-    public HttpStatus editVacancy(@PathVariable Long id, @RequestBody UpdateVacancyDto updateVacancyDto) {
-        try {
+    public HttpStatus editVacancy(@PathVariable Long id, @RequestBody @Valid UpdateVacancyDto updateVacancyDto) {
             vacancyService.editVacancy(id, updateVacancyDto);
             return HttpStatus.ACCEPTED;
-        } catch (VacancyException e) {
-            log.info(e.getMessage());
-            return HttpStatus.NO_CONTENT;
-        }
     }
 
     @DeleteMapping("{id}")
