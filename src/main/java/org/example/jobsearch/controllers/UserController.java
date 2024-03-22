@@ -1,16 +1,18 @@
 package org.example.jobsearch.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dto.AvatarImageDto;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.UserAlreadyRegisteredException;
-import org.example.jobsearch.exceptions.UserHaveTooLowAge;
+import org.example.jobsearch.exceptions.UserHaveTooLowAgeException;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.service.AvatarImageService;
 import org.example.jobsearch.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -77,14 +79,9 @@ public class UserController {
     }
 
     @PostMapping()
-    public HttpStatus createUser(@RequestBody UserDto userDto) {
-        try {
+    public HttpStatus createUser(@RequestBody @Valid UserDto userDto) {
             userService.createUser(userDto);
             return HttpStatus.CREATED;
-        } catch (UserAlreadyRegisteredException | UserHaveTooLowAge e) {
-            log.info("Пользователь либо существует, либо он слишком молод!");
-            return HttpStatus.NO_CONTENT;
-        }
     }
 
     @PostMapping("{id}/avatar")
