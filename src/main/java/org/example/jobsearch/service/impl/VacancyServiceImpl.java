@@ -179,7 +179,8 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public void respondToVacancy(RespondedApplicantDto respondedApplicantDto) throws ResumeException, VacancyException {
+    @SneakyThrows
+    public void respondToVacancy(RespondedApplicantDto respondedApplicantDto) {
         if (!resumeDao.idIsExists(respondedApplicantDto.getResumeId())) {
             throw new ResumeException("Резюме не существует!");
         }

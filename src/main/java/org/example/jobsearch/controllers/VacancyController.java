@@ -39,20 +39,15 @@ public class VacancyController {
     }
 
     @PostMapping("responded-applicant")
-    public HttpStatus respondToVacancy(@RequestBody RespondedApplicantDto respondedApplicantDto) {
-        try {
-            vacancyService.respondToVacancy(respondedApplicantDto);
-            return HttpStatus.ACCEPTED;
-        } catch (VacancyException | ResumeException e) {
-            log.info(e.getMessage());
-            return HttpStatus.NOT_FOUND;
-        }
+    public HttpStatus respondToVacancy(@RequestBody @Valid RespondedApplicantDto respondedApplicantDto) {
+        vacancyService.respondToVacancy(respondedApplicantDto);
+        return HttpStatus.ACCEPTED;
     }
 
     @PostMapping("{id}")
     public HttpStatus editVacancy(@PathVariable Long id, @RequestBody @Valid UpdateVacancyDto updateVacancyDto) {
-            vacancyService.editVacancy(id, updateVacancyDto);
-            return HttpStatus.ACCEPTED;
+        vacancyService.editVacancy(id, updateVacancyDto);
+        return HttpStatus.ACCEPTED;
     }
 
     @DeleteMapping("{id}")

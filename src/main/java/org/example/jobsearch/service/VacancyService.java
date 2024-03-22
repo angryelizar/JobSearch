@@ -33,7 +33,7 @@ public interface VacancyService {
 
     List<VacancyDto> getVacanciesByQuery(String query);
 
-    void respondToVacancy(RespondedApplicantDto respondedApplicantDto) throws ResumeException, VacancyException;
+    void respondToVacancy(RespondedApplicantDto respondedApplicantDto);
 
     List<ProfileAndVacancyDto> getVacanciesByEmployerName(String employer);
 }
