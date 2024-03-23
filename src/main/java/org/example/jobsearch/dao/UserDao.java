@@ -57,8 +57,8 @@ public class UserDao {
 
     public Long createUser(User user) {
         String sql = """
-                insert into users (name, surname, age, email, password, phone_number, avatar, account_type)
-                values (?, ?, ?, ?, ?, ?, ?, ?);
+                insert into users (name, surname, age, email, password, phone_number, avatar, account_type, ENABLED)
+                values (?, ?, ?, ?, ?, ?, ?, ?, true);
                 """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(connection -> {
@@ -193,7 +193,7 @@ public class UserDao {
 
     public int getUserAge(Long id) {
         String sql = "SELECT AGE FROM USERS WHERE ID = ?";
-        Integer age =  template.queryForObject(sql, Integer.class, id);
+        Integer age = template.queryForObject(sql, Integer.class, id);
         return age != null ? age.intValue() : 0;
     }
 
@@ -220,4 +220,5 @@ public class UserDao {
                 """;
         return template.query(sql, new BeanPropertyRowMapper<>(User.class), "Работодатель");
     }
+
 }

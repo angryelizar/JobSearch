@@ -9,6 +9,7 @@ import org.example.jobsearch.exceptions.UserAlreadyRegisteredException;
 import org.example.jobsearch.exceptions.UserHaveTooLowAgeException;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.models.User;
+import org.example.jobsearch.service.AuthorityService;
 import org.example.jobsearch.service.UserService;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
+    private final AuthorityService authorityService;
 
     @Override
     public List<UserDto> getUsersByName(String name) throws UserNotFoundException {
@@ -118,5 +120,10 @@ public class UserServiceImpl implements UserService {
         user.setAvatar(userDto.getAvatar());
         user.setAccountType(userDto.getAccountType());
         userDao.createUser(user);
+        authorityService.add(user.getId(), getAccountTypeIdByTypeString(user.getAccountType()));
+    }
+
+    public Long getAccountTypeIdByTypeString(String type) {
+        return authorityService.getAccountAuthorityByTypeString(type);
     }
 }
