@@ -2,8 +2,10 @@ package org.example.jobsearch.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.example.jobsearch.dao.UserDao;
 import org.example.jobsearch.dto.AvatarImageDto;
+import org.example.jobsearch.models.User;
 import org.example.jobsearch.service.AvatarImageService;
 import org.example.jobsearch.util.FileUtil;
 import org.springframework.http.MediaType;

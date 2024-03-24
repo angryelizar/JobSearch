@@ -3,6 +3,7 @@ package org.example.jobsearch.controllers;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.example.jobsearch.dto.AvatarImageDto;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.UserAlreadyRegisteredException;
@@ -85,7 +86,7 @@ public class UserController {
     }
 
     @PostMapping("{id}/avatar")
-    public ResponseEntity<Void> uploadAvatar(@PathVariable Long id, AvatarImageDto imageDto) {
+    public ResponseEntity<Void> uploadAvatar(@PathVariable Long id, @ModelAttribute AvatarImageDto imageDto) {
         avatarImageService.upload(id, imageDto);
         return ResponseEntity.ok().build();
     }

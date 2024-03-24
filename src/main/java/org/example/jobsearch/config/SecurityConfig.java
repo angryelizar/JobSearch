@@ -39,15 +39,27 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain (HttpSecurity http) throws Exception {
-        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        String EMPLOYER = "EMPLOYER";
+        String APPLICANT = "APPLICANT";
+        String ADMIN = "ADMIN";
+        http
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(Customizer.withDefaults())
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                        .requestMatchers("/resumes").hasAuthority("EMPLOYER"));
+                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                        .requestMatchers("/users/applicants").hasAuthority(EMPLOYER)
+                        .requestMatchers("/users/employers").permitAll()
+                        .requestMatchers("/users/name/{name}").hasAuthority(EMPLOYER)
+                        .requestMatchers(HttpMethod.POST, "/users/{id}/avatar").fullyAuthenticated()
+                        .requestMatchers(HttpMethod.GET,"/users/{id}/avatar").permitAll()
+                        .requestMatchers("/users/email/{email}").hasAuthority(ADMIN)
+                        .requestMatchers("users/phone/{phone}").hasAuthority(ADMIN)
+                        .requestMatchers("users/exists/{email}").hasAuthority(ADMIN)
+                        .requestMatchers("/resumes").hasAuthority(EMPLOYER));
         return http.build();
     }
 }
