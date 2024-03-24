@@ -8,6 +8,7 @@ import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.*;
 import org.example.jobsearch.models.*;
 import org.example.jobsearch.service.VacancyService;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -79,13 +80,7 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     @SneakyThrows
-    public void createVacancy(VacancyDto vacancyDto) {
-        if (!userDao.idIsExists(vacancyDto.getAuthorId())) {
-            throw new VacancyException("Пользователя не существует!");
-        }
-        if (!userDao.userIsEmployer(vacancyDto.getAuthorId())) {
-            throw new VacancyException("Пользователь не работодатель!");
-        }
+    public void createVacancy(Authentication auth, VacancyDto vacancyDto) {
         if (Boolean.FALSE.equals(categoryDao.isExists(vacancyDto.getCategoryId()))) {
             throw new VacancyException("Выбранной категории не существует");
         }
@@ -95,17 +90,18 @@ public class VacancyServiceImpl implements VacancyService {
         if (vacancyDto.getExpFrom() > vacancyDto.getExpTo()) {
             throw new VacancyException("Стартовый опыт работы не может быть больше окончательного!");
         }
-        Vacancy vacancy = new Vacancy();
-        vacancy.setName(vacancyDto.getName());
-        vacancy.setDescription(vacancyDto.getDescription());
-        vacancy.setCategoryId(vacancyDto.getCategoryId());
-        vacancy.setSalary(vacancyDto.getSalary());
-        vacancy.setExpFrom(vacancyDto.getExpFrom());
-        vacancy.setExpTo(vacancyDto.getExpTo());
-        vacancy.setIsActive(vacancyDto.getIsActive());
-        vacancy.setAuthorId(vacancyDto.getAuthorId());
-        vacancy.setCreatedTime(LocalDateTime.now());
-        vacancy.setUpdateTime(LocalDateTime.now());
+        Vacancy vacancy = Vacancy.builder()
+                .name(vacancyDto.getName())
+                .description(vacancyDto.getDescription())
+                .categoryId(vacancyDto.getCategoryId())
+                .salary(vacancyDto.getSalary())
+                .expFrom(vacancyDto.getExpFrom())
+                .expTo(vacancyDto.getExpTo())
+                .isActive(vacancyDto.getIsActive())
+                .authorId(userDao.getUserByEmail(auth.getName()).get().getId())
+                .createdTime(LocalDateTime.now())
+                .updateTime(LocalDateTime.now())
+                .build();
         vacancyDao.createVacancy(vacancy);
     }
 
@@ -132,15 +128,16 @@ public class VacancyServiceImpl implements VacancyService {
         if (updateVacancyDto.getExpFrom() > updateVacancyDto.getExpTo()) {
             throw new VacancyException("Стартовый опыт работы не может быть больше окончательного!");
         }
-        Vacancy vacancy = new Vacancy();
-        vacancy.setName(updateVacancyDto.getName());
-        vacancy.setDescription(updateVacancyDto.getDescription());
-        vacancy.setCategoryId(updateVacancyDto.getCategoryId());
-        vacancy.setSalary(updateVacancyDto.getSalary());
-        vacancy.setExpFrom(updateVacancyDto.getExpFrom());
-        vacancy.setExpTo(updateVacancyDto.getExpTo());
-        vacancy.setIsActive(updateVacancyDto.getIsActive());
-        vacancy.setUpdateTime(LocalDateTime.now());
+        Vacancy vacancy = Vacancy.builder()
+                .name(updateVacancyDto.getName())
+                .description(updateVacancyDto.getDescription())
+                .categoryId(updateVacancyDto.getCategoryId())
+                .salary(updateVacancyDto.getSalary())
+                .expFrom(updateVacancyDto.getExpFrom())
+                .expTo(updateVacancyDto.getExpTo())
+                .isActive(updateVacancyDto.getIsActive())
+                .updateTime(LocalDateTime.now())
+                .build();
         vacancyDao.editVacancy(id, vacancy);
     }
 
@@ -217,7 +214,6 @@ public class VacancyServiceImpl implements VacancyService {
                 .expFrom(e.getExpFrom())
                 .expTo(e.getExpTo())
                 .isActive(e.getIsActive())
-                .authorId(e.getAuthorId())
                 .createdTime(e.getCreatedTime())
                 .updateTime(e.getUpdateTime())
                 .build()));
@@ -225,17 +221,16 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     private VacancyDto getVacancyDto(Vacancy vacancy) {
-        VacancyDto vacancyDto = new VacancyDto();
-        vacancyDto.setName(vacancy.getName());
-        vacancyDto.setDescription(vacancy.getDescription());
-        vacancyDto.setCategoryId(vacancy.getCategoryId());
-        vacancyDto.setSalary(vacancy.getSalary());
-        vacancyDto.setExpFrom(vacancy.getExpFrom());
-        vacancyDto.setExpTo(vacancy.getExpTo());
-        vacancyDto.setIsActive(vacancy.getIsActive());
-        vacancyDto.setAuthorId(vacancy.getAuthorId());
-        vacancyDto.setCreatedTime(vacancy.getCreatedTime());
-        vacancyDto.setUpdateTime(vacancy.getUpdateTime());
-        return vacancyDto;
+        return VacancyDto.builder()
+                .name(vacancy.getName())
+                .description(vacancy.getDescription())
+                .categoryId(vacancy.getCategoryId())
+                .salary(vacancy.getSalary())
+                .expFrom(vacancy.getExpFrom())
+                .expTo(vacancy.getExpTo())
+                .isActive(vacancy.getIsActive())
+                .createdTime(vacancy.getCreatedTime())
+                .updateTime(vacancy.getUpdateTime())
+                .build();
     }
 }

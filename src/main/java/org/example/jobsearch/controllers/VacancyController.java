@@ -2,13 +2,13 @@ package org.example.jobsearch.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.*;
 import org.example.jobsearch.service.VacancyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,9 +21,9 @@ public class VacancyController {
     private final VacancyService vacancyService;
 
 
-    @GetMapping("search/employers")
-    public ResponseEntity<List<ProfileAndVacancyDto>> getResumesByApplicantName(@RequestParam String employer) {
-        return ResponseEntity.ok(vacancyService.getVacanciesByEmployerName(employer));
+    @GetMapping("search/employer")
+    public ResponseEntity<List<ProfileAndVacancyDto>> getVacanciesByUserName(@RequestParam String name) {
+        return ResponseEntity.ok(vacancyService.getVacanciesByEmployerName(name));
     }
 
     @GetMapping("search")
@@ -31,10 +31,9 @@ public class VacancyController {
         return ResponseEntity.ok(vacancyService.getVacanciesByQuery(query));
     }
 
-
     @PostMapping
-    public HttpStatus createVacancy(@RequestBody @Valid VacancyDto vacancyDto) {
-        vacancyService.createVacancy(vacancyDto);
+    public HttpStatus createVacancy(@RequestBody @Valid VacancyDto vacancyDto, Authentication auth) {
+        vacancyService.createVacancy(auth, vacancyDto);
         return HttpStatus.CREATED;
     }
 

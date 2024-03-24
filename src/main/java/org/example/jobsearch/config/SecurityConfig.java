@@ -20,6 +20,9 @@ import javax.sql.DataSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final DataSource dataSource;
+    String EMPLOYER = "EMPLOYER";
+    String APPLICANT = "APPLICANT";
+    String ADMIN = "ADMIN";
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -40,9 +43,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        String EMPLOYER = "EMPLOYER";
-        String APPLICANT = "APPLICANT";
-        String ADMIN = "ADMIN";
         http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(Customizer.withDefaults())
@@ -50,28 +50,43 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
+                                .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                        .requestMatchers("/users/applicants").hasAuthority(EMPLOYER)
-                        .requestMatchers("/users/employers").permitAll()
-                        .requestMatchers("/users/name/{name}").hasAuthority(EMPLOYER)
-                        .requestMatchers(HttpMethod.POST, "/users/avatar").hasAnyAuthority(EMPLOYER, ADMIN, APPLICANT)
-                        .requestMatchers(HttpMethod.GET,"/users/{id}/avatar").permitAll()
-                        .requestMatchers("/users/email/{email}").hasAuthority(ADMIN)
-                        .requestMatchers("users/phone/{phone}").hasAuthority(ADMIN)
-                        .requestMatchers("users/exists/{email}").hasAuthority(ADMIN)
+                                .requestMatchers(HttpMethod.POST, "/users").anonymous()
+                                .requestMatchers("/users/applicants").hasAuthority(EMPLOYER)
+                                .requestMatchers("/users/employers").permitAll()
+                                .requestMatchers("/users/name/{name}").hasAuthority(EMPLOYER)
+                                .requestMatchers(HttpMethod.POST, "/users/avatar").hasAnyAuthority(EMPLOYER, ADMIN, APPLICANT)
+                                .requestMatchers(HttpMethod.GET, "/users/{id}/avatar").permitAll()
+                                .requestMatchers("/users/email/{email}").hasAuthority(ADMIN)
+                                .requestMatchers("/users/phone/{phone}").hasAuthority(ADMIN)
+                                .requestMatchers("/users/exists/{email}").hasAuthority(ADMIN)
 
-                        .requestMatchers(HttpMethod.GET, "/resumes").hasAnyAuthority(EMPLOYER, ADMIN)
-                        .requestMatchers(HttpMethod.POST, "/resumes").hasAnyAuthority(APPLICANT, ADMIN)
-                        .requestMatchers(HttpMethod.POST, "/resumes/{id}").hasAnyAuthority(APPLICANT,ADMIN)
-                        .requestMatchers(HttpMethod.DELETE, "/resumes/{id}").hasAnyAuthority(APPLICANT, ADMIN)
-                        .requestMatchers(HttpMethod.GET, "/resumes/active").hasAnyAuthority(EMPLOYER, ADMIN)
-                        .requestMatchers(HttpMethod.GET, "/resumes/inactive").hasAuthority(ADMIN)
-                        .requestMatchers(HttpMethod.GET, "/resumes/search/applicants").hasAnyAuthority(EMPLOYER, ADMIN)
-                        .requestMatchers(HttpMethod.GET, "/resumes/search").hasAnyAuthority(EMPLOYER, ADMIN)
-                        .requestMatchers(HttpMethod.GET, "/resumes/category/{id}").hasAnyAuthority(EMPLOYER, ADMIN)
-                        .requestMatchers(HttpMethod.GET, "/resumes/user/{id}").hasAnyAuthority(EMPLOYER, ADMIN)
+                                .requestMatchers(HttpMethod.GET, "/resumes").hasAnyAuthority(EMPLOYER, ADMIN)
+                                .requestMatchers(HttpMethod.POST, "/resumes").hasAnyAuthority(APPLICANT, ADMIN)
+                                .requestMatchers(HttpMethod.POST, "/resumes/{id}").hasAnyAuthority(APPLICANT, ADMIN)
+                                .requestMatchers(HttpMethod.DELETE, "/resumes/{id}").hasAnyAuthority(APPLICANT, ADMIN)
+                                .requestMatchers(HttpMethod.GET, "/resumes/active").hasAnyAuthority(EMPLOYER, ADMIN)
+                                .requestMatchers(HttpMethod.GET, "/resumes/inactive").hasAuthority(ADMIN)
+                                .requestMatchers(HttpMethod.GET, "/resumes/search/applicants").hasAnyAuthority(EMPLOYER, ADMIN)
+                                .requestMatchers(HttpMethod.GET, "/resumes/search").hasAnyAuthority(EMPLOYER, ADMIN)
+                                .requestMatchers(HttpMethod.GET, "/resumes/category/{id}").hasAnyAuthority(EMPLOYER, ADMIN)
+                                .requestMatchers(HttpMethod.GET, "/resumes/user/{id}").hasAnyAuthority(EMPLOYER, ADMIN)
+
+                                .requestMatchers(HttpMethod.GET, "/vacancies").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/vacancies/category/{id}").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/vacancies/{id}").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/vacancies/active").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/vacancies/inactive").hasAnyAuthority(ADMIN, EMPLOYER)// странно работает
+                                .requestMatchers(HttpMethod.POST, "/vacancies").hasAnyAuthority(ADMIN, EMPLOYER)
+                                .requestMatchers(HttpMethod.POST, "/vacancies/responded-applicant").hasAnyAuthority(ADMIN, APPLICANT)
+                                .requestMatchers(HttpMethod.POST, "/vacancies/{id}").hasAnyAuthority(ADMIN, EMPLOYER)
+                                .requestMatchers(HttpMethod.DELETE, "/vacancies/{id}").hasAnyAuthority(ADMIN, EMPLOYER)
+                                .requestMatchers(HttpMethod.GET, "/vacancies/search/**").permitAll() // не работает
+                                .requestMatchers(HttpMethod.GET, "/vacancies/applicant/{id}").hasAnyAuthority(ADMIN, EMPLOYER)
+                                .requestMatchers("/vacancies/search/employer/**").hasAnyAuthority(ADMIN, EMPLOYER) // не работает
+                                .requestMatchers(HttpMethod.GET, "/vacancies/{id}/responded-applicants").hasAnyAuthority(ADMIN, EMPLOYER)
+                                .requestMatchers(HttpMethod.GET, "/vacancies/{id}/users").hasAnyAuthority(ADMIN, EMPLOYER)
                 );
         return http.build();
     }

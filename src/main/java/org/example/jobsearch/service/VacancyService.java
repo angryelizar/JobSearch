@@ -2,6 +2,7 @@ package org.example.jobsearch.service;
 
 import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public interface VacancyService {
 
     List<UserDto> getApplicantsByVacancyId(Long id) throws UserNotFoundException, ResumeNotFoundException;
 
-    void createVacancy(VacancyDto vacancyDto);
+    void createVacancy(Authentication auth, VacancyDto vacancyDto);
 
     VacancyDto getVacancyById(Long id) throws VacancyNotFoundException;
 
