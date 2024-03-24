@@ -3,17 +3,14 @@ package org.example.jobsearch.controllers;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.example.jobsearch.dto.AvatarImageDto;
 import org.example.jobsearch.dto.UserDto;
-import org.example.jobsearch.exceptions.UserAlreadyRegisteredException;
-import org.example.jobsearch.exceptions.UserHaveTooLowAgeException;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.service.AvatarImageService;
 import org.example.jobsearch.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -85,9 +82,10 @@ public class UserController {
             return HttpStatus.CREATED;
     }
 
-    @PostMapping("{id}/avatar")
-    public ResponseEntity<Void> uploadAvatar(@PathVariable Long id, @ModelAttribute AvatarImageDto imageDto) {
-        avatarImageService.upload(id, imageDto);
+
+    @PostMapping("avatar")
+    public ResponseEntity<Void> uploadAvatar( @ModelAttribute AvatarImageDto imageDto, Authentication auth) {
+        avatarImageService.upload(auth, imageDto);
         return ResponseEntity.ok().build();
     }
 

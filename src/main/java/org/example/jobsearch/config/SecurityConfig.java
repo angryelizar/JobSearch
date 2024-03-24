@@ -54,7 +54,7 @@ public class SecurityConfig {
                         .requestMatchers("/users/applicants").hasAuthority(EMPLOYER)
                         .requestMatchers("/users/employers").permitAll()
                         .requestMatchers("/users/name/{name}").hasAuthority(EMPLOYER)
-                        .requestMatchers(HttpMethod.POST, "/users/{id}/avatar").fullyAuthenticated()
+                        .requestMatchers(HttpMethod.POST, "/users/avatar").hasAnyAuthority(EMPLOYER, ADMIN, APPLICANT)
                         .requestMatchers(HttpMethod.GET,"/users/{id}/avatar").permitAll()
                         .requestMatchers("/users/email/{email}").hasAuthority(ADMIN)
                         .requestMatchers("users/phone/{phone}").hasAuthority(ADMIN)
