@@ -3,6 +3,7 @@ package org.example.jobsearch.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.example.jobsearch.config.AppConfig;
 import org.example.jobsearch.dao.UserDao;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.UserAlreadyRegisteredException;
@@ -11,6 +12,8 @@ import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.service.AuthorityService;
 import org.example.jobsearch.service.UserService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,6 +25,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
     private final AuthorityService authorityService;
+    private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Override
     public List<UserDto> getUsersByName(String name) throws UserNotFoundException {
@@ -116,11 +120,11 @@ public class UserServiceImpl implements UserService {
         user.setAge(userDto.getAge());
         user.setEmail(userDto.getEmail());
         user.setPhoneNumber(userDto.getPhoneNumber());
-        user.setPassword(userDto.getPassword());
+        user.setPassword(encoder.encode(userDto.getPassword()));
         user.setAvatar(userDto.getAvatar());
         user.setAccountType(userDto.getAccountType());
-        userDao.createUser(user);
-        authorityService.add(user.getId(), getAccountTypeIdByTypeString(user.getAccountType()));
+        Long userId = userDao.createUser(user);
+        authorityService.add(userId, getAccountTypeIdByTypeString(user.getAccountType()));
     }
 
     public Long getAccountTypeIdByTypeString(String type) {

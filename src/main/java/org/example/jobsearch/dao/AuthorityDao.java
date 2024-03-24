@@ -22,6 +22,6 @@ public class AuthorityDao {
                 select id from AUTHORITIES
                 where AUTHORITY = ?
                 """;
-        return template.queryForObject(sql, Long.class);
+        return template.queryForObject(sql, Long.class, authority);
     }
 }
