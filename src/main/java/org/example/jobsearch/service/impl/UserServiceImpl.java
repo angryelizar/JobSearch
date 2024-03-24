@@ -100,6 +100,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getFullUserByEmail(String email) throws UserNotFoundException {
+        return userDao.getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("С такой почтой пользователей не найдено - " + email));
+    }
+
+    @Override
     public String userIsExists(String email) {
         boolean result = userDao.emailIsExists(email);
         return result ? "Пользователь существует" : "Пользователя нет в системе";
