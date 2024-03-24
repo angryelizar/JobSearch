@@ -17,6 +17,7 @@ import org.example.jobsearch.service.ContactInfoService;
 import org.example.jobsearch.service.EducationInfoService;
 import org.example.jobsearch.service.ResumeService;
 import org.example.jobsearch.service.WorkExperienceInfoService;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -98,7 +99,7 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     @SneakyThrows
-    public void createResume(ResumeDto resumeDto) {
+    public void createResume(Authentication authentication, ResumeDto resumeDto) {
         if (userDao.userIsEmployer(resumeDto.getApplicantId()) || !userDao.idIsExists(resumeDto.getApplicantId())) {
             throw new ResumeException("Пользователь либо работодатель, либо его не существует!");
         }
@@ -108,8 +109,9 @@ public class ResumeServiceImpl implements ResumeService {
         if (resumeDto.getSalary() <= 0) {
             throw new ResumeException("Зарплата не может быть меньше или равна нулю");
         }
+        Long applicantId = userDao.getUserByEmail(authentication.getName()).get().getId();
         Long resumeId = resumeDao.createResume(Resume.builder()
-                .applicantId(resumeDto.getApplicantId())
+                .applicantId(applicantId)
                 .name(resumeDto.getName())
                 .categoryId(resumeDto.getCategoryId())
                 .salary(resumeDto.getSalary())

@@ -5,6 +5,7 @@ import org.example.jobsearch.dto.ResumeDto;
 import org.example.jobsearch.dto.UpdateResumeDto;
 import org.example.jobsearch.exceptions.ResumeException;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public interface ResumeService {
 
     List<ProfileAndResumesDto> getResumesByApplicantName(String user) throws ResumeNotFoundException;
 
-    void createResume(ResumeDto resumeDto);
+    void createResume(Authentication authentication, ResumeDto resumeDto);
 
     void editResume(Long id, UpdateResumeDto updateResumeDto);
 

@@ -12,6 +12,7 @@ import org.example.jobsearch.exceptions.ResumeNotFoundException;
 import org.example.jobsearch.service.ResumeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,8 +25,8 @@ public class ResumeController {
     private final ResumeService resumeService;
 
     @PostMapping
-    public HttpStatus createResume(@RequestBody @Valid ResumeDto resumeDto) {
-        resumeService.createResume(resumeDto);
+    public HttpStatus createResume(@RequestBody @Valid ResumeDto resumeDto, Authentication auth) {
+        resumeService.createResume(auth, resumeDto);
         return HttpStatus.ACCEPTED;
     }
 

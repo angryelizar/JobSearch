@@ -50,6 +50,8 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
+
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers("/users/applicants").hasAuthority(EMPLOYER)
                         .requestMatchers("/users/employers").permitAll()
@@ -59,7 +61,18 @@ public class SecurityConfig {
                         .requestMatchers("/users/email/{email}").hasAuthority(ADMIN)
                         .requestMatchers("users/phone/{phone}").hasAuthority(ADMIN)
                         .requestMatchers("users/exists/{email}").hasAuthority(ADMIN)
-                        .requestMatchers("/resumes").hasAuthority(EMPLOYER));
+
+                        .requestMatchers(HttpMethod.GET, "/resumes").hasAnyAuthority(EMPLOYER, ADMIN)
+                        .requestMatchers(HttpMethod.POST, "/resumes").hasAnyAuthority(APPLICANT, ADMIN)
+                        .requestMatchers(HttpMethod.POST, "/resumes/{id}").hasAnyAuthority(APPLICANT,ADMIN)
+                        .requestMatchers(HttpMethod.DELETE, "/resumes/{id}").hasAnyAuthority(APPLICANT, ADMIN)
+                        .requestMatchers(HttpMethod.GET, "/resumes/active").hasAnyAuthority(EMPLOYER, ADMIN)
+                        .requestMatchers(HttpMethod.GET, "/resumes/inactive").hasAuthority(ADMIN)
+                        .requestMatchers(HttpMethod.GET, "/resumes/search/applicants").hasAnyAuthority(EMPLOYER, ADMIN)
+                        .requestMatchers(HttpMethod.GET, "/resumes/search").hasAnyAuthority(EMPLOYER, ADMIN)
+                        .requestMatchers(HttpMethod.GET, "/resumes/category/{id}").hasAnyAuthority(EMPLOYER, ADMIN)
+                        .requestMatchers(HttpMethod.GET, "/resumes/user/{id}").hasAnyAuthority(EMPLOYER, ADMIN)
+                );
         return http.build();
     }
 }
