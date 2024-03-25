@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("users")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
@@ -41,7 +41,7 @@ public class UserController {
 
 
 
-    @GetMapping("name/{name}")
+    @GetMapping("/name/{name}")
     public ResponseEntity<?> getUserByName(@PathVariable String name) {
         try {
             List<UserDto> users = userService.getUsersByName(name);
@@ -51,7 +51,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("phone/{phone}")
+    @GetMapping("/phone/{phone}")
     public ResponseEntity<?> getUserByPhone(@PathVariable String phone) {
         try {
             UserDto user = userService.getUserByPhone(phone);
@@ -61,7 +61,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("email/{email}")
+    @GetMapping("/email/{email}")
     public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
         try {
             UserDto user = userService.getUserByEmail(email);
@@ -71,7 +71,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("exists/{email}")
+    @GetMapping("/exists/{email}")
     public ResponseEntity<String> userIsExists(@PathVariable String email) {
         return ResponseEntity.ok(userService.userIsExists(email));
     }
@@ -83,13 +83,13 @@ public class UserController {
     }
 
 
-    @PostMapping("avatar")
+    @PostMapping("/avatar")
     public ResponseEntity<Void> uploadAvatar( @ModelAttribute AvatarImageDto imageDto, Authentication auth) {
         avatarImageService.upload(auth, imageDto);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("{id}/avatar")
+    @GetMapping("/{id}/avatar")
     public ResponseEntity<?> downloadAvatar(@PathVariable Long id) {
         return avatarImageService.download(id);
     }

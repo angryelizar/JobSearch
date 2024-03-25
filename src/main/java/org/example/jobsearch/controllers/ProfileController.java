@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("profile")
+@RequestMapping("/profile")
 public class ProfileController {
     private final ProfileService profileService;
     @GetMapping()

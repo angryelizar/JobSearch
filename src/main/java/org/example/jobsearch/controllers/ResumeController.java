@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("resumes")
+@RequestMapping("/resumes")
 public class ResumeController {
     private final ResumeService resumeService;
 
@@ -30,13 +30,13 @@ public class ResumeController {
         return HttpStatus.ACCEPTED;
     }
 
-    @PostMapping("{id}")
+    @PostMapping("/{id}")
     public HttpStatus editResume(@PathVariable Long id, @RequestBody @Valid UpdateResumeDto updateResumeDto) throws ResumeException {
         resumeService.editResume(id, updateResumeDto);
         return HttpStatus.ACCEPTED;
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public HttpStatus deleteVacancyById(@PathVariable Long id) {
         resumeService.deleteResumeById(id);
         return HttpStatus.ACCEPTED;
@@ -57,17 +57,17 @@ public class ResumeController {
         return ResponseEntity.ok(resumeService.getInActiveResumes());
     }
 
-    @GetMapping("search")
+    @GetMapping("/search")
     public ResponseEntity<List<ResumeDto>> getResumesByName(@RequestParam String name) {
         return ResponseEntity.ok(resumeService.getResumesByName(name));
     }
 
-    @GetMapping("search/applicants")
+    @GetMapping("/search/applicants")
     public ResponseEntity<List<ProfileAndResumesDto>> getResumesByApplicantName(@RequestParam String user) throws ResumeNotFoundException {
         return ResponseEntity.ok(resumeService.getResumesByApplicantName(user));
     }
 
-    @GetMapping("category/{id}")
+    @GetMapping("/category/{id}")
     public ResponseEntity<?> getResumesByCategoryId(@PathVariable Long id) {
         try {
             List<ResumeDto> resumes = resumeService.getResumesByCategoryId(id);
@@ -78,7 +78,7 @@ public class ResumeController {
         }
     }
 
-    @GetMapping("user/{id}")
+    @GetMapping("/user/{id}")
     public ResponseEntity<?> getResumesByUserId(@PathVariable Long id) {
         try {
             List<ResumeDto> resumes = resumeService.getResumesByUserId(id);
