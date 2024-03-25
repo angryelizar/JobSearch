@@ -5,20 +5,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dto.AvatarImageDto;
 import org.example.jobsearch.dto.UserDto;
-import org.example.jobsearch.exceptions.UserAlreadyRegisteredException;
-import org.example.jobsearch.exceptions.UserHaveTooLowAgeException;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.service.AvatarImageService;
 import org.example.jobsearch.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("users")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
@@ -43,7 +41,7 @@ public class UserController {
 
 
 
-    @GetMapping("name/{name}")
+    @GetMapping("/name/{name}")
     public ResponseEntity<?> getUserByName(@PathVariable String name) {
         try {
             List<UserDto> users = userService.getUsersByName(name);
@@ -53,7 +51,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("phone/{phone}")
+    @GetMapping("/phone/{phone}")
     public ResponseEntity<?> getUserByPhone(@PathVariable String phone) {
         try {
             UserDto user = userService.getUserByPhone(phone);
@@ -63,7 +61,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("email/{email}")
+    @GetMapping("/email/{email}")
     public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
         try {
             UserDto user = userService.getUserByEmail(email);
@@ -73,7 +71,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("exists/{email}")
+    @GetMapping("/exists/{email}")
     public ResponseEntity<String> userIsExists(@PathVariable String email) {
         return ResponseEntity.ok(userService.userIsExists(email));
     }
@@ -84,13 +82,14 @@ public class UserController {
             return HttpStatus.CREATED;
     }
 
-    @PostMapping("{id}/avatar")
-    public ResponseEntity<Void> uploadAvatar(@PathVariable Long id, AvatarImageDto imageDto) {
-        avatarImageService.upload(id, imageDto);
+
+    @PostMapping("/avatar")
+    public ResponseEntity<Void> uploadAvatar( @ModelAttribute AvatarImageDto imageDto, Authentication auth) {
+        avatarImageService.upload(auth, imageDto);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("{id}/avatar")
+    @GetMapping("/{id}/avatar")
     public ResponseEntity<?> downloadAvatar(@PathVariable Long id) {
         return avatarImageService.download(id);
     }

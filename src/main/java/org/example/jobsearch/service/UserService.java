@@ -4,6 +4,7 @@ import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.UserAlreadyRegisteredException;
 import org.example.jobsearch.exceptions.UserHaveTooLowAgeException;
 import org.example.jobsearch.exceptions.UserNotFoundException;
+import org.example.jobsearch.models.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public interface UserService {
     UserDto getUserByPhone(String phone) throws UserNotFoundException;
 
     UserDto getUserByEmail(String email) throws UserNotFoundException;
+    User getFullUserByEmail(String email) throws UserNotFoundException;
 
     String userIsExists(String email);
 

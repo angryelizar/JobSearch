@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: 17-create roles and users table
+      author: angryelizar
+      changes:
+        - createTable:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: long
+                  constraints:
+                    foreignKeyName: fk_role_user_id
+                    nullable: false
+                    references: users(id)
+              - column:
+                  name: authority_id
+                  type: long
+                  constraints:
+                    foreignKeyName: fk_authority_id
+                    nullable: false
+                    references: authorities(id)
