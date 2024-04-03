@@ -10,7 +10,7 @@
               crossorigin="anonymous">
     </head>
     <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary" style="background-color: #e3f2fd" ;>
+    <nav class="navbar bg-primary navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
         <div class="container">
             <a class="navbar-brand" href="/">Job Search</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
@@ -31,7 +31,7 @@
     <div class="container mt-3 mb-3">
         <#nested>
     </div>
-    <nav class="navbar bg-body-tertiary">
+    <nav class="navbar bg-primary bg-body-tertiary" data-bs-theme="dark">
         <div class="container-fluid">
     <span class="navbar-text">
       Job Search, 2024
