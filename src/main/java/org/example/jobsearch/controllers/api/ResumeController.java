@@ -1,4 +1,4 @@
-package org.example.jobsearch.controllers;
+package org.example.jobsearch.controllers.api;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/resumes")
+@RequestMapping("api/resumes")
 public class ResumeController {
     private final ResumeService resumeService;
 
