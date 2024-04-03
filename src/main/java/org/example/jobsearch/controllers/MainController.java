@@ -1,13 +1,17 @@
 package org.example.jobsearch.controllers;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 @RequiredArgsConstructor
-@Slf4j
 public class MainController {
+
+    @GetMapping("registration")
+    public String registrationGet(Model model){
+        model.addAttribute("pageTitle", "Регистрация");
+        return "main/registration";
+    }
 }
