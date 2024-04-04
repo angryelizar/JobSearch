@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.*;
+import org.example.jobsearch.dto.PageResumeDto;
 import org.example.jobsearch.dto.ProfileAndResumesDto;
 import org.example.jobsearch.dto.ResumeDto;
 import org.example.jobsearch.dto.UpdateResumeDto;
@@ -17,6 +18,7 @@ import org.example.jobsearch.service.ContactInfoService;
 import org.example.jobsearch.service.EducationInfoService;
 import org.example.jobsearch.service.ResumeService;
 import org.example.jobsearch.service.WorkExperienceInfoService;
+import org.example.jobsearch.util.DateUtil;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -74,10 +76,34 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
+    public List<Resume> getFullResumesByUserId(Long id) {
+        return resumeDao.getResumesByUserId(id);
+    }
+
+    @Override
     public List<ResumeDto> getResumesByName(String query) {
         List<Resume> resumes = resumeDao.getResumesByName(query);
         return getResumeDtos(resumes);
     }
+
+    @Override
+    public List<PageResumeDto> getActivePageResumes() {
+        List<PageResumeDto> pageResumeDtos = new ArrayList<>();
+        List<Resume> resumes = resumeDao.getActiveResumes();
+        for (Resume curRes : resumes) {
+            pageResumeDtos.add(PageResumeDto
+                    .builder()
+                    .id(curRes.getId())
+                    .category(categoryDao.getCategoryNameById(curRes.getCategoryId()))
+                    .name(curRes.getName())
+                    .author(userDao.getUserNameById(curRes.getApplicantId()) + " " + userDao.getSurnameNameById(curRes.getApplicantId()))
+                    .updatedDate(DateUtil.getFormattedLocalDateTime(curRes.getUpdateTime()))
+                    .salary(curRes.getSalary())
+                    .build());
+        }
+        return pageResumeDtos;
+    }
+
 
     @Override
     public List<ProfileAndResumesDto> getResumesByApplicantName(String user) throws ResumeNotFoundException {
@@ -191,6 +217,36 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     public void deleteResumeById(Long id) {
         resumeDao.deleteResumeById(id);
+    }
+
+    @Override
+    @SneakyThrows
+    public void update(Long id) {
+        if (resumeDao.idIsExists(id)) {
+            resumeDao.setUpdateTime(LocalDateTime.now(), id);
+        } else {
+            log.error("Было запрошено несуществующее резюме с ID " + id);
+            throw new ResumeException("Этого резюме не существует");
+        }
+    }
+
+    @Override
+    @SneakyThrows
+    public PageResumeDto getPageResumeById(Long id) {
+        if (resumeDao.idIsExists(id)) {
+            Resume resume = resumeDao.getResumeById(id).get();
+            return PageResumeDto.builder()
+                    .name(resume.getName())
+                    .category(categoryDao.getCategoryNameById(resume.getCategoryId()))
+                    .author(userDao.getUserNameById(resume.getApplicantId()) + " " + userDao.getSurnameNameById(resume.getApplicantId()))
+                    .id(resume.getId())
+                    .salary(resume.getSalary())
+                    .updatedDate(DateUtil.getFormattedLocalDate(resume.getUpdateTime()))
+                    .build();
+        } else {
+            log.error("Было запрошено несуществующее резюме с ID " + id);
+            throw new ResumeException("Этого резюме не существует");
+        }
     }
 
     private List<ResumeDto> getResumeDtos(List<Resume> resumes) {

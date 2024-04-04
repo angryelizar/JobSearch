@@ -29,8 +29,6 @@ public class VacancyDto {
     private Integer expTo;
     @NotNull(message = "Укажите активная ли вакансия или нет")
     private Boolean isActive;
-//    @NotNull(message = "Укажите автора")
-//    private Long authorId;
     private LocalDateTime createdTime;
     private LocalDateTime updateTime;
 }

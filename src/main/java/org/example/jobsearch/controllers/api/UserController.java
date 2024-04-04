@@ -1,4 +1,4 @@
-package org.example.jobsearch.controllers;
+package org.example.jobsearch.controllers.api;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/users")
+@RestController("restUser")
+@RequestMapping("api/users")
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {

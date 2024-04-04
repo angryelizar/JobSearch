@@ -1,91 +1,46 @@
 package org.example.jobsearch.controllers;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.example.jobsearch.dto.ProfileAndResumesDto;
-import org.example.jobsearch.dto.ResumeDto;
-import org.example.jobsearch.dto.UpdateResumeDto;
-import org.example.jobsearch.exceptions.ResumeException;
-import org.example.jobsearch.exceptions.ResumeNotFoundException;
+import org.example.jobsearch.service.ContactInfoService;
+import org.example.jobsearch.service.EducationInfoService;
 import org.example.jobsearch.service.ResumeService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.example.jobsearch.service.WorkExperienceInfoService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
-
-@RestController
+@Controller
 @RequiredArgsConstructor
-@Slf4j
 @RequestMapping("/resumes")
 public class ResumeController {
     private final ResumeService resumeService;
-
-    @PostMapping
-    public HttpStatus createResume(@RequestBody @Valid ResumeDto resumeDto, Authentication auth) {
-        resumeService.createResume(auth, resumeDto);
-        return HttpStatus.ACCEPTED;
-    }
-
-    @PostMapping("/{id}")
-    public HttpStatus editResume(@PathVariable Long id, @RequestBody @Valid UpdateResumeDto updateResumeDto) throws ResumeException {
-        resumeService.editResume(id, updateResumeDto);
-        return HttpStatus.ACCEPTED;
-    }
-
-    @DeleteMapping("/{id}")
-    public HttpStatus deleteVacancyById(@PathVariable Long id) {
-        resumeService.deleteResumeById(id);
-        return HttpStatus.ACCEPTED;
-    }
+    private final WorkExperienceInfoService workExperienceInfoService;
+    private final EducationInfoService educationInfoService;
+    private final ContactInfoService contactInfoService;
 
     @GetMapping()
-    public ResponseEntity<List<ResumeDto>> getResumes() {
-        return ResponseEntity.ok(resumeService.getResumes());
+    public String resumesGet(Model model) {
+        model.addAttribute("pageTitle", "Резюме");
+        model.addAttribute("resumes", resumeService.getActivePageResumes());
+        return "resume/resumes";
     }
 
-    @GetMapping("/active")
-    public ResponseEntity<List<ResumeDto>> getActiveResumes() {
-        return ResponseEntity.ok(resumeService.getActiveResumes());
+    @GetMapping("{id}")
+    public String resumeGet(@PathVariable Long id, Model model) {
+        model.addAttribute("pageTitle", "Резюме");
+        model.addAttribute("resume", resumeService.getPageResumeById(id));
+        model.addAttribute("workExperience", workExperienceInfoService.getPageWorkExperienceByResumeId(id));
+        model.addAttribute("educationInfo", educationInfoService.getPageEducationInfoByResumeId(id));
+        model.addAttribute("contactInfo", contactInfoService.getPageContactInfoByResumeId(id));
+        return "resume/resume";
     }
 
-    @GetMapping("/inactive")
-    public ResponseEntity<List<ResumeDto>> getInActiveResumes() {
-        return ResponseEntity.ok(resumeService.getInActiveResumes());
+    @GetMapping("/update")
+    public String updateGet(@RequestParam Long id) {
+        resumeService.update(id);
+        return "redirect:/profile";
     }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<ResumeDto>> getResumesByName(@RequestParam String name) {
-        return ResponseEntity.ok(resumeService.getResumesByName(name));
-    }
-
-    @GetMapping("/search/applicants")
-    public ResponseEntity<List<ProfileAndResumesDto>> getResumesByApplicantName(@RequestParam String user) throws ResumeNotFoundException {
-        return ResponseEntity.ok(resumeService.getResumesByApplicantName(user));
-    }
-
-    @GetMapping("/category/{id}")
-    public ResponseEntity<?> getResumesByCategoryId(@PathVariable Long id) {
-        try {
-            List<ResumeDto> resumes = resumeService.getResumesByCategoryId(id);
-            return ResponseEntity.ok().body(resumes);
-        } catch (ResumeNotFoundException e) {
-            log.info("Такой категории нет");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-    }
-
-    @GetMapping("/user/{id}")
-    public ResponseEntity<?> getResumesByUserId(@PathVariable Long id) {
-        try {
-            List<ResumeDto> resumes = resumeService.getResumesByUserId(id);
-            return ResponseEntity.ok().body(resumes);
-        } catch (ResumeNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-    }
-
 }

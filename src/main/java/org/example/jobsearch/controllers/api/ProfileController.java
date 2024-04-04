@@ -1,4 +1,4 @@
-package org.example.jobsearch.controllers;
+package org.example.jobsearch.controllers.api;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController
+@RestController("restProfile")
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/profile")
+@RequestMapping("api/profile")
 public class ProfileController {
     private final ProfileService profileService;
     @GetMapping()

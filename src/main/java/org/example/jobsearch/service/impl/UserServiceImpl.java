@@ -15,6 +15,7 @@ import org.example.jobsearch.service.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> getUsersByName(String name) throws UserNotFoundException {
         List<User> users = userDao.getUsersByName(name);
-        if (users == null || users.isEmpty()){
+        if (users == null || users.isEmpty()) {
             throw new UserNotFoundException("Пользователи с таким именем не найдены");
         }
         List<UserDto> userDtos = new ArrayList<>();
@@ -113,10 +114,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @SneakyThrows
     public void createUser(UserDto userDto) {
-        if (userDao.emailIsExists(userDto.getEmail()) || userDao.phoneIsExists(userDto.getPhoneNumber())){
+        if (userDao.emailIsExists(userDto.getEmail()) || userDao.phoneIsExists(userDto.getPhoneNumber())) {
             throw new UserAlreadyRegisteredException("Пользователь уже зарегистрирован");
         }
-        if (userDto.getAge() < 18){
+        if (userDto.getAge() < 18) {
             throw new UserHaveTooLowAgeException("Пользователь слишком молод!");
         }
         User user = new User();
@@ -130,6 +131,24 @@ public class UserServiceImpl implements UserService {
         user.setAccountType(userDto.getAccountType());
         Long userId = userDao.createUser(user);
         authorityService.add(userId, getAccountTypeIdByTypeString(user.getAccountType()));
+    }
+
+    @Override
+    @SneakyThrows
+    @Transactional
+    public void update(UserDto userDto) {
+        var user = userDao.getUserByEmail(userDto.getEmail());
+        if (user.isEmpty()) {
+            log.error("Запрошен несуществующий пользователь с e-mail " + userDto.getEmail());
+            throw new UserNotFoundException("Такого пользователя нет!");
+        }
+        Long userId = user.get().getId();
+        userDao.changeNameOfUser(userDto.getName(), userId);
+        userDao.changeSurnameOfUser(userDto.getSurname(), userId);
+        userDao.changeAgeOfUser(userDto.getAge(), userId);
+        userDao.changeEmailOfUser(userDto.getEmail(), userId);
+        userDao.changePasswordOfUser(encoder.encode(userDto.getPassword()), userId);
+        userDao.changePhoneOfUser(userDto.getPhoneNumber(), userId);
     }
 
     public Long getAccountTypeIdByTypeString(String type) {

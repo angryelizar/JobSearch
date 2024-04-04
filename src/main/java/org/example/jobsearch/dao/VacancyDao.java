@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -196,5 +197,14 @@ public class VacancyDao {
                 where IS_ACTIVE = false;
                 """;
         return template.query(sql, new BeanPropertyRowMapper<>(Vacancy.class));
+    }
+
+    public void update(LocalDateTime date, Long id) {
+        String sql = """
+                UPDATE VACANCIES
+                SET UPDATE_TIME = ?
+                WHERE ID = ?
+                """;
+        template.update(sql, date, id);
     }
 }

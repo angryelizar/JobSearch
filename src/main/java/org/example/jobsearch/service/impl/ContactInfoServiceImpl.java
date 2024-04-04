@@ -3,6 +3,7 @@ package org.example.jobsearch.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.example.jobsearch.dao.ContactInfoDao;
 import org.example.jobsearch.dto.ContactInfoDto;
+import org.example.jobsearch.dto.PageContactInfoDto;
 import org.example.jobsearch.models.ContactInfo;
 import org.example.jobsearch.service.ContactInfoService;
 import org.springframework.stereotype.Service;
@@ -35,5 +36,22 @@ public class ContactInfoServiceImpl implements ContactInfoService {
                         .typeId(contactInfoDto.getTypeId())
                         .build()
         );
+    }
+
+    @Override
+    public List<PageContactInfoDto> getPageContactInfoByResumeId(Long id) {
+        List<ContactInfo> contactInfos = contactInfoDao.getContactInfosByResumeId(id);
+        List<PageContactInfoDto> contactInfoDtos = new ArrayList<>();
+        for (int i = 0; i < contactInfos.size(); i++) {
+            ContactInfo curContact = contactInfos.get(i);
+            contactInfoDtos.add(
+                    PageContactInfoDto
+                            .builder()
+                            .type(contactInfoDao.getContactInfoType(curContact.getTypeId()))
+                            .content(curContact.getContent())
+                            .build()
+            );
+        }
+        return contactInfoDtos;
     }
 }

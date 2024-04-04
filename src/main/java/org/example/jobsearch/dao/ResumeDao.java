@@ -96,7 +96,7 @@ public class ResumeDao {
         template.update(sql, isActive, resumeId);
     }
 
-    public void setUpdateTime(LocalDateTime updateTime, int resumeId) {
+    public void setUpdateTime(LocalDateTime updateTime, Long resumeId) {
         String sql = """
                 update RESUMES
                 SET UPDATE_TIME = ?

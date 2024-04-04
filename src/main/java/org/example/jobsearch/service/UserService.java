@@ -22,9 +22,12 @@ public interface UserService {
     UserDto getUserByPhone(String phone) throws UserNotFoundException;
 
     UserDto getUserByEmail(String email) throws UserNotFoundException;
+
     User getFullUserByEmail(String email) throws UserNotFoundException;
 
     String userIsExists(String email);
 
     void createUser(UserDto userDto);
+
+    void update(UserDto userDto);
 }
