@@ -198,6 +198,17 @@ public class ResumeServiceImpl implements ResumeService {
         resumeDao.deleteResumeById(id);
     }
 
+    @Override
+    @SneakyThrows
+    public void update(Long id) {
+        if (resumeDao.idIsExists(id)){
+            resumeDao.setUpdateTime(LocalDateTime.now(), id);
+        } else {
+            log.error("Было запрошено несуществующее резюме с ID " + id);
+            throw new ResumeException("Этого резюме не существует");
+        }
+    }
+
     private List<ResumeDto> getResumeDtos(List<Resume> resumes) {
         List<ResumeDto> resumeDtos = new ArrayList<>();
         for (Resume rs : resumes) {

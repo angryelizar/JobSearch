@@ -43,13 +43,13 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public List<VacancyDto> getActiveVacancies(){
+    public List<VacancyDto> getActiveVacancies() {
         List<Vacancy> vacancies = vacancyDao.getActiveVacancies();
         return getVacancyDtos(vacancies);
     }
 
     @Override
-    public List<VacancyDto> getInActiveVacancies(){
+    public List<VacancyDto> getInActiveVacancies() {
         List<Vacancy> vacancies = vacancyDao.getInActiveVacancies();
         return getVacancyDtos(vacancies);
     }
@@ -207,6 +207,17 @@ public class VacancyServiceImpl implements VacancyService {
     @Override
     public List<Vacancy> getVacanciesByEmployerId(Long id) {
         return vacancyDao.getVacanciesByAuthorId(id);
+    }
+
+    @Override
+    @SneakyThrows
+    public void update(Long id) {
+        if (vacancyDao.isExists(id)){
+            vacancyDao.update(LocalDateTime.now(), id);
+        } else {
+            log.error("Была запрошена несуществующая вакансия с ID " + id);
+            throw new VacancyException("Такой вакансии нет!");
+        }
     }
 
     private List<VacancyDto> getVacancyDtos(List<Vacancy> vacancies) {

@@ -43,7 +43,7 @@
                                                               href="resumes/${resume.id}">${resume.name}</a></h5>
                                     <h6 class="card-subtitle mb-2 text-body-secondary">Оклад: ${resume.salary}</h6>
                                     <p class="card-text">Обновлено: ${resume.updateDate}</p>
-                                    <a href="#" class="text-light card-link btn btn-info"
+                                    <a href="resumes/update?id=${resume.id}" class="text-light card-link btn btn-info"
                                        style="width: 40%; font-size: 10px">Обновить</a>
                                     <a href="#" class="card-link btn btn-success" style="width: 40%; font-size: 10px">Редактировать</a>
                                 </div>
@@ -59,7 +59,7 @@
                                                               href="vacancies/${vacancy.id}">${vacancy.name}</a></h5>
                                     <h6 class="card-subtitle mb-2 text-body-secondary">Оклад: ${vacancy.salary}</h6>
                                     <p class="card-text">Обновлено: ${vacancy.updateDate}</p>
-                                    <a href="#" class="text-light card-link btn btn-info"
+                                    <a href="/vacancies/update?id=${vacancy.id}" class="text-light card-link btn btn-info"
                                        style="width: 40%; font-size: 10px">Обновить</a>
                                     <a href="#" class="card-link btn btn-success" style="width: 40%; font-size: 10px">Редактировать</a>
                                 </div>

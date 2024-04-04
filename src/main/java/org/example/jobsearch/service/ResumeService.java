@@ -34,4 +34,5 @@ public interface ResumeService {
     void editResume(Long id, UpdateResumeDto updateResumeDto);
 
     void deleteResumeById(Long id);
+    void update(Long id);
 }
