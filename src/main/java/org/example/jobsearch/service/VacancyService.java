@@ -41,4 +41,8 @@ public interface VacancyService {
 
     List<Vacancy> getVacanciesByEmployerId(Long id);
     void update(Long id);
+
+    List<PageVacancyDto> getActivePageVacancies();
+
+    PageVacancyDto getPageVacancyById(Long id);
 }

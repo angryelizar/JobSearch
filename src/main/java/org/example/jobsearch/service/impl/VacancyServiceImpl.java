@@ -8,6 +8,7 @@ import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.*;
 import org.example.jobsearch.models.*;
 import org.example.jobsearch.service.VacancyService;
+import org.example.jobsearch.util.DateUtil;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -214,6 +215,51 @@ public class VacancyServiceImpl implements VacancyService {
     public void update(Long id) {
         if (vacancyDao.isExists(id)){
             vacancyDao.update(LocalDateTime.now(), id);
+        } else {
+            log.error("Была запрошена несуществующая вакансия с ID " + id);
+            throw new VacancyException("Такой вакансии нет!");
+        }
+    }
+
+    @Override
+    public List<PageVacancyDto> getActivePageVacancies() {
+        List<Vacancy> vacancies = vacancyDao.getActiveVacancies();
+        List<PageVacancyDto> pageVacancyDtos = new ArrayList<>();
+        for (Vacancy vacancy : vacancies) {
+            pageVacancyDtos.add(
+                    PageVacancyDto
+                            .builder()
+                            .id(vacancy.getId())
+                            .name(vacancy.getName())
+                            .description(vacancy.getDescription())
+                            .category(categoryDao.getCategoryNameById(vacancy.getCategoryId()))
+                            .author(userDao.getUserNameById(vacancy.getAuthorId()))
+                            .salary(vacancy.getSalary())
+                            .expFrom(vacancy.getExpFrom())
+                            .expTo(vacancy.getExpTo())
+                            .updateTime(DateUtil.getFormattedLocalDateTime(vacancy.getUpdateTime()))
+                            .build()
+            );
+        }
+        return pageVacancyDtos;
+    }
+
+    @Override
+    @SneakyThrows
+    public PageVacancyDto getPageVacancyById(Long id) {
+        if (vacancyDao.isExists(id)){
+            Vacancy vacancy = vacancyDao.getVacancyById(id).get();
+            return PageVacancyDto
+                    .builder()
+                    .name(vacancy.getName())
+                    .description(vacancy.getDescription())
+                    .author(userDao.getUserNameById(vacancy.getAuthorId()))
+                    .category(categoryDao.getCategoryNameById(vacancy.getCategoryId()))
+                    .salary(vacancy.getSalary())
+                    .expFrom(vacancy.getExpFrom())
+                    .expTo(vacancy.getExpTo())
+                    .updateTime(DateUtil.getFormattedLocalDateTime(vacancy.getUpdateTime()))
+                    .build();
         } else {
             log.error("Была запрошена несуществующая вакансия с ID " + id);
             throw new VacancyException("Такой вакансии нет!");
