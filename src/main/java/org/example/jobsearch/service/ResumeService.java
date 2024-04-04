@@ -5,6 +5,7 @@ import org.example.jobsearch.dto.ResumeDto;
 import org.example.jobsearch.dto.UpdateResumeDto;
 import org.example.jobsearch.exceptions.ResumeException;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
+import org.example.jobsearch.models.Resume;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,8 @@ public interface ResumeService {
     List<ResumeDto> getResumesByCategoryId(Long id) throws ResumeNotFoundException;
 
     List<ResumeDto> getResumesByUserId(Long id) throws ResumeNotFoundException;
+
+    List<Resume> getFullResumesByUserId(Long id);
 
     List<ResumeDto> getResumesByName(String query);
 

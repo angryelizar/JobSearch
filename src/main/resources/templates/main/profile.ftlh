@@ -8,35 +8,44 @@
                     <img src="#" alt="Аватарка профиля" class="rounded-4 img-fluid">
                 </div>
                 <div class="col-xxl-6 col-xl-4 col-lg-5 col-md-11">
-                    <h4 class="d-block">Имя и фамилия</h4>
-                    <p class="d-block">Возраст: 55</p>
+                    <h4 class="d-block">${data.user.name} ${data.user.surname}</h4>
+                    <p class="d-block">Возраст: ${data.user.age}</p>
                     <a href="#" class="p-2 btn btn-success d-block">Редактировать</a>
                 </div>
                 <div class="col-xxl-2 col-xl-3 col-lg-3 col-md-12 mt-3">
-                    <a href="#" class="text-center d-block p-3 bg-danger rounded-4 text-decoration-none text-light"
-                       style="height: 40%">Создать резюме</a>
+                    <#if data.user.accountType = "Соискатель">
+                        <a href="#" class="text-center d-block p-3 bg-danger rounded-4 text-decoration-none text-light"
+                           style="height: 40%">Создать резюме</a>
+                    <#else>
+                        <a href="#" class="text-center d-block p-3 bg-danger rounded-4 text-decoration-none text-light"
+                           style="height: 40%">Создать вакансию</a>
+                    </#if>
                 </div>
                 <div class="col-xxl-2 col-xl-3 col-lg-3 col-md-12 mt-3">
-                    <a href="#" class="text-center d-block p-3 border border-2 rounded-4 text-decoration-none text-black"
-                       style="height: 40%">Отклики</a>
+                    <#if data.user.accountType = "Соискатель">
+                        <a href="#"
+                           class="text-center d-block p-3 border border-2 rounded-4 text-decoration-none text-black"
+                           style="height: 40%">Отклики</a>
+                    <#else>
+                    </#if>
                 </div>
             </div>
         </div>
-        <div class="posts-block container-fluid">
-            <h3 class="text-start mt-3">Резюме:</h3>
-            <div class="row mt-3">
-                <div class="col-12 col-md-6 col-lg-3 mb-1">
-                    <div class="card" style="width: 18rem;">
-                        <div class="card-body">
-                            <h5 class="card-title">Название резюме</h5>
-                            <h6 class="card-subtitle mb-2 text-body-secondary">Оклад: 10 000</h6>
-                            <p class="card-text">Дата обновления: 8 марта</p>
-                            <a href="#" class="card-link btn btn-info" style="width: 40%; font-size: 10px">Обновить</a>
-                            <a href="#" class="card-link btn btn-success" style="width: 40%; font-size: 10px">Редактировать</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <#--        <div class="posts-block container-fluid">-->
+        <#--            <h3 class="text-start mt-3">Резюме:</h3>-->
+        <#--            <div class="row mt-3">-->
+        <#--                <div class="col-12 col-md-6 col-lg-3 mb-1">-->
+        <#--                    <div class="card" style="width: 18rem;">-->
+        <#--                        <div class="card-body">-->
+        <#--                            <h5 class="card-title">Название резюме</h5>-->
+        <#--                            <h6 class="card-subtitle mb-2 text-body-secondary">Оклад: 10 000</h6>-->
+        <#--                            <p class="card-text">Дата обновления: 8 марта</p>-->
+        <#--                            <a href="#" class="text-light card-link btn btn-info" style="width: 40%; font-size: 10px">Обновить</a>-->
+        <#--                            <a href="#" class="card-link btn btn-success" style="width: 40%; font-size: 10px">Редактировать</a>-->
+        <#--                        </div>-->
+        <#--                    </div>-->
+        <#--                </div>-->
+        <#--            </div>-->
+        <#--        </div>-->
     </div>
 </@main.layout>

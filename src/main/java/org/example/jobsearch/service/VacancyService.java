@@ -2,6 +2,7 @@ package org.example.jobsearch.service;
 
 import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.*;
+import org.example.jobsearch.models.Vacancy;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -37,4 +38,6 @@ public interface VacancyService {
     void respondToVacancy(RespondedApplicantDto respondedApplicantDto);
 
     List<ProfileAndVacancyDto> getVacanciesByEmployerName(String employer);
+
+    List<Vacancy> getVacanciesByEmployerId(Long id);
 }

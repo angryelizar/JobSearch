@@ -74,6 +74,11 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
+    public List<Resume> getFullResumesByUserId(Long id) {
+        return resumeDao.getResumesByUserId(id);
+    }
+
+    @Override
     public List<ResumeDto> getResumesByName(String query) {
         List<Resume> resumes = resumeDao.getResumesByName(query);
         return getResumeDtos(resumes);
