@@ -24,6 +24,13 @@ public class MainController {
         return "redirect:/vacancies";
     }
 
+    @GetMapping("/employers")
+    public String employersGet(Model model){
+        model.addAttribute("pageTitle", "Работодатели");
+        model.addAttribute("employers", userService.getEmployersUsers());
+        return "main/employers";
+    }
+
     @GetMapping("/registration")
     public String registrationGet(Model model){
         model.addAttribute("pageTitle", "Регистрация");
