@@ -27,4 +27,6 @@ public interface UserService {
     String userIsExists(String email);
 
     void createUser(UserDto userDto);
+
+    void update(UserDto userDto);
 }

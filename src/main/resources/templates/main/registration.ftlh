@@ -34,7 +34,7 @@
                 <option value="Соискатель">Соискатель</option>
             </select>
         </div>
-        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+        <button type="submit" class="btn btn-secondary">Зарегистрироваться</button>
     </form>
 </div>
 </@main.layout>

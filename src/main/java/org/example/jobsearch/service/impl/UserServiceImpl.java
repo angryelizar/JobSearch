@@ -15,6 +15,7 @@ import org.example.jobsearch.service.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,6 +131,24 @@ public class UserServiceImpl implements UserService {
         user.setAccountType(userDto.getAccountType());
         Long userId = userDao.createUser(user);
         authorityService.add(userId, getAccountTypeIdByTypeString(user.getAccountType()));
+    }
+
+    @Override
+    @SneakyThrows
+    @Transactional
+    public void update(UserDto userDto) {
+        var user = userDao.getUserByEmail(userDto.getEmail());
+        if (user.isEmpty()){
+            log.error("Запрошен несуществующий пользователь с e-mail " + userDto.getEmail());
+            throw new UserNotFoundException("Такого пользователя нет!");
+        }
+        Long userId = user.get().getId();
+        userDao.changeNameOfUser(userDto.getName(), userId);
+        userDao.changeSurnameOfUser(userDto.getSurname(), userId);
+        userDao.changeAgeOfUser(userDto.getAge(), userId);
+        userDao.changeEmailOfUser(userDto.getEmail(), userId);
+        userDao.changePasswordOfUser(encoder.encode(userDto.getPassword()), userId);
+        userDao.changePhoneOfUser(userDto.getPhoneNumber(), userId);
     }
 
     public Long getAccountTypeIdByTypeString(String type) {

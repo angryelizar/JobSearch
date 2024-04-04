@@ -76,7 +76,7 @@ public class UserDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    public void changeNameOfUser(String newName, int id) {
+    public void changeNameOfUser(String newName, Long id) {
         String sql = """
                 update users
                 set name = ?
@@ -85,7 +85,7 @@ public class UserDao {
         template.update(sql, newName, id);
     }
 
-    public void changeSurnameOfUser(String newSurname, int id) {
+    public void changeSurnameOfUser(String newSurname, Long id) {
         String sql = """
                 update users
                 set surname = ?
@@ -94,7 +94,7 @@ public class UserDao {
         template.update(sql, newSurname, id);
     }
 
-    public void changeAgeOfUser(Byte newAge, int id) {
+    public void changeAgeOfUser(Byte newAge, Long id) {
         String sql = """
                 update users
                 set age = ?
@@ -103,7 +103,7 @@ public class UserDao {
         template.update(sql, newAge, id);
     }
 
-    public void changePhoneOfUser(String newPhone, int id) {
+    public void changePhoneOfUser(String newPhone, Long id) {
         String sql = """
                 update users
                 set PHONE_NUMBER = ?
@@ -112,7 +112,7 @@ public class UserDao {
         template.update(sql, newPhone, id);
     }
 
-    public void changeEmailOfUser(String newEmail, int id) {
+    public void changeEmailOfUser(String newEmail, Long id) {
         String sql = """
                 update users
                 set EMAIL = ?
@@ -121,7 +121,7 @@ public class UserDao {
         template.update(sql, newEmail, id);
     }
 
-    public void changePasswordOfUser(String newPassword, int id) {
+    public void changePasswordOfUser(String newPassword, Long id) {
         String sql = """
                 update users
                 set PASSWORD = ?

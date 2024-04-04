@@ -51,6 +51,8 @@ public class ProfileServiceImpl implements ProfileService {
                         .surname(user.getSurname())
                         .avatar(user.getAvatar())
                         .age(user.getAge())
+                        .email(user.getEmail())
+                        .phoneNumber(user.getPhoneNumber())
                         .accountType(user.getAccountType())
                         .build()
         );

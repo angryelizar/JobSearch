@@ -2,6 +2,7 @@ package org.example.jobsearch.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.example.jobsearch.dto.UserDto;
+import org.example.jobsearch.models.User;
 import org.example.jobsearch.service.ProfileService;
 import org.example.jobsearch.service.UserService;
 import org.springframework.security.core.Authentication;
@@ -27,6 +28,12 @@ public class MainController {
         model.addAttribute("pageTitle", "Профиль");
         model.addAttribute("data", profileService.profileGet(auth));
         return "main/profile";
+    }
+
+    @PostMapping("/profile")
+    public String profilePost(UserDto userDto){
+        userService.update(userDto);
+        return "redirect:/profile";
     }
 
     @PostMapping("/registration")
