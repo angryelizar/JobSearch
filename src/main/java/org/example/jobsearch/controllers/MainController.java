@@ -13,13 +13,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class MainController {
     private final UserService userService;
 
-    @GetMapping("registration")
+    @GetMapping("/registration")
     public String registrationGet(Model model){
         model.addAttribute("pageTitle", "Регистрация");
         return "main/registration";
     }
 
-    @PostMapping("registration")
+    @GetMapping("/profile")
+    public String profileGet(Model model){
+        model.addAttribute("pageTitle", "Профиль");
+        return "main/profile";
+    }
+
+    @PostMapping("/registration")
     public String registrationPost(UserDto userDto){
         userService.createUser(userDto);
         return "redirect:/";
