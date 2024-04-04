@@ -229,7 +229,26 @@ public void update(Long id) {
     }
 }
 
-private List<ResumeDto> getResumeDtos(List<Resume> resumes) {
+    @Override
+    @SneakyThrows
+    public PageResumeDto getPageResumeById(Long id) {
+        if (resumeDao.idIsExists(id)) {
+            Resume resume = resumeDao.getResumeById(id).get();
+            return PageResumeDto.builder()
+                    .name(resume.getName())
+                    .category(categoryDao.getCategoryNameById(resume.getCategoryId()))
+                    .author(userDao.getUserNameById(resume.getApplicantId()) + " " + userDao.getSurnameNameById(resume.getApplicantId()))
+                    .id(resume.getId())
+                    .salary(resume.getSalary())
+                    .updatedDate(DateUtil.getFormattedLocalDate(resume.getUpdateTime()))
+                    .build();
+        } else {
+            log.error("Было запрошено несуществующее резюме с ID " + id);
+            throw new ResumeException("Этого резюме не существует");
+        }
+    }
+
+    private List<ResumeDto> getResumeDtos(List<Resume> resumes) {
     List<ResumeDto> resumeDtos = new ArrayList<>();
     for (Resume rs : resumes) {
         resumeDtos.add(

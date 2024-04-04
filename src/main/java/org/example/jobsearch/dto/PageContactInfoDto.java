@@ -9,11 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PageResumeDto {
-    private Long id;
-    private String category;
-    private Double salary;
-    private String name;
-    private String author;
-    private String updatedDate;
+public class PageContactInfoDto {
+    private String type;
+    private String content;
 }

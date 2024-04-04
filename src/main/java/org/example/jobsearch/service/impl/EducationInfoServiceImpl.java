@@ -2,11 +2,14 @@ package org.example.jobsearch.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.jobsearch.dao.EducationInfoDao;
 import org.example.jobsearch.dao.UserDao;
 import org.example.jobsearch.dto.EducationInfoDto;
+import org.example.jobsearch.dto.PageEducationInfoDto;
 import org.example.jobsearch.exceptions.ResumeException;
 import org.example.jobsearch.models.EducationInfo;
 import org.example.jobsearch.service.EducationInfoService;
+import org.example.jobsearch.util.DateUtil;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,6 +21,7 @@ import java.util.List;
 @Slf4j
 public class EducationInfoServiceImpl implements EducationInfoService {
     private final UserDao userDao;
+    private final EducationInfoDao educationInfoDao;
 
     public List<EducationInfoDto> getDtos(List<EducationInfo> list) {
         List<EducationInfoDto> result = new ArrayList<>();
@@ -63,6 +67,25 @@ public class EducationInfoServiceImpl implements EducationInfoService {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public List<PageEducationInfoDto> getPageEducationInfoByResumeId(Long id) {
+        List<EducationInfo> educationInfos = educationInfoDao.getEducationInfoByResumeId(id);
+        List<PageEducationInfoDto> pageEducationInfoDtos = new ArrayList<>();
+        for (int i = 0; i < educationInfos.size(); i++) {
+            EducationInfo edInf = educationInfos.get(i);
+            pageEducationInfoDtos.add(
+                    PageEducationInfoDto
+                            .builder()
+                            .name(edInf.getInstitution())
+                            .dates(DateUtil.getFormattedLocalDate(edInf.getStartDate().atStartOfDay()) + " - " + DateUtil.getFormattedLocalDate(edInf.getEndDate().atStartOfDay()))
+                            .program(edInf.getProgram())
+                            .degree(edInf.getDegree())
+                            .build()
+            );
+        }
+        return pageEducationInfoDtos;
     }
 
     public boolean isDateRangeValid(LocalDateTime startDate, LocalDateTime endDate) {
