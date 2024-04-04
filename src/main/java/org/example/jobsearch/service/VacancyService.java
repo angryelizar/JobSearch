@@ -40,6 +40,7 @@ public interface VacancyService {
     List<ProfileAndVacancyDto> getVacanciesByEmployerName(String employer);
 
     List<Vacancy> getVacanciesByEmployerId(Long id);
+
     void update(Long id);
 
     List<PageVacancyDto> getActivePageVacancies();

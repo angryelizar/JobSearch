@@ -26,6 +26,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final UserService userService;
     private final ResumeService resumeService;
     private final VacancyService vacancyService;
+
     @Override
     public ProfileDto getProfile(Authentication auth) throws UserNotFoundException {
         User user = userService.getFullUserByEmail(auth.getName());
@@ -56,7 +57,7 @@ public class ProfileServiceImpl implements ProfileService {
                         .accountType(user.getAccountType())
                         .build()
         );
-        if (user.getAccountType().equalsIgnoreCase("Соискатель")){
+        if (user.getAccountType().equalsIgnoreCase("Соискатель")) {
             List<Resume> resumes = resumeService.getFullResumesByUserId(user.getId());
             List<ProfilePageResumeDto> pageResumeDtos = new ArrayList<>();
             for (Resume resume : resumes) {

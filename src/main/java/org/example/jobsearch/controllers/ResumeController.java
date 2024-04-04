@@ -22,14 +22,14 @@ public class ResumeController {
     private final ContactInfoService contactInfoService;
 
     @GetMapping()
-    public String resumesGet(Model model){
+    public String resumesGet(Model model) {
         model.addAttribute("pageTitle", "Резюме");
         model.addAttribute("resumes", resumeService.getActivePageResumes());
         return "resume/resumes";
     }
 
     @GetMapping("{id}")
-    public String resumeGet(@PathVariable Long id, Model model){
+    public String resumeGet(@PathVariable Long id, Model model) {
         model.addAttribute("pageTitle", "Резюме");
         model.addAttribute("resume", resumeService.getPageResumeById(id));
         model.addAttribute("workExperience", workExperienceInfoService.getPageWorkExperienceByResumeId(id));
@@ -39,7 +39,7 @@ public class ResumeController {
     }
 
     @GetMapping("/update")
-    public String updateGet(@RequestParam Long id){
+    public String updateGet(@RequestParam Long id) {
         resumeService.update(id);
         return "redirect:/profile";
     }

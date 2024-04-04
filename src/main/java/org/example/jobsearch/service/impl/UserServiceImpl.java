@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> getUsersByName(String name) throws UserNotFoundException {
         List<User> users = userDao.getUsersByName(name);
-        if (users == null || users.isEmpty()){
+        if (users == null || users.isEmpty()) {
             throw new UserNotFoundException("Пользователи с таким именем не найдены");
         }
         List<UserDto> userDtos = new ArrayList<>();
@@ -114,10 +114,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @SneakyThrows
     public void createUser(UserDto userDto) {
-        if (userDao.emailIsExists(userDto.getEmail()) || userDao.phoneIsExists(userDto.getPhoneNumber())){
+        if (userDao.emailIsExists(userDto.getEmail()) || userDao.phoneIsExists(userDto.getPhoneNumber())) {
             throw new UserAlreadyRegisteredException("Пользователь уже зарегистрирован");
         }
-        if (userDto.getAge() < 18){
+        if (userDto.getAge() < 18) {
             throw new UserHaveTooLowAgeException("Пользователь слишком молод!");
         }
         User user = new User();
@@ -138,7 +138,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void update(UserDto userDto) {
         var user = userDao.getUserByEmail(userDto.getEmail());
-        if (user.isEmpty()){
+        if (user.isEmpty()) {
             log.error("Запрошен несуществующий пользователь с e-mail " + userDto.getEmail());
             throw new UserNotFoundException("Такого пользователя нет!");
         }

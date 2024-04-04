@@ -213,7 +213,7 @@ public class VacancyServiceImpl implements VacancyService {
     @Override
     @SneakyThrows
     public void update(Long id) {
-        if (vacancyDao.isExists(id)){
+        if (vacancyDao.isExists(id)) {
             vacancyDao.update(LocalDateTime.now(), id);
         } else {
             log.error("Была запрошена несуществующая вакансия с ID " + id);
@@ -247,7 +247,7 @@ public class VacancyServiceImpl implements VacancyService {
     @Override
     @SneakyThrows
     public PageVacancyDto getPageVacancyById(Long id) {
-        if (vacancyDao.isExists(id)){
+        if (vacancyDao.isExists(id)) {
             Vacancy vacancy = vacancyDao.getVacancyById(id).get();
             return PageVacancyDto
                     .builder()
