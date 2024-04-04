@@ -31,21 +31,43 @@
                 </div>
             </div>
         </div>
-        <#--        <div class="posts-block container-fluid">-->
-        <#--            <h3 class="text-start mt-3">Резюме:</h3>-->
-        <#--            <div class="row mt-3">-->
-        <#--                <div class="col-12 col-md-6 col-lg-3 mb-1">-->
-        <#--                    <div class="card" style="width: 18rem;">-->
-        <#--                        <div class="card-body">-->
-        <#--                            <h5 class="card-title">Название резюме</h5>-->
-        <#--                            <h6 class="card-subtitle mb-2 text-body-secondary">Оклад: 10 000</h6>-->
-        <#--                            <p class="card-text">Дата обновления: 8 марта</p>-->
-        <#--                            <a href="#" class="text-light card-link btn btn-info" style="width: 40%; font-size: 10px">Обновить</a>-->
-        <#--                            <a href="#" class="card-link btn btn-success" style="width: 40%; font-size: 10px">Редактировать</a>-->
-        <#--                        </div>-->
-        <#--                    </div>-->
-        <#--                </div>-->
-        <#--            </div>-->
-        <#--        </div>-->
+        <div class="posts-block container-fluid">
+             <h3 class="text-start mt-3"><#if data.user.accountType = "Соискатель">Резюме<#else>Вакансии</#if>:</h3>
+            <div class="row mt-3">
+                <#if data.user.accountType = "Соискатель">
+                    <#list data.resumes as resume>
+                        <div class="col-12 col-md-6 col-lg-3 mb-1">
+                            <div class="card" style="width: 18rem;">
+                                <div class="card-body">
+                                    <h5 class="card-title"><a class="text-decoration-none"
+                                                              href="resumes/${resume.id}">${resume.name}</a></h5>
+                                    <h6 class="card-subtitle mb-2 text-body-secondary">Оклад: ${resume.salary}</h6>
+                                    <p class="card-text">Обновлено: ${resume.updateDate}</p>
+                                    <a href="#" class="text-light card-link btn btn-info"
+                                       style="width: 40%; font-size: 10px">Обновить</a>
+                                    <a href="#" class="card-link btn btn-success" style="width: 40%; font-size: 10px">Редактировать</a>
+                                </div>
+                            </div>
+                        </div>
+                    </#list>
+                <#else>
+                    <#list data.vacancies as vacancy>
+                        <div class="col-12 col-md-6 col-lg-3 mb-1">
+                            <div class="card" style="width: 18rem;">
+                                <div class="card-body">
+                                    <h5 class="card-title"><a class="text-decoration-none"
+                                                              href="vacancies/${vacancy.id}">${vacancy.name}</a></h5>
+                                    <h6 class="card-subtitle mb-2 text-body-secondary">Оклад: ${vacancy.salary}</h6>
+                                    <p class="card-text">Обновлено: ${vacancy.updateDate}</p>
+                                    <a href="#" class="text-light card-link btn btn-info"
+                                       style="width: 40%; font-size: 10px">Обновить</a>
+                                    <a href="#" class="card-link btn btn-success" style="width: 40%; font-size: 10px">Редактировать</a>
+                                </div>
+                            </div>
+                        </div>
+                    </#list>
+                </#if>
+            </div>
+        </div>
     </div>
 </@main.layout>
