@@ -1,5 +1,6 @@
 package org.example.jobsearch.service;
 
+import org.example.jobsearch.dto.PageResumeDto;
 import org.example.jobsearch.dto.ProfileAndResumesDto;
 import org.example.jobsearch.dto.ResumeDto;
 import org.example.jobsearch.dto.UpdateResumeDto;
@@ -26,6 +27,7 @@ public interface ResumeService {
     List<Resume> getFullResumesByUserId(Long id);
 
     List<ResumeDto> getResumesByName(String query);
+    List<PageResumeDto> getActivePageResumes();
 
     List<ProfileAndResumesDto> getResumesByApplicantName(String user) throws ResumeNotFoundException;
 

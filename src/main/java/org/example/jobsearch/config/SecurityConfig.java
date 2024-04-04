@@ -50,7 +50,9 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET, "/vacancies/inactive").hasAnyAuthority(ADMIN, EMPLOYER)
+                        .requestMatchers("/profile").fullyAuthenticated()
+                        .requestMatchers("/resumes").hasAnyAuthority(ADMIN, EMPLOYER)
+                        .requestMatchers(HttpMethod.GET, "api/vacancies/inactive").hasAnyAuthority(ADMIN, EMPLOYER)
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                         .requestMatchers("api/users/employers").permitAll()
                         .requestMatchers(HttpMethod.GET, "api/users/{id}/avatar").permitAll()

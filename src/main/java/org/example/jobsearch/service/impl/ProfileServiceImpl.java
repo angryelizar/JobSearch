@@ -65,7 +65,7 @@ public class ProfileServiceImpl implements ProfileService {
                                 .id(resume.getId())
                                 .name(resume.getName())
                                 .salary(resume.getSalary())
-                                .updateDate(DateUtil.getFormattedLocalDate(resume.getUpdateTime()))
+                                .updateDate(DateUtil.getFormattedLocalDateTime(resume.getUpdateTime()))
                                 .build()
                 );
             }
@@ -79,7 +79,7 @@ public class ProfileServiceImpl implements ProfileService {
                                 .id(vacancy.getId())
                                 .name(vacancy.getName())
                                 .salary(vacancy.getSalary())
-                                .updateDate(DateUtil.getFormattedLocalDate(vacancy.getUpdateTime()))
+                                .updateDate(DateUtil.getFormattedLocalDateTime(vacancy.getUpdateTime()))
                                 .build()
                 );
                 profilePageDTO.setVacancies(pageVacancyDtos);
