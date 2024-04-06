@@ -57,7 +57,7 @@
                 <#else>
                     <#list data.vacancies as vacancy>
                         <div class="col-12 col-md-6 col-lg-3 mb-1">
-                            <div class="card" style="width: 18rem;">
+                            <div class="card" style="width: 18rem; align-self: auto;">
                                 <div class="card-body">
                                     <h5 class="card-title"><a class="text-decoration-none"
                                                               href="vacancies/${vacancy.id}">${vacancy.name}</a></h5>

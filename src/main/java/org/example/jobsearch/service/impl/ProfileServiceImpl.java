@@ -43,8 +43,8 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @SneakyThrows
-    public ProfilePageDTO profileGet(Authentication authentication) {
-        ProfilePageDTO profilePageDTO = new ProfilePageDTO();
+    public ProfilePageDto profileGet(Authentication authentication) {
+        ProfilePageDto profilePageDTO = new ProfilePageDto();
         User user = userService.getFullUserByEmail(authentication.getName());
         profilePageDTO.setUser(
                 UserDto.builder()

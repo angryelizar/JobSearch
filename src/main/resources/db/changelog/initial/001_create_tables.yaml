@@ -202,7 +202,7 @@ databaseChangeLog:
                   name: salary
                   type: double
                   constraints:
-                    nullable: false
+                    nullable: true
               - column:
                   name: is_active
                   type: boolean

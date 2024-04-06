@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProfilePageDTO {
+public class ProfilePageDto {
     private UserDto user;
     private List<ProfilePageResumeDto> resumes;
     private List<ProfilePageVacancyDto> vacancies;
