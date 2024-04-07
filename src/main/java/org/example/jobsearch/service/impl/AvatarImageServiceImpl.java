@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,11 @@ public class AvatarImageServiceImpl implements AvatarImageService {
     public void upload(Authentication auth, AvatarImageDto avatarImageDto) {
         User user = userDao.getUserByEmail(auth.getName()).get();
         String fileName = fileUtil.saveUploadedFile(avatarImageDto.getFile(), "images");
+        userDao.setAvatar(user.getId(), fileName);
+    }
+
+    public void upload(User user, MultipartFile file) {
+        String fileName = fileUtil.saveUploadedFile(file, "images");
         userDao.setAvatar(user.getId(), fileName);
     }
 

@@ -5,7 +5,7 @@
         <div class="profile-block mt-2">
             <div class="row d-flex align-items-center">
                 <div class="col-xxl-2 col-xl-2 col-lg-1 col-md-1">
-                    <img src="#" alt="Аватарка профиля" class="rounded-4 img-fluid">
+                    <img src="/api/users/${userId}/avatar" alt="Аватарка профиля" class="rounded-4 img-fluid">
                 </div>
                 <div class="col-xxl-6 col-xl-4 col-lg-5 col-md-11">
                     <h4 class="d-block">${data.user.name} ${data.user.surname}</h4>
@@ -84,7 +84,11 @@
                 </div>
                 <div class="modal-footer">
                     <div class="modal-body">
-                        <form action="/profile" method="post">
+                        <form action="/profile" method="post" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="avatarFile" class="form-label">Аватарка</label>
+                                <input type="file" class="form-control" id="avatarFile" name="avatarFile" aria-describedby="avatarFileHelp">
+                            </div>
                             <div class="mb-3">
                                 <label for="name" class="form-label">Ваше имя</label>
                                 <input type="text" class="form-control" id="name" name="name"

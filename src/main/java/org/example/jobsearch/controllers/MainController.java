@@ -2,6 +2,7 @@ package org.example.jobsearch.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.example.jobsearch.dto.UserDto;
+import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.service.ProfileService;
 import org.example.jobsearch.service.UserService;
 import org.springframework.security.core.Authentication;
@@ -37,9 +38,10 @@ public class MainController {
     }
 
     @GetMapping("/profile")
-    public String profileGet(Model model, Authentication auth) {
+    public String profileGet(Model model, Authentication auth) throws UserNotFoundException {
         model.addAttribute("pageTitle", "Профиль");
         model.addAttribute("data", profileService.profileGet(auth));
+        model.addAttribute("userId", userService.getFullUserByEmail(auth.getName()).getId());
         return "main/profile";
     }
 
