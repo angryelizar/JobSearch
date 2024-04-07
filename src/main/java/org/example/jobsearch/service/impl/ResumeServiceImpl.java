@@ -283,19 +283,44 @@ public class ResumeServiceImpl implements ResumeService {
         educationInfoDao.createEducationInfo(educationInfo);
 
         if (!whatsapp.isEmpty() && !whatsapp.isBlank()){
-            ///
+            contactInfoService.addContactInfo(
+                    ContactInfoDto.builder()
+                            .typeId(contactInfoService.getContactInfoIdByType("WhatsApp"))
+                            .content(whatsapp)
+                            .build(), resumeId
+            );
         }
         if (!telegram.isEmpty() && !telegram.isBlank()){
-            ///
+            contactInfoService.addContactInfo(
+                    ContactInfoDto.builder()
+                            .typeId(contactInfoService.getContactInfoIdByType("Telegram"))
+                            .content(telegram)
+                            .build(), resumeId
+            );
         }
         if (!telephone.isEmpty() && !telephone.isBlank()){
-            ///
+            contactInfoService.addContactInfo(
+                    ContactInfoDto.builder()
+                            .typeId(contactInfoService.getContactInfoIdByType("Телефон"))
+                            .content(telephone)
+                            .build(), resumeId
+            );
         }
         if (!linkedin.isEmpty() && !linkedin.isBlank()){
-            ///
+            contactInfoService.addContactInfo(
+                    ContactInfoDto.builder()
+                            .typeId(contactInfoService.getContactInfoIdByType("Linkedin"))
+                            .content(linkedin)
+                            .build(), resumeId
+            );
         }
         if (!email.isEmpty() && !email.isBlank()){
-            ///
+            contactInfoService.addContactInfo(
+                    ContactInfoDto.builder()
+                            .typeId(contactInfoService.getContactInfoIdByType("E-mail"))
+                            .content(email)
+                            .build(), resumeId
+            );
         }
     }
 

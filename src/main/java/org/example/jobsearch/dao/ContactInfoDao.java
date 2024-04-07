@@ -29,6 +29,14 @@ public class ContactInfoDao {
         return template.queryForObject(sql, String.class, id);
     }
 
+    public Long getContactInfoIdByType(String type){
+        String sql = """
+                SELECT ID FROM CONTACT_TYPES
+                WHERE TYPE = ?
+                """;
+        return template.queryForObject(sql, Long.class, type);
+    }
+
     public void addContactInfo(ContactInfo contactInfo) {
         String sql = """
                 insert into CONTACTS_INFO (TYPE_ID, RESUME_ID, CONTENT) values (?, ?, ?);
