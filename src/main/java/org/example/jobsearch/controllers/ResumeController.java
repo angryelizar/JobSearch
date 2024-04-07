@@ -54,12 +54,12 @@ public class ResumeController {
     public String addPost(CreatePageResumeDto pageResumeDto,
                           HttpServletRequest request,
                           Authentication auth,
-                          @RequestParam (name = "telegram") String telegram,
-                          @RequestParam (name = "whatsapp") String whatsapp,
-                          @RequestParam (name = "telephone") String telephone,
-                          @RequestParam (name = "linkedin") String linkedin,
-                          @RequestParam (name = "email") String email
-                          ){
+                          @RequestParam(name = "telegram") String telegram,
+                          @RequestParam(name = "whatsapp") String whatsapp,
+                          @RequestParam(name = "telephone") String telephone,
+                          @RequestParam(name = "linkedin") String linkedin,
+                          @RequestParam(name = "email") String email
+    ) {
         resumeService.addResumeFromForm(pageResumeDto, request, auth, telegram, whatsapp, telephone, linkedin, email);
         return "redirect:/vacancies";
     }

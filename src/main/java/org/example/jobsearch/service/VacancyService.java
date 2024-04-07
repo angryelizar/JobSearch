@@ -32,6 +32,8 @@ public interface VacancyService {
 
     void deleteVacancyById(Long id);
 
+    void deleteVacancyById(Long id, Authentication authentication);
+
     List<RespondedResumeDto> getRespondedResumesByVacancyId(Long id);
 
     List<VacancyDto> getVacanciesByQuery(String query);
@@ -49,4 +51,8 @@ public interface VacancyService {
     PageVacancyDto getPageVacancyById(Long id);
 
     Long addVacancyFromForm(CreatePageVacancyDto vacancyPageDto, HttpServletRequest request, Authentication auth);
+
+    PageVacancyDto vacancyEditGet(Long id, Authentication authentication);
+
+    Long editVacancyFromForm(UpdatePageVacancyDto vacancyDto, HttpServletRequest request, Authentication auth);
 }

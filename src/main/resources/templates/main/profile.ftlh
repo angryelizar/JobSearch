@@ -66,7 +66,7 @@
                                     <a href="/vacancies/update?id=${vacancy.id}"
                                        class="text-light card-link btn btn-secondary"
                                        style="width: 40%; font-size: 10px">Обновить</a>
-                                    <a href="#" class="card-link btn btn-secondary" style="width: 40%; font-size: 10px">Редактировать</a>
+                                    <a href="/vacancies/edit/${vacancy.id}" class="card-link btn btn-secondary" style="width: 40%; font-size: 10px">Редактировать</a>
                                 </div>
                             </div>
                         </div>

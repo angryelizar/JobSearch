@@ -2,7 +2,6 @@ package org.example.jobsearch.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.example.jobsearch.dto.UserDto;
-import org.example.jobsearch.models.User;
 import org.example.jobsearch.service.ProfileService;
 import org.example.jobsearch.service.UserService;
 import org.springframework.security.core.Authentication;

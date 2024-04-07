@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -146,6 +147,21 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public void deleteVacancyById(Long id) {
+        vacancyDao.deleteVacancyById(id);
+    }
+
+    @Override
+    @SneakyThrows
+    public void deleteVacancyById(Long id, Authentication authentication) {
+        if (!vacancyDao.isExists(id)){
+            log.error("Вакансии с ID " + id + " не существует");
+            throw new VacancyException("Такой вакансии нет");
+        }
+        Vacancy vacancy = vacancyDao.getVacancyById(id).get();
+        if (!Objects.equals(vacancy.getAuthorId(), userDao.getUserByEmail(authentication.getName()).get().getId())){
+            log.error("Была попытка удалить чужую вакансию");
+            throw new VacancyException("Это не ваша вакансия!");
+        }
         vacancyDao.deleteVacancyById(id);
     }
 
@@ -287,6 +303,58 @@ public class VacancyServiceImpl implements VacancyService {
                 .createdTime(LocalDateTime.now())
                 .updateTime(LocalDateTime.now())
                 .build());
+    }
+
+    @Override
+    @SneakyThrows
+    public PageVacancyDto vacancyEditGet(Long id, Authentication authentication) {
+        if (!vacancyDao.isExists(id)){
+            log.error("Вакансии с ID " + id + " не существует");
+            throw new VacancyException("Такой вакансии нет");
+        }
+        Vacancy vacancy = vacancyDao.getVacancyById(id).get();
+        if (!Objects.equals(vacancy.getAuthorId(), userDao.getUserByEmail(authentication.getName()).get().getId())){
+            log.error("Была попытка отредактировать чужую вакансию");
+            throw new VacancyException("Это не ваша вакансия!");
+        }
+        log.error(String.valueOf(vacancy.getSalary()));
+        return PageVacancyDto
+                .builder()
+                .id(vacancy.getId())
+                .name(vacancy.getName())
+                .description(vacancy.getDescription())
+                .salary(vacancy.getSalary())
+                .expTo(vacancy.getExpTo())
+                .expFrom(vacancy.getExpFrom())
+                .build();
+    }
+
+    @Override
+    @SneakyThrows
+    public Long editVacancyFromForm(UpdatePageVacancyDto vacancyDto, HttpServletRequest request, Authentication auth) {
+        Long id = vacancyDto.getId();
+        if (!vacancyDao.isExists(id)){
+            log.error("Вакансии с ID " + id + " не существует");
+            throw new VacancyException("Такой вакансии нет");
+        }
+        Vacancy vacancy = vacancyDao.getVacancyById(id).get();
+        if (!Objects.equals(vacancy.getAuthorId(), userDao.getUserByEmail(auth.getName()).get().getId())){
+            log.error("Была попытка отредактировать чужую вакансию");
+            throw new VacancyException("Это не ваша вакансия!");
+        }
+        String isActive = request.getParameter("isActive");
+        Vacancy updatedVacancy = Vacancy.builder()
+                .name(vacancyDto.getName())
+                .description(vacancyDto.getDescription())
+                .categoryId(vacancyDto.getCategoryId())
+                .salary(vacancyDto.getSalary())
+                .expFrom(vacancyDto.getExpFrom())
+                .expTo(vacancyDto.getExpTo())
+                .isActive("on".equals(isActive))
+                .updateTime(LocalDateTime.now())
+                .build();
+        vacancyDao.editVacancy(id, updatedVacancy);
+        return id;
     }
 
     private List<VacancyDto> getVacancyDtos(List<Vacancy> vacancies) {
