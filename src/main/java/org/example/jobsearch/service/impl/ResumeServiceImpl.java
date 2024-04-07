@@ -1,13 +1,11 @@
 package org.example.jobsearch.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.*;
-import org.example.jobsearch.dto.PageResumeDto;
-import org.example.jobsearch.dto.ProfileAndResumesDto;
-import org.example.jobsearch.dto.ResumeDto;
-import org.example.jobsearch.dto.UpdateResumeDto;
+import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.ResumeException;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
 import org.example.jobsearch.models.EducationInfo;
@@ -248,6 +246,56 @@ public class ResumeServiceImpl implements ResumeService {
         } else {
             log.error("Было запрошено несуществующее резюме с ID " + id);
             throw new ResumeException("Этого резюме не существует");
+        }
+    }
+    @Override
+    public void addResumeFromForm(CreatePageResumeDto pageResumeDto, HttpServletRequest request, Authentication auth, String telegram, String whatsapp, String telephone, String linkedin, String email) {
+        String isActive = request.getParameter("isActive");
+        pageResumeDto.setIsActive("on".equals(isActive));
+        Resume resume = Resume.builder()
+                .applicantId(userDao.getUserByEmail(auth.getName()).get().getId())
+                .name(pageResumeDto.getName())
+                .categoryId(pageResumeDto.getCategoryId())
+                .salary(pageResumeDto.getSalary())
+                .isActive(pageResumeDto.getIsActive())
+                .createdTime(LocalDateTime.now())
+                .updateTime(LocalDateTime.now())
+                .build();
+        Long resumeId = resumeDao.createResume(resume);
+
+        WorkExperienceInfo workExperienceInfo = WorkExperienceInfo.builder()
+                .resumeId(resumeId)
+                .years(pageResumeDto.getWorkExperienceInfo().getYears())
+                .companyName(pageResumeDto.getWorkExperienceInfo().getCompanyName())
+                .position(pageResumeDto.getWorkExperienceInfo().getPosition())
+                .responsibilities(pageResumeDto.getWorkExperienceInfo().getResponsibilities())
+                .build();
+        workExperienceInfoDao.createWorkExperienceInfo(workExperienceInfo);
+
+        EducationInfo educationInfo = EducationInfo.builder()
+                .resumeId(resumeId)
+                .institution(pageResumeDto.getEducationInfo().getInstitution())
+                .program(pageResumeDto.getEducationInfo().getProgram())
+                .degree(pageResumeDto.getEducationInfo().getDegree())
+                .startDate(pageResumeDto.getEducationInfo().getStartDate())
+                .endDate(pageResumeDto.getEducationInfo().getEndDate())
+                .build();
+        educationInfoDao.createEducationInfo(educationInfo);
+
+        if (!whatsapp.isEmpty() && !whatsapp.isBlank()){
+            ///
+        }
+        if (!telegram.isEmpty() && !telegram.isBlank()){
+            ///
+        }
+        if (!telephone.isEmpty() && !telephone.isBlank()){
+            ///
+        }
+        if (!linkedin.isEmpty() && !linkedin.isBlank()){
+            ///
+        }
+        if (!email.isEmpty() && !email.isBlank()){
+            ///
         }
     }
 

@@ -1,10 +1,7 @@
 package org.example.jobsearch.service;
 
-import org.example.jobsearch.dto.PageResumeDto;
-import org.example.jobsearch.dto.ProfileAndResumesDto;
-import org.example.jobsearch.dto.ResumeDto;
-import org.example.jobsearch.dto.UpdateResumeDto;
-import org.example.jobsearch.exceptions.ResumeException;
+import jakarta.servlet.http.HttpServletRequest;
+import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
 import org.example.jobsearch.models.Resume;
 import org.springframework.security.core.Authentication;
@@ -39,4 +36,6 @@ public interface ResumeService {
     void update(Long id);
 
     PageResumeDto getPageResumeById(Long id);
+
+    void addResumeFromForm(CreatePageResumeDto pageResumeDto, HttpServletRequest request, Authentication auth, String telegram, String whatsapp, String telephone, String linkedin, String email);
 }

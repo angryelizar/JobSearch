@@ -19,24 +19,18 @@ public class VacancyController {
     private final VacancyService vacancyService;
     private final CategoryService categoryService;
 
-    @GetMapping("/add")
-    public String addGet(Model model) {
-        model.addAttribute("pageTitle", "Создать вакансию");
-        model.addAttribute("categories", categoryService.getCategoriesList());
-        return "vacancy/add";
-    }
-
-    @PostMapping("/add")
-    public String addPost(CreatePageVacancyDto vacancyPageDto, HttpServletRequest request, Authentication auth) {
-        Long id = vacancyService.addVacancyFromForm(vacancyPageDto, request, auth);
-        return String.format("redirect:/vacancies/%d", id);
-    }
-
     @GetMapping()
     public String vacanciesGet(Model model) {
         model.addAttribute("pageTitle", "Вакансии");
         model.addAttribute("vacancies", vacancyService.getActivePageVacancies());
         return "vacancy/vacancies";
+    }
+
+    @GetMapping("/add")
+    public String addGet(Model model) {
+        model.addAttribute("pageTitle", "Создать вакансию");
+        model.addAttribute("categories", categoryService.getCategoriesList());
+        return "vacancy/add";
     }
 
     @GetMapping("/{id}")
@@ -50,5 +44,11 @@ public class VacancyController {
     public String updateGet(@RequestParam Long id) {
         vacancyService.update(id);
         return "redirect:/profile";
+    }
+
+    @PostMapping("/add")
+    public String addPost(CreatePageVacancyDto vacancyPageDto, HttpServletRequest request, Authentication auth) {
+        Long id = vacancyService.addVacancyFromForm(vacancyPageDto, request, auth);
+        return String.format("redirect:/vacancies/%d", id);
     }
 }
