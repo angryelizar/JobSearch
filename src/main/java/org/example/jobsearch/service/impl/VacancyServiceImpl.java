@@ -357,6 +357,30 @@ public class VacancyServiceImpl implements VacancyService {
         return id;
     }
 
+    @Override
+    @SneakyThrows
+    public List<PageVacancyDto> getPageVacancyByCategoryId(Long categoryId) {
+        if (Boolean.FALSE.equals(categoryDao.isExists(categoryId))){
+            throw new VacancyException("Такой категории нет!");
+        }
+        List<Vacancy> vacancies = vacancyDao.getActiveVacancies();
+        List<PageVacancyDto> resultVacancies = new ArrayList<>();
+        for (Vacancy curVac : vacancies) {
+            if (Objects.equals(curVac.getCategoryId(), categoryId)) {
+                resultVacancies.add(PageVacancyDto.builder()
+                        .id(curVac.getId())
+                        .name(curVac.getName())
+                        .author(userDao.getUserNameById(curVac.getAuthorId()))
+                        .category(categoryDao.getCategoryNameById(curVac.getCategoryId()))
+                        .salary(curVac.getSalary())
+                        .updateTime(DateUtil.getFormattedLocalDateTime(curVac.getUpdateTime()))
+                        .build());
+            }
+        }
+
+        return resultVacancies;
+    }
+
     private List<VacancyDto> getVacancyDtos(List<Vacancy> vacancies) {
         List<VacancyDto> vacancyDtos = new ArrayList<>();
         vacancies.forEach(e -> vacancyDtos.add(VacancyDto.builder()

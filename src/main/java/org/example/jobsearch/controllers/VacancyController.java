@@ -22,6 +22,7 @@ public class VacancyController {
     public String vacanciesGet(Model model) {
         model.addAttribute("pageTitle", "Вакансии");
         model.addAttribute("vacancies", vacancyService.getActivePageVacancies());
+        model.addAttribute("categories", categoryService.getCategoriesList());
         return "vacancy/vacancies";
     }
 
@@ -69,5 +70,13 @@ public class VacancyController {
     public String editPost(UpdatePageVacancyDto vacancyDto, HttpServletRequest request, Authentication auth) {
         Long id = vacancyService.editVacancyFromForm(vacancyDto, request, auth);
         return String.format("redirect:/vacancies/%d", id);
+    }
+
+    @PostMapping("/category")
+    public String getByCategory(@RequestParam Integer categoryId, Model model) {
+        model.addAttribute("pageTitle", "Вакансии");
+        model.addAttribute("vacancies", vacancyService.getPageVacancyByCategoryId(Long.valueOf(categoryId)));
+        model.addAttribute("categories", categoryService.getCategoriesList());
+        return "vacancy/vacancies";
     }
 }

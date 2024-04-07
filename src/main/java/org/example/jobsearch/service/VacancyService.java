@@ -55,4 +55,6 @@ public interface VacancyService {
     PageVacancyDto vacancyEditGet(Long id, Authentication authentication);
 
     Long editVacancyFromForm(UpdatePageVacancyDto vacancyDto, HttpServletRequest request, Authentication auth);
+
+    List<PageVacancyDto> getPageVacancyByCategoryId(Long categoryId);
 }
