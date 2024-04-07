@@ -24,6 +24,7 @@ public class ResumeController {
     public String resumesGet(Model model) {
         model.addAttribute(PAGE_TITLE, "Резюме");
         model.addAttribute("resumes", resumeService.getActivePageResumes());
+        model.addAttribute("categories",  categoryService.getCategoriesList());
         return "resume/resumes";
     }
 
@@ -61,6 +62,14 @@ public class ResumeController {
                           @RequestParam(name = "email") String email
     ) {
         resumeService.addResumeFromForm(pageResumeDto, request, auth, telegram, whatsapp, telephone, linkedin, email);
-        return "redirect:/vacancies";
+        return "redirect:/profile";
+    }
+
+    @PostMapping("/category")
+    public String getByCategory(@RequestParam Integer categoryId, Model model) {
+        model.addAttribute(PAGE_TITLE, "Резюме");
+        model.addAttribute("resumes", resumeService.getPageResumeByCategoryId(Long.valueOf(categoryId)));
+        model.addAttribute("categories", categoryService.getCategoriesList());
+        return "resume/resumes";
     }
 }

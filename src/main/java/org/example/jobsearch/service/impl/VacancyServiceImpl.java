@@ -364,6 +364,7 @@ public class VacancyServiceImpl implements VacancyService {
             throw new VacancyException("Такой категории нет!");
         }
         List<Vacancy> vacancies = vacancyDao.getActiveVacancies();
+        vacancies.sort(Comparator.comparing(Vacancy::getUpdateTime).reversed());
         List<PageVacancyDto> resultVacancies = new ArrayList<>();
         for (Vacancy curVac : vacancies) {
             if (Objects.equals(curVac.getCategoryId(), categoryId)) {

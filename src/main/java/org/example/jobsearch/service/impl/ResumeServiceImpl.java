@@ -8,6 +8,7 @@ import org.example.jobsearch.dao.*;
 import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.ResumeException;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
+import org.example.jobsearch.exceptions.VacancyException;
 import org.example.jobsearch.models.EducationInfo;
 import org.example.jobsearch.models.Resume;
 import org.example.jobsearch.models.User;
@@ -24,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -322,6 +324,30 @@ public class ResumeServiceImpl implements ResumeService {
                             .build(), resumeId
             );
         }
+    }
+
+    @Override
+    @SneakyThrows
+    public List<PageResumeDto> getPageResumeByCategoryId(Long categoryId) {
+        if (Boolean.FALSE.equals(categoryDao.isExists(categoryId))){
+            throw new VacancyException("Такой категории нет!");
+        }
+        List<Resume> resumes = resumeDao.getActiveResumes();
+        resumes.sort(Comparator.comparing(Resume::getUpdateTime).reversed());
+        List<PageResumeDto> resumeDtos = new ArrayList<>();
+        for (Resume curRes : resumes) {
+            if (Objects.equals(curRes.getCategoryId(), categoryId)) {
+                resumeDtos.add(PageResumeDto.builder()
+                        .id(curRes.getId())
+                        .category(categoryDao.getCategoryNameById(curRes.getCategoryId()))
+                        .salary(curRes.getSalary())
+                        .name(curRes.getName())
+                        .author(userDao.getUserNameById(curRes.getApplicantId()) + " " + userDao.getSurnameNameById((curRes.getApplicantId())))
+                        .updatedDate(DateUtil.getFormattedLocalDateTime(curRes.getUpdateTime()))
+                        .build());
+            }
+        }
+        return resumeDtos;
     }
 
     private List<ResumeDto> getResumeDtos(List<Resume> resumes) {

@@ -24,6 +24,7 @@ public interface ResumeService {
     List<Resume> getFullResumesByUserId(Long id);
 
     List<ResumeDto> getResumesByName(String query);
+
     List<PageResumeDto> getActivePageResumes();
 
     List<ProfileAndResumesDto> getResumesByApplicantName(String user) throws ResumeNotFoundException;
@@ -33,9 +34,12 @@ public interface ResumeService {
     void editResume(Long id, UpdateResumeDto updateResumeDto);
 
     void deleteResumeById(Long id);
+
     void update(Long id);
 
     PageResumeDto getPageResumeById(Long id);
 
     void addResumeFromForm(CreatePageResumeDto pageResumeDto, HttpServletRequest request, Authentication auth, String telegram, String whatsapp, String telephone, String linkedin, String email);
+
+    List<PageResumeDto> getPageResumeByCategoryId(Long aLong);
 }
