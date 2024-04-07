@@ -1,5 +1,6 @@
 package org.example.jobsearch.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.*;
 import org.example.jobsearch.models.Vacancy;
@@ -46,4 +47,6 @@ public interface VacancyService {
     List<PageVacancyDto> getActivePageVacancies();
 
     PageVacancyDto getPageVacancyById(Long id);
+
+    Long addVacancyFromForm(CreatePageVacancyDto vacancyPageDto, HttpServletRequest request, Authentication auth);
 }

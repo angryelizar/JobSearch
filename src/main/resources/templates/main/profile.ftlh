@@ -20,7 +20,7 @@
                         <a href="#" class="text-center d-block p-3 bg-danger rounded-4 text-decoration-none text-light"
                            style="height: 40%">Создать резюме</a>
                     <#else>
-                        <a href="#" class="text-center d-block p-3 bg-danger rounded-4 text-decoration-none text-light"
+                        <a href="/vacancies/add" class="text-center d-block p-3 bg-danger rounded-4 text-decoration-none text-light"
                            style="height: 40%">Создать вакансию</a>
                     </#if>
                 </div>

@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -90,6 +91,7 @@ public class ResumeServiceImpl implements ResumeService {
     public List<PageResumeDto> getActivePageResumes() {
         List<PageResumeDto> pageResumeDtos = new ArrayList<>();
         List<Resume> resumes = resumeDao.getActiveResumes();
+        resumes.sort(Comparator.comparing(Resume::getUpdateTime).reversed());
         for (Resume curRes : resumes) {
             pageResumeDtos.add(PageResumeDto
                     .builder()

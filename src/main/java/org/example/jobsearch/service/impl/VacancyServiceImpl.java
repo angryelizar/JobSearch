@@ -1,5 +1,6 @@
 package org.example.jobsearch.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -224,6 +226,7 @@ public class VacancyServiceImpl implements VacancyService {
     @Override
     public List<PageVacancyDto> getActivePageVacancies() {
         List<Vacancy> vacancies = vacancyDao.getActiveVacancies();
+        vacancies.sort(Comparator.comparing(Vacancy::getUpdateTime).reversed());
         List<PageVacancyDto> pageVacancyDtos = new ArrayList<>();
         for (Vacancy vacancy : vacancies) {
             pageVacancyDtos.add(
@@ -264,6 +267,26 @@ public class VacancyServiceImpl implements VacancyService {
             log.error("Была запрошена несуществующая вакансия с ID " + id);
             throw new VacancyException("Такой вакансии нет!");
         }
+    }
+
+    @Override
+    public Long addVacancyFromForm(CreatePageVacancyDto vacancyPageDto, HttpServletRequest request, Authentication auth) {
+        String isActive = request.getParameter("isActive");
+        vacancyPageDto.setIsActive("on".equals(isActive));
+        log.info(String.valueOf(vacancyPageDto));
+        Long authorId = userDao.getUserByEmail(auth.getName()).get().getId();
+        return vacancyDao.createVacancy(Vacancy.builder()
+                .name(vacancyPageDto.getName())
+                .description(vacancyPageDto.getDescription())
+                .categoryId(vacancyPageDto.getCategoryId())
+                .salary(vacancyPageDto.getSalary())
+                .expTo(vacancyPageDto.getExpTo())
+                .expFrom(vacancyPageDto.getExpFrom())
+                .authorId(authorId)
+                .isActive(vacancyPageDto.getIsActive())
+                .createdTime(LocalDateTime.now())
+                .updateTime(LocalDateTime.now())
+                .build());
     }
 
     private List<VacancyDto> getVacancyDtos(List<Vacancy> vacancies) {
