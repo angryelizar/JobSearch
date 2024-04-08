@@ -28,6 +28,7 @@
                 <label class="form-check-label" for="isActive">Активно</label>
             </div>
             <button type="submit" class="btn btn-secondary">Отправить</button>
+            <a href="/resumes/delete?id=${resume.id}" class=" btn btn-danger">Удалить резюме</a>
         </form>
     </div>
 </@main.layout>

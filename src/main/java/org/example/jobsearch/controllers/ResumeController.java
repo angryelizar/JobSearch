@@ -26,7 +26,7 @@ public class ResumeController {
     public String resumesGet(Model model) {
         model.addAttribute(PAGE_TITLE, "Резюме");
         model.addAttribute("resumes", resumeService.getActivePageResumes());
-        model.addAttribute(CATEGORIES,  categoryService.getCategoriesList());
+        model.addAttribute(CATEGORIES, categoryService.getCategoriesList());
         return "resume/resumes";
     }
 
@@ -38,7 +38,7 @@ public class ResumeController {
     }
 
     @GetMapping("/edit/{id}")
-    public String editGet(@PathVariable Long id, Model model, Authentication auth){
+    public String editGet(@PathVariable Long id, Model model, Authentication auth) {
         model.addAttribute(PAGE_TITLE, "Отредактировать резюме");
         model.addAttribute("resume", resumeService.resumeEditGet(id, auth));
         model.addAttribute(CATEGORIES, categoryService.getCategoriesList());
@@ -61,6 +61,12 @@ public class ResumeController {
         return "redirect:/profile";
     }
 
+    @GetMapping("/delete")
+    public String delete(@RequestParam Long id, Authentication auth) {
+        resumeService.deleteResumeById(id, auth);
+        return "redirect:/profile";
+    }
+
     @PostMapping("/add")
     public String addPost(CreatePageResumeDto pageResumeDto,
                           HttpServletRequest request,
@@ -76,7 +82,7 @@ public class ResumeController {
     }
 
     @PostMapping("/edit")
-    public String editPost(UpdatePageResumeDto resumeDto, HttpServletRequest request, Authentication auth){
+    public String editPost(UpdatePageResumeDto resumeDto, HttpServletRequest request, Authentication auth) {
         Long id = resumeService.resumeEditPost(resumeDto, request, auth);
         return String.format("redirect:/resumes/%d", id);
     }

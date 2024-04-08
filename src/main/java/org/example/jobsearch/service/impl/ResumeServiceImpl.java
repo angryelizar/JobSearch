@@ -220,6 +220,21 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     @SneakyThrows
+    public void deleteResumeById(Long id, Authentication auth) {
+        if (!resumeDao.idIsExists(id)) {
+            log.info("Была попытка удалить несуществующую вакансию с ID " + id);
+            throw new ResumeException("Такой вакансии нет! ID " + id);
+        }
+        Resume resume = resumeDao.getResumeById(id).get();
+        if (!Objects.equals(resume.getApplicantId(), userDao.getUserByEmail(auth.getName()).get().getId())){
+            log.info("Была попытка удалить чужую вакансию с ID " + id);
+            throw new ResumeException("Это не ваше резюме - вы не можете его удалить!");
+        }
+        resumeDao.deleteResumeById(id);
+    }
+
+    @Override
+    @SneakyThrows
     public void update(Long id) {
         if (resumeDao.idIsExists(id)) {
             resumeDao.setUpdateTime(LocalDateTime.now(), id);
@@ -370,8 +385,8 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     @SneakyThrows
     public Long resumeEditPost(UpdatePageResumeDto resumeDto, HttpServletRequest request, Authentication auth) {
-        Long id =  resumeDto.getId();
-        if (!resumeDao.idIsExists(id)){
+        Long id = resumeDto.getId();
+        if (!resumeDao.idIsExists(id)) {
             log.info("Была попытка отредактировать несуществующее резюме");
             throw new ResumeException("Резюме с ID " + id + " не существует!");
         }
