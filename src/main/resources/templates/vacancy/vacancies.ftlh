@@ -1,9 +1,9 @@
 <#import "../layout.ftlh" as main>
 <@main.layout>
     <div class="row">
-        <div class="col-12 col-md-10">
+        <div class="col-12 col-md-10 d-flex flex-column gap-3">
             <#list vacancies as vacancy>
-                <div class="card mt-1 mb-1">
+                <div class="card">
                     <div class="card-header">
                         ${vacancy.category}
                     </div>
