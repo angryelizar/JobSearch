@@ -22,10 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -250,6 +247,7 @@ public class ResumeServiceImpl implements ResumeService {
             throw new ResumeException("Этого резюме не существует");
         }
     }
+
     @Override
     public void addResumeFromForm(CreatePageResumeDto pageResumeDto, HttpServletRequest request, Authentication auth, String telegram, String whatsapp, String telephone, String linkedin, String email) {
         String isActive = request.getParameter("isActive");
@@ -284,7 +282,7 @@ public class ResumeServiceImpl implements ResumeService {
                 .build();
         educationInfoDao.createEducationInfo(educationInfo);
 
-        if (!whatsapp.isEmpty() && !whatsapp.isBlank()){
+        if (!whatsapp.isEmpty() && !whatsapp.isBlank()) {
             contactInfoService.addContactInfo(
                     ContactInfoDto.builder()
                             .typeId(contactInfoService.getContactInfoIdByType("WhatsApp"))
@@ -292,7 +290,7 @@ public class ResumeServiceImpl implements ResumeService {
                             .build(), resumeId
             );
         }
-        if (!telegram.isEmpty() && !telegram.isBlank()){
+        if (!telegram.isEmpty() && !telegram.isBlank()) {
             contactInfoService.addContactInfo(
                     ContactInfoDto.builder()
                             .typeId(contactInfoService.getContactInfoIdByType("Telegram"))
@@ -300,7 +298,7 @@ public class ResumeServiceImpl implements ResumeService {
                             .build(), resumeId
             );
         }
-        if (!telephone.isEmpty() && !telephone.isBlank()){
+        if (!telephone.isEmpty() && !telephone.isBlank()) {
             contactInfoService.addContactInfo(
                     ContactInfoDto.builder()
                             .typeId(contactInfoService.getContactInfoIdByType("Телефон"))
@@ -308,7 +306,7 @@ public class ResumeServiceImpl implements ResumeService {
                             .build(), resumeId
             );
         }
-        if (!linkedin.isEmpty() && !linkedin.isBlank()){
+        if (!linkedin.isEmpty() && !linkedin.isBlank()) {
             contactInfoService.addContactInfo(
                     ContactInfoDto.builder()
                             .typeId(contactInfoService.getContactInfoIdByType("Linkedin"))
@@ -316,7 +314,7 @@ public class ResumeServiceImpl implements ResumeService {
                             .build(), resumeId
             );
         }
-        if (!email.isEmpty() && !email.isBlank()){
+        if (!email.isEmpty() && !email.isBlank()) {
             contactInfoService.addContactInfo(
                     ContactInfoDto.builder()
                             .typeId(contactInfoService.getContactInfoIdByType("E-mail"))
@@ -329,7 +327,7 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     @SneakyThrows
     public List<PageResumeDto> getPageResumeByCategoryId(Long categoryId) {
-        if (Boolean.FALSE.equals(categoryDao.isExists(categoryId))){
+        if (Boolean.FALSE.equals(categoryDao.isExists(categoryId))) {
             throw new VacancyException("Такой категории нет!");
         }
         List<Resume> resumes = resumeDao.getActiveResumes();
@@ -348,6 +346,50 @@ public class ResumeServiceImpl implements ResumeService {
             }
         }
         return resumeDtos;
+    }
+
+    @Override
+    @SneakyThrows
+    public PageResumeDto resumeEditGet(Long id, Authentication auth) {
+        if (!resumeDao.idIsExists(id)) {
+            log.info("Было запрошено несуществующее резюме с ID " + id);
+            throw new ResumeException("Резюме с " + id + " не существует!");
+        }
+        Resume resume = resumeDao.getResumeById(id).get();
+        if (!Objects.equals(resume.getApplicantId(), userDao.getUserByEmail(auth.getName()).get().getId())) {
+            log.info("Была попытка отредактировать чужое резюме");
+            throw new ResumeException("Нельзя отредактировать чужое резюме");
+        }
+        return PageResumeDto.builder()
+                .id(resume.getId())
+                .salary(resume.getSalary())
+                .name(resume.getName())
+                .build();
+    }
+
+    @Override
+    @SneakyThrows
+    public Long resumeEditPost(UpdatePageResumeDto resumeDto, HttpServletRequest request, Authentication auth) {
+        Long id =  resumeDto.getId();
+        if (!resumeDao.idIsExists(id)){
+            log.info("Была попытка отредактировать несуществующее резюме");
+            throw new ResumeException("Резюме с ID " + id + " не существует!");
+        }
+        Resume resume = resumeDao.getResumeById(id).get();
+        if (!Objects.equals(resume.getApplicantId(), userDao.getUserByEmail(auth.getName()).get().getId())) {
+            log.info("Была попытка отредактировать чужое резюме");
+            throw new ResumeException("Нельзя отредактировать чужое резюме!");
+        }
+        String isActive = request.getParameter("isActive");
+        Resume updateRes = Resume.builder()
+                .name(resumeDto.getName())
+                .categoryId(resumeDto.getCategoryId())
+                .salary(resumeDto.getSalary())
+                .isActive("on".equals(isActive))
+                .updateTime(LocalDateTime.now())
+                .build();
+        resumeDao.editResume(updateRes, id);
+        return id;
     }
 
     private List<ResumeDto> getResumeDtos(List<Resume> resumes) {

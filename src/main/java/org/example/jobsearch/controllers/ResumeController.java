@@ -3,6 +3,7 @@ package org.example.jobsearch.controllers;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.jobsearch.dto.CreatePageResumeDto;
+import org.example.jobsearch.dto.UpdatePageResumeDto;
 import org.example.jobsearch.service.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -19,20 +20,29 @@ public class ResumeController {
     private final ContactInfoService contactInfoService;
     private final CategoryService categoryService;
     private static final String PAGE_TITLE = "pageTitle";
+    private static final String CATEGORIES = "categories";
 
     @GetMapping()
     public String resumesGet(Model model) {
         model.addAttribute(PAGE_TITLE, "Резюме");
         model.addAttribute("resumes", resumeService.getActivePageResumes());
-        model.addAttribute("categories",  categoryService.getCategoriesList());
+        model.addAttribute(CATEGORIES,  categoryService.getCategoriesList());
         return "resume/resumes";
     }
 
     @GetMapping("/add")
     public String addGet(Model model) {
         model.addAttribute(PAGE_TITLE, "Создать резюме");
-        model.addAttribute("categories", categoryService.getCategoriesList());
+        model.addAttribute(CATEGORIES, categoryService.getCategoriesList());
         return "resume/add";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String editGet(@PathVariable Long id, Model model, Authentication auth){
+        model.addAttribute(PAGE_TITLE, "Отредактировать резюме");
+        model.addAttribute("resume", resumeService.resumeEditGet(id, auth));
+        model.addAttribute(CATEGORIES, categoryService.getCategoriesList());
+        return "resume/edit";
     }
 
     @GetMapping("/{id}")
@@ -65,11 +75,17 @@ public class ResumeController {
         return "redirect:/profile";
     }
 
+    @PostMapping("/edit")
+    public String editPost(UpdatePageResumeDto resumeDto, HttpServletRequest request, Authentication auth){
+        Long id = resumeService.resumeEditPost(resumeDto, request, auth);
+        return String.format("redirect:/resumes/%d", id);
+    }
+
     @PostMapping("/category")
     public String getByCategory(@RequestParam Integer categoryId, Model model) {
         model.addAttribute(PAGE_TITLE, "Резюме");
         model.addAttribute("resumes", resumeService.getPageResumeByCategoryId(Long.valueOf(categoryId)));
-        model.addAttribute("categories", categoryService.getCategoriesList());
+        model.addAttribute(CATEGORIES, categoryService.getCategoriesList());
         return "resume/resumes";
     }
 }

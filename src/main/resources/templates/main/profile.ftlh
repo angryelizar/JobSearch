@@ -53,7 +53,7 @@
                                     <a href="resumes/update?id=${resume.id}"
                                        class="text-light card-link btn btn-secondary"
                                        style="width: 40%; font-size: 10px">Обновить</a>
-                                    <a href="#" class="card-link btn btn-secondary" style="width: 40%; font-size: 10px">Редактировать</a>
+                                    <a href="/resumes/edit/${resume.id}" class="card-link btn btn-secondary" style="width: 40%; font-size: 10px">Редактировать</a>
                                 </div>
                             </div>
                         </div>

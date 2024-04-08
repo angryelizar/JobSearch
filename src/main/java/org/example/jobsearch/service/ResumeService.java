@@ -42,4 +42,8 @@ public interface ResumeService {
     void addResumeFromForm(CreatePageResumeDto pageResumeDto, HttpServletRequest request, Authentication auth, String telegram, String whatsapp, String telephone, String linkedin, String email);
 
     List<PageResumeDto> getPageResumeByCategoryId(Long aLong);
+
+    PageResumeDto resumeEditGet(Long id, Authentication auth);
+
+    Long resumeEditPost(UpdatePageResumeDto resumeDto, HttpServletRequest request, Authentication auth);
 }

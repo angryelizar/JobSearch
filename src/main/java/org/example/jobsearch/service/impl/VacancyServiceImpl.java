@@ -317,7 +317,6 @@ public class VacancyServiceImpl implements VacancyService {
             log.error("Была попытка отредактировать чужую вакансию");
             throw new VacancyException("Это не ваша вакансия!");
         }
-        log.error(String.valueOf(vacancy.getSalary()));
         return PageVacancyDto
                 .builder()
                 .id(vacancy.getId())
