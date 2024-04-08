@@ -88,9 +88,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: avatar
-                  type: text
-                  constraints:
-                    nullable: true
+                  type: varchar(255)
               - column:
                   name: age
                   type: int

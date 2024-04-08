@@ -57,8 +57,8 @@ public class UserDao {
 
     public Long createUser(User user) {
         String sql = """
-                insert into users (name, surname, age, email, password, phone_number, avatar, account_type, ENABLED)
-                values (?, ?, ?, ?, ?, ?, ?, ?, true);
+                insert into users (name, surname, age, email, password, phone_number, account_type, ENABLED)
+                values (?, ?, ?, ?, ?, ?, ?, true);
                 """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
         template.update(connection -> {
@@ -69,8 +69,7 @@ public class UserDao {
             ps.setString(4, user.getEmail());
             ps.setString(5, user.getPassword());
             ps.setString(6, user.getPhoneNumber());
-            ps.setString(7, user.getAvatar());
-            ps.setString(8, user.getAccountType());
+            ps.setString(7, user.getAccountType());
             return ps;
         }, keyHolder);
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
