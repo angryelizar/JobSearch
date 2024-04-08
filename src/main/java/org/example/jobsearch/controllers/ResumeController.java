@@ -21,9 +21,10 @@ public class ResumeController {
     private static final String PAGE_TITLE = "pageTitle";
 
     @GetMapping()
-    public String resumesGet(Model model) {
+    public String resumesGet(Model model, @RequestParam(name = "page", defaultValue = "0") Integer page) {
         model.addAttribute(PAGE_TITLE, "Резюме");
-        model.addAttribute("resumes", resumeService.getActivePageResumes());
+        model.addAttribute("page", page);
+        model.addAttribute("resumes", resumeService.getActiveResumes(page));
         model.addAttribute("categories",  categoryService.getCategoriesList());
         return "resume/resumes";
     }

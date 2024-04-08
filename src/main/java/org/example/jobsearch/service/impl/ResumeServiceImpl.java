@@ -18,6 +18,10 @@ import org.example.jobsearch.service.EducationInfoService;
 import org.example.jobsearch.service.ResumeService;
 import org.example.jobsearch.service.WorkExperienceInfoService;
 import org.example.jobsearch.util.DateUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -46,12 +50,22 @@ public class ResumeServiceImpl implements ResumeService {
         return getResumeDtos(resumes);
     }
 
-    @Override
-    public List<ResumeDto> getActiveResumes() {
-        List<Resume> resumes = resumeDao.getActiveResumes();
-        return getResumeDtos(resumes);
+
+    public Page<ResumeDto> getActiveResumes(int pageNumber) {
+        List<ResumeDto> resumes = getResumeDtos(resumeDao.getActiveResumes());
+        return toPage(resumes, PageRequest.of(pageNumber, 5));
     }
 
+    private Page<ResumeDto> toPage(List<ResumeDto> resumes, Pageable pageable){
+        if (pageable.getOffset() >= resumes.size()){
+            return Page.empty();
+        }
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = (int) ((pageable.getOffset() + pageable.getPageSize() > resumes.size() ?
+                resumes.size() : pageable.getOffset() + pageable.getPageSize()));
+        List<ResumeDto> subList = resumes.subList(startIndex, endIndex);
+        return new PageImpl<>(subList, pageable, resumes.size());
+    }
     @Override
     public List<ResumeDto> getInActiveResumes() {
         List<Resume> resumes = resumeDao.getInActiveResumes();

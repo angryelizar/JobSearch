@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
 import org.example.jobsearch.models.Resume;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,7 @@ import java.util.List;
 public interface ResumeService {
     List<ResumeDto> getResumes();
 
-    List<ResumeDto> getActiveResumes();
+    Page<ResumeDto> getActiveResumes(int page);
 
     List<ResumeDto> getInActiveResumes();
 
