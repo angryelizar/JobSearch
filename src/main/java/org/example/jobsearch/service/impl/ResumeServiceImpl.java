@@ -18,6 +18,10 @@ import org.example.jobsearch.service.EducationInfoService;
 import org.example.jobsearch.service.ResumeService;
 import org.example.jobsearch.service.WorkExperienceInfoService;
 import org.example.jobsearch.util.DateUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -101,6 +105,26 @@ public class ResumeServiceImpl implements ResumeService {
                     .build());
         }
         return pageResumeDtos;
+    }
+
+    @Override
+    public Page<PageResumeDto> getActivePageResumes(Integer page) {
+        List<PageResumeDto> resumes = getActivePageResumes();
+        if (page < 0){
+            page = 0;
+        }
+        return toPage(resumes, PageRequest.of(page, 5));
+    }
+
+    private Page<PageResumeDto> toPage(List<PageResumeDto> resumes, Pageable pageable) {
+        if (pageable.getOffset() >= resumes.size()){
+            log.error("Я пока не понял как эту ситуацию обработать....");
+            return Page.empty();
+        }
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = (int) ((pageable.getOffset() + pageable.getPageSize() > resumes.size() ? resumes.size() : pageable.getOffset() + pageable.getPageSize()));
+        List<PageResumeDto> subList = resumes.subList(startIndex, endIndex);
+        return new PageImpl<>(subList, pageable, resumes.size());
     }
 
 
@@ -364,6 +388,15 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
+    public Page<PageResumeDto> getPageResumeByCategoryId(Long id, Integer page) {
+        List<PageResumeDto> result = getPageResumeByCategoryId(id);
+        if (page < 0){
+            page = 0;
+        }
+        return toPage(result, PageRequest.of(page, 5));
+    }
+
+    @Override
     @SneakyThrows
     public PageResumeDto resumeEditGet(Long id, Authentication auth) {
         if (!resumeDao.idIsExists(id)) {
@@ -405,6 +438,11 @@ public class ResumeServiceImpl implements ResumeService {
                 .build();
         resumeDao.editResume(updateRes, id);
         return id;
+    }
+
+    @Override
+    public Integer getCount() {
+        return resumeDao.getCount();
     }
 
     private List<ResumeDto> getResumeDtos(List<Resume> resumes) {

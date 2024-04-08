@@ -169,4 +169,12 @@ public class ResumeDao {
                 """;
         return template.query(sql, new BeanPropertyRowMapper<>(Resume.class));
     }
+
+    public Integer getCount() {
+        String sql = """
+                SELECT COUNT(*)
+                FROM  RESUMES
+                """;
+        return template.queryForObject(sql, Integer.class);
+    }
 }

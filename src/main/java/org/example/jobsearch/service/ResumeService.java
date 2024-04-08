@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
 import org.example.jobsearch.models.Resume;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,8 @@ public interface ResumeService {
 
     List<PageResumeDto> getActivePageResumes();
 
+    Page<PageResumeDto> getActivePageResumes(Integer page);
+
     List<ProfileAndResumesDto> getResumesByApplicantName(String user) throws ResumeNotFoundException;
 
     void createResume(Authentication authentication, ResumeDto resumeDto);
@@ -43,9 +46,13 @@ public interface ResumeService {
 
     void addResumeFromForm(CreatePageResumeDto pageResumeDto, HttpServletRequest request, Authentication auth, String telegram, String whatsapp, String telephone, String linkedin, String email);
 
-    List<PageResumeDto> getPageResumeByCategoryId(Long aLong);
+    List<PageResumeDto> getPageResumeByCategoryId(Long id);
+
+   Page<PageResumeDto> getPageResumeByCategoryId(Long id, Integer page);
 
     PageResumeDto resumeEditGet(Long id, Authentication auth);
 
     Long resumeEditPost(UpdatePageResumeDto resumeDto, HttpServletRequest request, Authentication auth);
+
+    Integer getCount();
 }

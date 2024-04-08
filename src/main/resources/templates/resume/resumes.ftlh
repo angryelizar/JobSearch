@@ -1,8 +1,10 @@
 <#import "../layout.ftlh" as main>
+<#import "../pagination.ftlh" as pagination>
 <@main.layout>
     <div class="row">
+        <@pagination.pagination></@pagination.pagination>
         <div class="col-12 col-md-10 d-flex flex-column gap-3">
-            <#list resumes as resume>
+            <#list resumes.content as resume>
                 <div class="card">
                     <div class="card-header">
                         ${resume.category}
@@ -32,4 +34,5 @@
             </form>
         </div>
     </div>
+    <@pagination.pagination></@pagination.pagination>
 </@main.layout>

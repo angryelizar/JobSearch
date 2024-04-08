@@ -23,9 +23,12 @@ public class ResumeController {
     private static final String CATEGORIES = "categories";
 
     @GetMapping()
-    public String resumesGet(Model model) {
+    public String resumesGet(Model model, @RequestParam(name = "page", defaultValue = "0") Integer page) {
         model.addAttribute(PAGE_TITLE, "Резюме");
-        model.addAttribute("resumes", resumeService.getActivePageResumes());
+        model.addAttribute("size", resumeService.getCount());
+        model.addAttribute("page", page);
+        model.addAttribute("url", "resumes");
+        model.addAttribute("resumes", resumeService.getActivePageResumes(page));
         model.addAttribute(CATEGORIES, categoryService.getCategoriesList());
         return "resume/resumes";
     }
@@ -88,9 +91,12 @@ public class ResumeController {
     }
 
     @PostMapping("/category")
-    public String getByCategory(@RequestParam Integer categoryId, Model model) {
+    public String getByCategory(@RequestParam Integer categoryId, Model model, @RequestParam(name = "page", defaultValue = "0") Integer page) {
         model.addAttribute(PAGE_TITLE, "Резюме");
-        model.addAttribute("resumes", resumeService.getPageResumeByCategoryId(Long.valueOf(categoryId)));
+        model.addAttribute("size", resumeService.getCount());
+        model.addAttribute("resumes", resumeService.getPageResumeByCategoryId(Long.valueOf(categoryId), page));
+        model.addAttribute("page", page);
+        model.addAttribute("url", "resumes");
         model.addAttribute(CATEGORIES, categoryService.getCategoriesList());
         return "resume/resumes";
     }
