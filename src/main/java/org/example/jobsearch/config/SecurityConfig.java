@@ -52,8 +52,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/profile").fullyAuthenticated()
                         .requestMatchers("/resumes").hasAnyAuthority(ADMIN, EMPLOYER)
-                        .requestMatchers("/vacancies/add").hasAuthority(EMPLOYER)
+
                         .requestMatchers("/resumes/add").hasAuthority(APPLICANT)
+                        .requestMatchers("resumes/edit").hasAuthority(APPLICANT)
+                        .requestMatchers("/resumes/delete").hasAuthority(APPLICANT)
+
+                        .requestMatchers("/vacancies/add").hasAuthority(EMPLOYER)
                         .requestMatchers("/vacancies/edit").hasAuthority(EMPLOYER)
                         .requestMatchers("/vacancies/delete").hasAuthority(EMPLOYER)
 

@@ -10,6 +10,10 @@ import org.example.jobsearch.exceptions.*;
 import org.example.jobsearch.models.*;
 import org.example.jobsearch.service.VacancyService;
 import org.example.jobsearch.util.DateUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +42,11 @@ public class VacancyServiceImpl implements VacancyService {
             throw new VacancyNotFoundException("Пользователь либо не откликался на вакансии - либо его нет :(");
         }
         return getVacancyDtos(vacancies);
+    }
+
+    @Override
+    public Integer getCount(){
+        return vacancyDao.getCount();
     }
 
     @Override
@@ -264,6 +273,26 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
+    public Page<PageVacancyDto> getActivePageVacancies(Integer pageNumber) {
+        List<PageVacancyDto> vacancies = getActivePageVacancies();
+        if (pageNumber < 0){
+            pageNumber = 0;
+        }
+        return toPage(vacancies, PageRequest.of(pageNumber, 5));
+    }
+
+    private Page<PageVacancyDto> toPage(List<PageVacancyDto> vacancies, Pageable pageable) {
+        if (pageable.getOffset() >= vacancies.size()){
+            log.error("Я пока не понял как эту ситуацию обработать....");
+            return Page.empty();
+        }
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = (int) ((pageable.getOffset() + pageable.getPageSize() > vacancies.size() ? vacancies.size() : pageable.getOffset() + pageable.getPageSize()));
+        List<PageVacancyDto> subList = vacancies.subList(startIndex, endIndex);
+        return new PageImpl<>(subList, pageable, vacancies.size());
+    }
+
+    @Override
     @SneakyThrows
     public PageVacancyDto getPageVacancyById(Long id) {
         if (vacancyDao.isExists(id)) {
@@ -379,6 +408,15 @@ public class VacancyServiceImpl implements VacancyService {
         }
 
         return resultVacancies;
+    }
+
+    @Override
+    public Page<PageVacancyDto> getPageVacancyByCategoryId(Long categoryId, int page) {
+        List<PageVacancyDto> result = getPageVacancyByCategoryId(categoryId);
+        if (page < 0){
+            page = 0;
+        }
+        return toPage(result, PageRequest.of(page, 5));
     }
 
     private List<VacancyDto> getVacancyDtos(List<Vacancy> vacancies) {

@@ -19,9 +19,11 @@ public class VacancyController {
     private final CategoryService categoryService;
 
     @GetMapping()
-    public String vacanciesGet(Model model) {
+    public String vacanciesGet(Model model, @RequestParam(name = "page", defaultValue = "0") Integer page) {
         model.addAttribute("pageTitle", "Вакансии");
-        model.addAttribute("vacancies", vacancyService.getActivePageVacancies());
+        model.addAttribute("page", page);
+        model.addAttribute("size", vacancyService.getCount());
+        model.addAttribute("vacancies", vacancyService.getActivePageVacancies(page));
         model.addAttribute("categories", categoryService.getCategoriesList());
         return "vacancy/vacancies";
     }
@@ -55,7 +57,7 @@ public class VacancyController {
     }
 
     @GetMapping("delete")
-    public String delete(@RequestParam Long id, Authentication auth){
+    public String delete(@RequestParam Long id, Authentication auth) {
         vacancyService.deleteVacancyById(id, auth);
         return "redirect:/profile";
     }
@@ -73,10 +75,12 @@ public class VacancyController {
     }
 
     @PostMapping("/category")
-    public String getByCategory(@RequestParam Integer categoryId, Model model) {
+    public String getByCategory(@RequestParam Integer categoryId, Model model, @RequestParam(name = "page", defaultValue = "0") Integer page) {
         model.addAttribute("pageTitle", "Вакансии");
-        model.addAttribute("vacancies", vacancyService.getPageVacancyByCategoryId(Long.valueOf(categoryId)));
+        model.addAttribute("vacancies", vacancyService.getPageVacancyByCategoryId(Long.valueOf(categoryId), page));
         model.addAttribute("categories", categoryService.getCategoriesList());
+        model.addAttribute("size", vacancyService.getCount());
+        model.addAttribute("page", page);
         return "vacancy/vacancies";
     }
 }
