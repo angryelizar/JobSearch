@@ -88,9 +88,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: avatar
-                  type: text
-                  constraints:
-                    nullable: true
+                  type: varchar(255)
               - column:
                   name: age
                   type: int
@@ -202,7 +200,7 @@ databaseChangeLog:
                   name: salary
                   type: double
                   constraints:
-                    nullable: false
+                    nullable: true
               - column:
                   name: is_active
                   type: boolean

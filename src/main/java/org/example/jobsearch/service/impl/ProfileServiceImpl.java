@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
@@ -43,8 +44,8 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @SneakyThrows
-    public ProfilePageDTO profileGet(Authentication authentication) {
-        ProfilePageDTO profilePageDTO = new ProfilePageDTO();
+    public ProfilePageDto profileGet(Authentication authentication) {
+        ProfilePageDto profilePageDTO = new ProfilePageDto();
         User user = userService.getFullUserByEmail(authentication.getName());
         profilePageDTO.setUser(
                 UserDto.builder()
@@ -60,6 +61,7 @@ public class ProfileServiceImpl implements ProfileService {
         if (user.getAccountType().equalsIgnoreCase("Соискатель")) {
             List<Resume> resumes = resumeService.getFullResumesByUserId(user.getId());
             List<ProfilePageResumeDto> pageResumeDtos = new ArrayList<>();
+            resumes.sort(Comparator.comparing(Resume::getUpdateTime).reversed());
             for (Resume resume : resumes) {
                 pageResumeDtos.add(
                         ProfilePageResumeDto.builder()
@@ -74,6 +76,7 @@ public class ProfileServiceImpl implements ProfileService {
         } else if (user.getAccountType().equalsIgnoreCase("Работодатель")) {
             List<Vacancy> vacancies = vacancyService.getVacanciesByEmployerId(user.getId());
             List<ProfilePageVacancyDto> pageVacancyDtos = new ArrayList<>();
+            vacancies.sort(Comparator.comparing(Vacancy::getUpdateTime).reversed());
             for (Vacancy vacancy : vacancies) {
                 pageVacancyDtos.add(
                         ProfilePageVacancyDto.builder()

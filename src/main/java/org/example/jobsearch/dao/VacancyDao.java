@@ -27,6 +27,14 @@ public class VacancyDao {
     private final JdbcTemplate template;
     private final ResumeDao resumeDao;
 
+    public Integer getCount(){
+        String sql = """
+                select count(*)
+                from VACANCIES;
+                """;
+        return template.queryForObject(sql, Integer.class);
+    }
+
 
     public List<Vacancy> getVacanciesByApplicantId(Long id) throws ResumeNotFoundException {
         List<Resume> usersResume = resumeDao.getResumesByUserId(id);

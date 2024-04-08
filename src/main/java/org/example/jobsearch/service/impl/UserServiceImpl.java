@@ -11,6 +11,7 @@ import org.example.jobsearch.exceptions.UserHaveTooLowAgeException;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.service.AuthorityService;
+import org.example.jobsearch.service.AvatarImageService;
 import org.example.jobsearch.service.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +27,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
     private final AuthorityService authorityService;
+    private final AvatarImageService avatarImageService;
     private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Override
@@ -101,7 +103,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getFullUserByEmail(String email) throws UserNotFoundException {
+    @SneakyThrows
+    public User getFullUserByEmail(String email) {
         return userDao.getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("С такой почтой пользователей не найдено - " + email));
     }
 
@@ -149,6 +152,9 @@ public class UserServiceImpl implements UserService {
         userDao.changeEmailOfUser(userDto.getEmail(), userId);
         userDao.changePasswordOfUser(encoder.encode(userDto.getPassword()), userId);
         userDao.changePhoneOfUser(userDto.getPhoneNumber(), userId);
+        if (!userDto.getAvatarFile().isEmpty()){
+            avatarImageService.upload(user.get(), userDto.getAvatarFile());
+        }
     }
 
     public Long getAccountTypeIdByTypeString(String type) {

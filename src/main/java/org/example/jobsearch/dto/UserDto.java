@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Builder
@@ -28,4 +29,5 @@ public class UserDto {
     private String avatar;
     @Pattern(regexp = "^(Работодатель|Соискатель)$", message = "Должно быть 'Работодатель' или 'Соискатель'")
     private String accountType;
+    private MultipartFile avatarFile;
 }

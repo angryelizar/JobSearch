@@ -5,7 +5,7 @@
         <div class="profile-block mt-2">
             <div class="row d-flex align-items-center">
                 <div class="col-xxl-2 col-xl-2 col-lg-1 col-md-1">
-                    <img src="#" alt="Аватарка профиля" class="rounded-4 img-fluid">
+                    <img src="/api/users/${userId}/avatar" alt="Аватарка профиля" class="rounded-4 img-fluid">
                 </div>
                 <div class="col-xxl-6 col-xl-4 col-lg-5 col-md-11">
                     <h4 class="d-block">${data.user.name} ${data.user.surname}</h4>
@@ -17,10 +17,12 @@
                 </div>
                 <div class="col-xxl-2 col-xl-3 col-lg-3 col-md-12 mt-3">
                     <#if data.user.accountType = "Соискатель">
-                        <a href="#" class="text-center d-block p-3 bg-danger rounded-4 text-decoration-none text-light"
+                        <a href="/resumes/add"
+                           class="text-center d-block p-3 bg-danger rounded-4 text-decoration-none text-light"
                            style="height: 40%">Создать резюме</a>
                     <#else>
-                        <a href="#" class="text-center d-block p-3 bg-danger rounded-4 text-decoration-none text-light"
+                        <a href="/vacancies/add"
+                           class="text-center d-block p-3 bg-danger rounded-4 text-decoration-none text-light"
                            style="height: 40%">Создать вакансию</a>
                     </#if>
                 </div>
@@ -36,37 +38,43 @@
         </div>
         <div class="posts-block container-fluid">
             <h3 class="text-start mt-3"><#if data.user.accountType = "Соискатель">Резюме<#else>Вакансии</#if>:</h3>
-            <div class="row mt-3">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 mt-3 g-3">
                 <#if data.user.accountType = "Соискатель">
                     <#list data.resumes as resume>
-                        <div class="col-12 col-md-6 col-lg-3 mb-1">
-                            <div class="card" style="width: 18rem;">
+                        <div class="col">
+                            <div class="card" style="min-height: 255px;">
                                 <div class="card-body">
                                     <h5 class="card-title"><a class="text-decoration-none"
                                                               href="resumes/${resume.id}">${resume.name}</a></h5>
                                     <h6 class="card-subtitle mb-2 text-body-secondary">Оклад: ${resume.salary}</h6>
                                     <p class="card-text">Обновлено: ${resume.updateDate}</p>
+                                </div>
+                                <div class="card-footer bg-transparent border-top-0">
                                     <a href="resumes/update?id=${resume.id}"
                                        class="text-light card-link btn btn-secondary"
                                        style="width: 40%; font-size: 10px">Обновить</a>
-                                    <a href="#" class="card-link btn btn-secondary" style="width: 40%; font-size: 10px">Редактировать</a>
+                                    <a href="/resumes/edit/${resume.id}" class="card-link btn btn-secondary" style="width: 40%; font-size: 10px">Редактировать</a>
                                 </div>
                             </div>
                         </div>
                     </#list>
                 <#else>
                     <#list data.vacancies as vacancy>
-                        <div class="col-12 col-md-6 col-lg-3 mb-1">
-                            <div class="card" style="width: 18rem;">
+                        <div class="col">
+                            <div class="card" style="min-height: 255px;">
                                 <div class="card-body">
                                     <h5 class="card-title"><a class="text-decoration-none"
                                                               href="vacancies/${vacancy.id}">${vacancy.name}</a></h5>
                                     <h6 class="card-subtitle mb-2 text-body-secondary">Оклад: ${vacancy.salary}</h6>
                                     <p class="card-text">Обновлено: ${vacancy.updateDate}</p>
+
+                                </div>
+                                <div class="card-footer bg-transparent border-top-0">
                                     <a href="/vacancies/update?id=${vacancy.id}"
                                        class="text-light card-link btn btn-secondary"
                                        style="width: 40%; font-size: 10px">Обновить</a>
-                                    <a href="#" class="card-link btn btn-secondary" style="width: 40%; font-size: 10px">Редактировать</a>
+                                    <a href="/vacancies/edit/${vacancy.id}" class="card-link btn btn-secondary"
+                                       style="width: 40%; font-size: 10px">Редактировать</a>
                                 </div>
                             </div>
                         </div>
@@ -84,7 +92,12 @@
                 </div>
                 <div class="modal-footer">
                     <div class="modal-body">
-                        <form action="/profile" method="post">
+                        <form action="/profile" method="post" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="avatarFile" class="form-label">Аватарка</label>
+                                <input type="file" class="form-control" id="avatarFile" name="avatarFile"
+                                       aria-describedby="avatarFileHelp">
+                            </div>
                             <div class="mb-3">
                                 <label for="name" class="form-label">Ваше имя</label>
                                 <input type="text" class="form-control" id="name" name="name"
@@ -94,7 +107,8 @@
                             <div class="mb-3">
                                 <label for="surname" class="form-label">Ваша фамилия</label>
                                 <input type="text" class="form-control" id="surname" name="surname"
-                                       aria-describedby="surnameHelp" value="${data.user.surname}"<#if data.user.accountType="Соискатель">required<#else></#if>>
+                                       aria-describedby="surnameHelp" value="${data.user.surname}"
+                                       <#if data.user.accountType="Соискатель">required<#else></#if>>
                             </div>
                             <div class="mb-3">
                                 <label for="age" class="form-label">Ваш возраст</label>
@@ -112,7 +126,8 @@
                             </div>
                             <div class="mb-3">
                                 <label for="phoneNumber" class="form-label">Ваш номер телефона</label>
-                                <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" value="${data.user.phoneNumber}" required>
+                                <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber"
+                                       value="${data.user.phoneNumber}" required>
                             </div>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
                             <button type="submit" class="btn btn-success">Обновить профиль</button>

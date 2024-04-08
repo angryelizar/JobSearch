@@ -11,4 +11,6 @@ public interface ContactInfoService {
     void addContactInfo(ContactInfoDto contactInfoDto, Long resumeId);
 
     List<PageContactInfoDto> getPageContactInfoByResumeId(Long id);
+
+    Long getContactInfoIdByType(String type);
 }

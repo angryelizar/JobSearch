@@ -88,6 +88,7 @@ public class EducationInfoServiceImpl implements EducationInfoService {
         return pageEducationInfoDtos;
     }
 
+
     public boolean isDateRangeValid(LocalDateTime startDate, LocalDateTime endDate) {
         return startDate.isBefore(endDate);
     }

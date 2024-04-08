@@ -52,6 +52,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/profile").fullyAuthenticated()
                         .requestMatchers("/resumes").hasAnyAuthority(ADMIN, EMPLOYER)
+
+                        .requestMatchers("/resumes/add").hasAuthority(APPLICANT)
+                        .requestMatchers("resumes/edit").hasAuthority(APPLICANT)
+                        .requestMatchers("/resumes/delete").hasAuthority(APPLICANT)
+
+                        .requestMatchers("/vacancies/add").hasAuthority(EMPLOYER)
+                        .requestMatchers("/vacancies/edit").hasAuthority(EMPLOYER)
+                        .requestMatchers("/vacancies/delete").hasAuthority(EMPLOYER)
+
                         .requestMatchers(HttpMethod.GET, "api/vacancies/inactive").hasAnyAuthority(ADMIN, EMPLOYER)
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                         .requestMatchers("api/users/employers").permitAll()

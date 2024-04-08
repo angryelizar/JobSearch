@@ -1,15 +1,14 @@
 package org.example.jobsearch.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.*;
-import org.example.jobsearch.dto.PageResumeDto;
-import org.example.jobsearch.dto.ProfileAndResumesDto;
-import org.example.jobsearch.dto.ResumeDto;
-import org.example.jobsearch.dto.UpdateResumeDto;
+import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.ResumeException;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
+import org.example.jobsearch.exceptions.VacancyException;
 import org.example.jobsearch.models.EducationInfo;
 import org.example.jobsearch.models.Resume;
 import org.example.jobsearch.models.User;
@@ -19,12 +18,15 @@ import org.example.jobsearch.service.EducationInfoService;
 import org.example.jobsearch.service.ResumeService;
 import org.example.jobsearch.service.WorkExperienceInfoService;
 import org.example.jobsearch.util.DateUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -90,6 +92,7 @@ public class ResumeServiceImpl implements ResumeService {
     public List<PageResumeDto> getActivePageResumes() {
         List<PageResumeDto> pageResumeDtos = new ArrayList<>();
         List<Resume> resumes = resumeDao.getActiveResumes();
+        resumes.sort(Comparator.comparing(Resume::getUpdateTime).reversed());
         for (Resume curRes : resumes) {
             pageResumeDtos.add(PageResumeDto
                     .builder()
@@ -102,6 +105,26 @@ public class ResumeServiceImpl implements ResumeService {
                     .build());
         }
         return pageResumeDtos;
+    }
+
+    @Override
+    public Page<PageResumeDto> getActivePageResumes(Integer page) {
+        List<PageResumeDto> resumes = getActivePageResumes();
+        if (page < 0){
+            page = 0;
+        }
+        return toPage(resumes, PageRequest.of(page, 5));
+    }
+
+    private Page<PageResumeDto> toPage(List<PageResumeDto> resumes, Pageable pageable) {
+        if (pageable.getOffset() >= resumes.size()){
+            log.error("Я пока не понял как эту ситуацию обработать....");
+            return Page.empty();
+        }
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = (int) ((pageable.getOffset() + pageable.getPageSize() > resumes.size() ? resumes.size() : pageable.getOffset() + pageable.getPageSize()));
+        List<PageResumeDto> subList = resumes.subList(startIndex, endIndex);
+        return new PageImpl<>(subList, pageable, resumes.size());
     }
 
 
@@ -221,6 +244,21 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     @SneakyThrows
+    public void deleteResumeById(Long id, Authentication auth) {
+        if (!resumeDao.idIsExists(id)) {
+            log.info("Была попытка удалить несуществующую вакансию с ID " + id);
+            throw new ResumeException("Такой вакансии нет! ID " + id);
+        }
+        Resume resume = resumeDao.getResumeById(id).get();
+        if (!Objects.equals(resume.getApplicantId(), userDao.getUserByEmail(auth.getName()).get().getId())){
+            log.info("Была попытка удалить чужую вакансию с ID " + id);
+            throw new ResumeException("Это не ваше резюме - вы не можете его удалить!");
+        }
+        resumeDao.deleteResumeById(id);
+    }
+
+    @Override
+    @SneakyThrows
     public void update(Long id) {
         if (resumeDao.idIsExists(id)) {
             resumeDao.setUpdateTime(LocalDateTime.now(), id);
@@ -247,6 +285,164 @@ public class ResumeServiceImpl implements ResumeService {
             log.error("Было запрошено несуществующее резюме с ID " + id);
             throw new ResumeException("Этого резюме не существует");
         }
+    }
+
+    @Override
+    public void addResumeFromForm(CreatePageResumeDto pageResumeDto, HttpServletRequest request, Authentication auth, String telegram, String whatsapp, String telephone, String linkedin, String email) {
+        String isActive = request.getParameter("isActive");
+        pageResumeDto.setIsActive("on".equals(isActive));
+        Resume resume = Resume.builder()
+                .applicantId(userDao.getUserByEmail(auth.getName()).get().getId())
+                .name(pageResumeDto.getName())
+                .categoryId(pageResumeDto.getCategoryId())
+                .salary(pageResumeDto.getSalary())
+                .isActive(pageResumeDto.getIsActive())
+                .createdTime(LocalDateTime.now())
+                .updateTime(LocalDateTime.now())
+                .build();
+        Long resumeId = resumeDao.createResume(resume);
+
+        WorkExperienceInfo workExperienceInfo = WorkExperienceInfo.builder()
+                .resumeId(resumeId)
+                .years(pageResumeDto.getWorkExperienceInfo().getYears())
+                .companyName(pageResumeDto.getWorkExperienceInfo().getCompanyName())
+                .position(pageResumeDto.getWorkExperienceInfo().getPosition())
+                .responsibilities(pageResumeDto.getWorkExperienceInfo().getResponsibilities())
+                .build();
+        workExperienceInfoDao.createWorkExperienceInfo(workExperienceInfo);
+
+        EducationInfo educationInfo = EducationInfo.builder()
+                .resumeId(resumeId)
+                .institution(pageResumeDto.getEducationInfo().getInstitution())
+                .program(pageResumeDto.getEducationInfo().getProgram())
+                .degree(pageResumeDto.getEducationInfo().getDegree())
+                .startDate(pageResumeDto.getEducationInfo().getStartDate())
+                .endDate(pageResumeDto.getEducationInfo().getEndDate())
+                .build();
+        educationInfoDao.createEducationInfo(educationInfo);
+
+        if (!whatsapp.isEmpty() && !whatsapp.isBlank()) {
+            contactInfoService.addContactInfo(
+                    ContactInfoDto.builder()
+                            .typeId(contactInfoService.getContactInfoIdByType("WhatsApp"))
+                            .content(whatsapp)
+                            .build(), resumeId
+            );
+        }
+        if (!telegram.isEmpty() && !telegram.isBlank()) {
+            contactInfoService.addContactInfo(
+                    ContactInfoDto.builder()
+                            .typeId(contactInfoService.getContactInfoIdByType("Telegram"))
+                            .content(telegram)
+                            .build(), resumeId
+            );
+        }
+        if (!telephone.isEmpty() && !telephone.isBlank()) {
+            contactInfoService.addContactInfo(
+                    ContactInfoDto.builder()
+                            .typeId(contactInfoService.getContactInfoIdByType("Телефон"))
+                            .content(telephone)
+                            .build(), resumeId
+            );
+        }
+        if (!linkedin.isEmpty() && !linkedin.isBlank()) {
+            contactInfoService.addContactInfo(
+                    ContactInfoDto.builder()
+                            .typeId(contactInfoService.getContactInfoIdByType("Linkedin"))
+                            .content(linkedin)
+                            .build(), resumeId
+            );
+        }
+        if (!email.isEmpty() && !email.isBlank()) {
+            contactInfoService.addContactInfo(
+                    ContactInfoDto.builder()
+                            .typeId(contactInfoService.getContactInfoIdByType("E-mail"))
+                            .content(email)
+                            .build(), resumeId
+            );
+        }
+    }
+
+    @Override
+    @SneakyThrows
+    public List<PageResumeDto> getPageResumeByCategoryId(Long categoryId) {
+        if (Boolean.FALSE.equals(categoryDao.isExists(categoryId))) {
+            throw new VacancyException("Такой категории нет!");
+        }
+        List<Resume> resumes = resumeDao.getActiveResumes();
+        resumes.sort(Comparator.comparing(Resume::getUpdateTime).reversed());
+        List<PageResumeDto> resumeDtos = new ArrayList<>();
+        for (Resume curRes : resumes) {
+            if (Objects.equals(curRes.getCategoryId(), categoryId)) {
+                resumeDtos.add(PageResumeDto.builder()
+                        .id(curRes.getId())
+                        .category(categoryDao.getCategoryNameById(curRes.getCategoryId()))
+                        .salary(curRes.getSalary())
+                        .name(curRes.getName())
+                        .author(userDao.getUserNameById(curRes.getApplicantId()) + " " + userDao.getSurnameNameById((curRes.getApplicantId())))
+                        .updatedDate(DateUtil.getFormattedLocalDateTime(curRes.getUpdateTime()))
+                        .build());
+            }
+        }
+        return resumeDtos;
+    }
+
+    @Override
+    public Page<PageResumeDto> getPageResumeByCategoryId(Long id, Integer page) {
+        List<PageResumeDto> result = getPageResumeByCategoryId(id);
+        if (page < 0){
+            page = 0;
+        }
+        return toPage(result, PageRequest.of(page, 5));
+    }
+
+    @Override
+    @SneakyThrows
+    public PageResumeDto resumeEditGet(Long id, Authentication auth) {
+        if (!resumeDao.idIsExists(id)) {
+            log.info("Было запрошено несуществующее резюме с ID " + id);
+            throw new ResumeException("Резюме с " + id + " не существует!");
+        }
+        Resume resume = resumeDao.getResumeById(id).get();
+        if (!Objects.equals(resume.getApplicantId(), userDao.getUserByEmail(auth.getName()).get().getId())) {
+            log.info("Была попытка отредактировать чужое резюме");
+            throw new ResumeException("Нельзя отредактировать чужое резюме");
+        }
+        return PageResumeDto.builder()
+                .id(resume.getId())
+                .salary(resume.getSalary())
+                .name(resume.getName())
+                .build();
+    }
+
+    @Override
+    @SneakyThrows
+    public Long resumeEditPost(UpdatePageResumeDto resumeDto, HttpServletRequest request, Authentication auth) {
+        Long id = resumeDto.getId();
+        if (!resumeDao.idIsExists(id)) {
+            log.info("Была попытка отредактировать несуществующее резюме");
+            throw new ResumeException("Резюме с ID " + id + " не существует!");
+        }
+        Resume resume = resumeDao.getResumeById(id).get();
+        if (!Objects.equals(resume.getApplicantId(), userDao.getUserByEmail(auth.getName()).get().getId())) {
+            log.info("Была попытка отредактировать чужое резюме");
+            throw new ResumeException("Нельзя отредактировать чужое резюме!");
+        }
+        String isActive = request.getParameter("isActive");
+        Resume updateRes = Resume.builder()
+                .name(resumeDto.getName())
+                .categoryId(resumeDto.getCategoryId())
+                .salary(resumeDto.getSalary())
+                .isActive("on".equals(isActive))
+                .updateTime(LocalDateTime.now())
+                .build();
+        resumeDao.editResume(updateRes, id);
+        return id;
+    }
+
+    @Override
+    public Integer getCount() {
+        return resumeDao.getCount();
     }
 
     private List<ResumeDto> getResumeDtos(List<Resume> resumes) {

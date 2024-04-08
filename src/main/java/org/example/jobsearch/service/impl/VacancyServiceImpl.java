@@ -1,5 +1,6 @@
 package org.example.jobsearch.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -9,12 +10,18 @@ import org.example.jobsearch.exceptions.*;
 import org.example.jobsearch.models.*;
 import org.example.jobsearch.service.VacancyService;
 import org.example.jobsearch.util.DateUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +42,11 @@ public class VacancyServiceImpl implements VacancyService {
             throw new VacancyNotFoundException("Пользователь либо не откликался на вакансии - либо его нет :(");
         }
         return getVacancyDtos(vacancies);
+    }
+
+    @Override
+    public Integer getCount(){
+        return vacancyDao.getCount();
     }
 
     @Override
@@ -148,6 +160,21 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
+    @SneakyThrows
+    public void deleteVacancyById(Long id, Authentication authentication) {
+        if (!vacancyDao.isExists(id)){
+            log.error("Вакансии с ID " + id + " не существует");
+            throw new VacancyException("Такой вакансии нет");
+        }
+        Vacancy vacancy = vacancyDao.getVacancyById(id).get();
+        if (!Objects.equals(vacancy.getAuthorId(), userDao.getUserByEmail(authentication.getName()).get().getId())){
+            log.error("Была попытка удалить чужую вакансию");
+            throw new VacancyException("Это не ваша вакансия!");
+        }
+        vacancyDao.deleteVacancyById(id);
+    }
+
+    @Override
     public List<RespondedResumeDto> getRespondedResumesByVacancyId(Long id) {
         List<RespondApplicant> respondedApplicants = new ArrayList<>(respondedApplicantDao.getRespondedApplicantsByVacancyId(id));
         List<RespondedResumeDto> respondedResumeDtos = new ArrayList<>();
@@ -224,6 +251,7 @@ public class VacancyServiceImpl implements VacancyService {
     @Override
     public List<PageVacancyDto> getActivePageVacancies() {
         List<Vacancy> vacancies = vacancyDao.getActiveVacancies();
+        vacancies.sort(Comparator.comparing(Vacancy::getUpdateTime).reversed());
         List<PageVacancyDto> pageVacancyDtos = new ArrayList<>();
         for (Vacancy vacancy : vacancies) {
             pageVacancyDtos.add(
@@ -242,6 +270,26 @@ public class VacancyServiceImpl implements VacancyService {
             );
         }
         return pageVacancyDtos;
+    }
+
+    @Override
+    public Page<PageVacancyDto> getActivePageVacancies(Integer pageNumber) {
+        List<PageVacancyDto> vacancies = getActivePageVacancies();
+        if (pageNumber < 0){
+            pageNumber = 0;
+        }
+        return toPage(vacancies, PageRequest.of(pageNumber, 5));
+    }
+
+    private Page<PageVacancyDto> toPage(List<PageVacancyDto> vacancies, Pageable pageable) {
+        if (pageable.getOffset() >= vacancies.size()){
+            log.error("Я пока не понял как эту ситуацию обработать....");
+            return Page.empty();
+        }
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = (int) ((pageable.getOffset() + pageable.getPageSize() > vacancies.size() ? vacancies.size() : pageable.getOffset() + pageable.getPageSize()));
+        List<PageVacancyDto> subList = vacancies.subList(startIndex, endIndex);
+        return new PageImpl<>(subList, pageable, vacancies.size());
     }
 
     @Override
@@ -264,6 +312,111 @@ public class VacancyServiceImpl implements VacancyService {
             log.error("Была запрошена несуществующая вакансия с ID " + id);
             throw new VacancyException("Такой вакансии нет!");
         }
+    }
+
+    @Override
+    public Long addVacancyFromForm(CreatePageVacancyDto vacancyPageDto, HttpServletRequest request, Authentication auth) {
+        String isActive = request.getParameter("isActive");
+        vacancyPageDto.setIsActive("on".equals(isActive));
+        log.info(String.valueOf(vacancyPageDto));
+        Long authorId = userDao.getUserByEmail(auth.getName()).get().getId();
+        return vacancyDao.createVacancy(Vacancy.builder()
+                .name(vacancyPageDto.getName())
+                .description(vacancyPageDto.getDescription())
+                .categoryId(vacancyPageDto.getCategoryId())
+                .salary(vacancyPageDto.getSalary())
+                .expTo(vacancyPageDto.getExpTo())
+                .expFrom(vacancyPageDto.getExpFrom())
+                .authorId(authorId)
+                .isActive(vacancyPageDto.getIsActive())
+                .createdTime(LocalDateTime.now())
+                .updateTime(LocalDateTime.now())
+                .build());
+    }
+
+    @Override
+    @SneakyThrows
+    public PageVacancyDto vacancyEditGet(Long id, Authentication authentication) {
+        if (!vacancyDao.isExists(id)){
+            log.error("Вакансии с ID " + id + " не существует");
+            throw new VacancyException("Такой вакансии нет");
+        }
+        Vacancy vacancy = vacancyDao.getVacancyById(id).get();
+        if (!Objects.equals(vacancy.getAuthorId(), userDao.getUserByEmail(authentication.getName()).get().getId())){
+            log.error("Была попытка отредактировать чужую вакансию");
+            throw new VacancyException("Это не ваша вакансия!");
+        }
+        return PageVacancyDto
+                .builder()
+                .id(vacancy.getId())
+                .name(vacancy.getName())
+                .description(vacancy.getDescription())
+                .salary(vacancy.getSalary())
+                .expTo(vacancy.getExpTo())
+                .expFrom(vacancy.getExpFrom())
+                .build();
+    }
+
+    @Override
+    @SneakyThrows
+    public Long editVacancyFromForm(UpdatePageVacancyDto vacancyDto, HttpServletRequest request, Authentication auth) {
+        Long id = vacancyDto.getId();
+        if (!vacancyDao.isExists(id)){
+            log.error("Вакансии с ID " + id + " не существует");
+            throw new VacancyException("Такой вакансии нет");
+        }
+        Vacancy vacancy = vacancyDao.getVacancyById(id).get();
+        if (!Objects.equals(vacancy.getAuthorId(), userDao.getUserByEmail(auth.getName()).get().getId())){
+            log.error("Была попытка отредактировать чужую вакансию");
+            throw new VacancyException("Это не ваша вакансия!");
+        }
+        String isActive = request.getParameter("isActive");
+        Vacancy updatedVacancy = Vacancy.builder()
+                .name(vacancyDto.getName())
+                .description(vacancyDto.getDescription())
+                .categoryId(vacancyDto.getCategoryId())
+                .salary(vacancyDto.getSalary())
+                .expFrom(vacancyDto.getExpFrom())
+                .expTo(vacancyDto.getExpTo())
+                .isActive("on".equals(isActive))
+                .updateTime(LocalDateTime.now())
+                .build();
+        vacancyDao.editVacancy(id, updatedVacancy);
+        return id;
+    }
+
+    @Override
+    @SneakyThrows
+    public List<PageVacancyDto> getPageVacancyByCategoryId(Long categoryId) {
+        if (Boolean.FALSE.equals(categoryDao.isExists(categoryId))){
+            throw new VacancyException("Такой категории нет!");
+        }
+        List<Vacancy> vacancies = vacancyDao.getActiveVacancies();
+        vacancies.sort(Comparator.comparing(Vacancy::getUpdateTime).reversed());
+        List<PageVacancyDto> resultVacancies = new ArrayList<>();
+        for (Vacancy curVac : vacancies) {
+            if (Objects.equals(curVac.getCategoryId(), categoryId)) {
+                resultVacancies.add(PageVacancyDto.builder()
+                        .id(curVac.getId())
+                        .name(curVac.getName())
+                        .author(userDao.getUserNameById(curVac.getAuthorId()))
+                        .category(categoryDao.getCategoryNameById(curVac.getCategoryId()))
+                        .salary(curVac.getSalary())
+                        .updateTime(DateUtil.getFormattedLocalDateTime(curVac.getUpdateTime()))
+                        .build());
+            }
+        }
+
+        return resultVacancies;
+    }
+
+    @Override
+    public Page<PageVacancyDto> getPageVacancyByCategoryId(Long categoryId, int page) {
+        List<PageVacancyDto> result = getPageVacancyByCategoryId(categoryId);
+        if (page < 0){
+            page = 0;
+        }
+        return toPage(result, PageRequest.of(page, 5));
     }
 
     private List<VacancyDto> getVacancyDtos(List<Vacancy> vacancies) {

@@ -54,4 +54,9 @@ public class ContactInfoServiceImpl implements ContactInfoService {
         }
         return contactInfoDtos;
     }
+
+    @Override
+    public Long getContactInfoIdByType(String type) {
+        return contactInfoDao.getContactInfoIdByType(type);
+    }
 }

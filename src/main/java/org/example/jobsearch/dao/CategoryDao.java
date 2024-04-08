@@ -1,8 +1,12 @@
 package org.example.jobsearch.dao;
 
 import lombok.RequiredArgsConstructor;
+import org.example.jobsearch.models.Category;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -21,5 +25,12 @@ public class CategoryDao {
                 where id = ?
                 """;
         return template.queryForObject(sql, String.class, id);
+    }
+
+    public List<Category> getCategoriesList() {
+        String sql = """
+                select * from CATEGORIES;
+                """;
+        return template.query(sql, new BeanPropertyRowMapper<>(Category.class));
     }
 }

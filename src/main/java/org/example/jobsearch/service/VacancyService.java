@@ -1,8 +1,10 @@
 package org.example.jobsearch.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.*;
 import org.example.jobsearch.models.Vacancy;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,8 @@ public interface VacancyService {
 
     void deleteVacancyById(Long id);
 
+    void deleteVacancyById(Long id, Authentication authentication);
+
     List<RespondedResumeDto> getRespondedResumesByVacancyId(Long id);
 
     List<VacancyDto> getVacanciesByQuery(String query);
@@ -42,8 +46,19 @@ public interface VacancyService {
     List<Vacancy> getVacanciesByEmployerId(Long id);
 
     void update(Long id);
+    Integer getCount();
 
     List<PageVacancyDto> getActivePageVacancies();
+    Page<PageVacancyDto> getActivePageVacancies(Integer pageNumber);
 
     PageVacancyDto getPageVacancyById(Long id);
+
+    Long addVacancyFromForm(CreatePageVacancyDto vacancyPageDto, HttpServletRequest request, Authentication auth);
+
+    PageVacancyDto vacancyEditGet(Long id, Authentication authentication);
+
+    Long editVacancyFromForm(UpdatePageVacancyDto vacancyDto, HttpServletRequest request, Authentication auth);
+
+    List<PageVacancyDto> getPageVacancyByCategoryId(Long categoryId);
+    Page<PageVacancyDto> getPageVacancyByCategoryId(Long categoryId, int page);
 }
