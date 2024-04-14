@@ -59,7 +59,7 @@
                                 <label for="EducationInfo.startDate" class="form-text form-label me-2">Начало
                                     обучения</label>
                                 <input type="date" class="form-control" id="EducationInfo.startDate"
-                                       name="EducationInfo.startDate" required>
+                                       name="EducationInfo[0].startDate" required>
                             </div>
                             <div class="experience-item d-flex justify-content-between align-items-center">
                                 <label for="EducationInfo.endDate" class="form-text form-label me-2">Конец
@@ -114,4 +114,5 @@
             </form>
         </div>
     </div>
+    <script src="../../static/scripts/add_resume.js"></script>
 </@main.layout>
