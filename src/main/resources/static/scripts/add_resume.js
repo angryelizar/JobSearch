@@ -1,6 +1,56 @@
 let workExperienceCounter = 0;
 let educationInfoCounter = 0;
 
+function deleteEducationOnClick() {
+    event.preventDefault();
+    let module = event.target.parentNode.parentNode;
+    module.remove();
+}
+
+function deleteEducationOnClickElement(element) {
+    event.preventDefault();
+    let module = element.target.parentNode.parentNode;
+    module.remove();
+}
+
+function addEducationOnClick(){
+    event.preventDefault();
+    educationInfoCounter = educationInfoCounter + 1;
+    let index = educationInfoCounter;
+    let educationInfoItem = `<div class="education-module-buttons d-flex justify-content-center gap-3">
+        <button class="education-delete-button mt-2 fs-6 rounded-4 btn btn-danger text-decoration-none">Удалить</button>
+    </div>
+    <label for="EducationInfos[${index}].degree" class="form-label">Образование:</label>
+    <input type="text" class="form-control" id="EducationInfos[${index}].degree"
+           name="EducationInfos[0].degree">
+        <label for="EducationInfos[${index}].program" class="form-label">Специальность:</label>
+        <input type="text" class="form-control" id="EducationInfos[${index}].program"
+               name="EducationInfos[${index}].program">
+            <label for="EducationInfos[${index}].institution" class="form-label">Где учились:</label>
+            <input type="text" class="form-control" id="EducationInfos[${index}].institution"
+                   name="EducationInfos[${index}].institution">
+                <div class="d-flex flex-column justify-content-start mt-3">
+                    <div class="experience-item d-flex align-items-center">
+                        <label for="EducationInfos[${index}].startDate" class="form-text form-label me-2">Начало
+                            обучения</label>
+                        <input type="date" class="form-control" id="EducationInfos[${index}].startDate"
+                               name="EducationInfos[${index}].startDate">
+                    </div>
+                    <div class="experience-item d-flex justify-content-between align-items-center">
+                        <label for="EducationInfos[${index}].endDate" class="form-text form-label me-2">Конец
+                            обучения</label>
+                        <input type="date" class="form-control" id="EducationInfos[${index}].endDate"
+                               name="EducationInfos[${index}].endDate">
+                    </div>
+                </div>`;
+    let module = event.target.parentNode;
+    let element = document.createElement('div');
+    element.classList.add('education-module-item', 'pb-3', 'mt-2', 'border-top', 'border-bottom');
+    element.innerHTML = educationInfoItem;
+    module.append(element);
+    let deleteItemButton = document.querySelector('.education-delete-button');
+    deleteItemButton.addEventListener('click', deleteEducationOnClickElement)
+}
 
 function deleteWorkOnClick() {
     event.preventDefault();
@@ -43,12 +93,6 @@ function addWorkOnClick() {
     deleteItemButton.addEventListener('click', deleteWorkOnClickElement)
 }
 
-function deleteEducationOnClick() {
-    event.preventDefault();
-    let module = event.target.parentNode.parentNode;
-    module.remove();
-}
-
 function onLoad() {
     let workInfoDeleteButton = document.getElementById('work-delete-button');
     workInfoDeleteButton.onclick = deleteWorkOnClick;
@@ -56,6 +100,8 @@ function onLoad() {
     workInfoAddButton.onclick = addWorkOnClick;
     let educationInfoDeleteButton = document.getElementById('education-delete-button');
     educationInfoDeleteButton.onclick = deleteEducationOnClick;
+    let educationInfoAddButton = document.getElementById('education-add-button');
+    educationInfoAddButton.onclick = addEducationOnClick;
 }
 
 

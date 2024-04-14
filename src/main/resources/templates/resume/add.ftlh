@@ -64,7 +64,7 @@
                             <input type="text" class="form-control" id="EducationInfos[0].institution"
                                    name="EducationInfos[0].institution">
                             <div class="d-flex flex-column justify-content-start mt-3">
-                                <div class="experience-item d-flex align-items-center me-3">
+                                <div class="experience-item d-flex align-items-center">
                                     <label for="EducationInfos[0].startDate" class="form-text form-label me-2">Начало
                                         обучения</label>
                                     <input type="date" class="form-control" id="EducationInfos[0].startDate"
