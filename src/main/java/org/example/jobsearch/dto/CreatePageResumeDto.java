@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -14,6 +16,6 @@ public class CreatePageResumeDto {
     private Long categoryId;
     private Double salary;
     private Boolean isActive;
-    private WorkExperienceInfoDto workExperienceInfo;
-    private EducationInfoDto educationInfo;
+    private List<WorkExperienceInfoDto> workExperienceInfos;
+    private List<EducationInfoDto> educationInfos;
 }

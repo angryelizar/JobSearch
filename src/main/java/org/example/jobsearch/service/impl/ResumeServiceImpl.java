@@ -302,24 +302,24 @@ public class ResumeServiceImpl implements ResumeService {
                 .build();
         Long resumeId = resumeDao.createResume(resume);
 
-        WorkExperienceInfo workExperienceInfo = WorkExperienceInfo.builder()
-                .resumeId(resumeId)
-                .years(pageResumeDto.getWorkExperienceInfo().getYears())
-                .companyName(pageResumeDto.getWorkExperienceInfo().getCompanyName())
-                .position(pageResumeDto.getWorkExperienceInfo().getPosition())
-                .responsibilities(pageResumeDto.getWorkExperienceInfo().getResponsibilities())
-                .build();
-        workExperienceInfoDao.createWorkExperienceInfo(workExperienceInfo);
-
-        EducationInfo educationInfo = EducationInfo.builder()
-                .resumeId(resumeId)
-                .institution(pageResumeDto.getEducationInfo().getInstitution())
-                .program(pageResumeDto.getEducationInfo().getProgram())
-                .degree(pageResumeDto.getEducationInfo().getDegree())
-                .startDate(pageResumeDto.getEducationInfo().getStartDate())
-                .endDate(pageResumeDto.getEducationInfo().getEndDate())
-                .build();
-        educationInfoDao.createEducationInfo(educationInfo);
+//        WorkExperienceInfo workExperienceInfo = WorkExperienceInfo.builder()
+//                .resumeId(resumeId)
+//                .years(pageResumeDto.getWorkExperienceInfo().getYears())
+//                .companyName(pageResumeDto.getWorkExperienceInfo().getCompanyName())
+//                .position(pageResumeDto.getWorkExperienceInfo().getPosition())
+//                .responsibilities(pageResumeDto.getWorkExperienceInfo().getResponsibilities())
+//                .build();
+//        workExperienceInfoDao.createWorkExperienceInfo(workExperienceInfo);
+//
+//        EducationInfo educationInfo = EducationInfo.builder()
+//                .resumeId(resumeId)
+//                .institution(pageResumeDto.getEducationInfo().getInstitution())
+//                .program(pageResumeDto.getEducationInfo().getProgram())
+//                .degree(pageResumeDto.getEducationInfo().getDegree())
+//                .startDate(pageResumeDto.getEducationInfo().getStartDate())
+//                .endDate(pageResumeDto.getEducationInfo().getEndDate())
+//                .build();
+//        educationInfoDao.createEducationInfo(educationInfo);
 
         if (!whatsapp.isEmpty() && !whatsapp.isBlank()) {
             contactInfoService.addContactInfo(
