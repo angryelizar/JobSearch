@@ -14,4 +14,6 @@ public interface EducationInfoService {
     boolean isValid(List<EducationInfoDto> educationInfos, Long applicantId);
 
     List<PageEducationInfoDto> getPageEducationInfoByResumeId(Long id);
+
+    boolean isValid(EducationInfoDto curDto);
 }

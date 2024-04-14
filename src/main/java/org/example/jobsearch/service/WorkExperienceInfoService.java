@@ -14,4 +14,6 @@ public interface WorkExperienceInfoService {
     List<WorkExperienceInfoDto> getDtos(List<WorkExperienceInfo> list);
 
     List<PageWorkExperienceInfo> getPageWorkExperienceByResumeId(Long id);
+
+    boolean isValid(WorkExperienceInfoDto workExperienceInfo);
 }

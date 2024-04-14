@@ -21,9 +21,9 @@ public class VacancyController {
     @GetMapping()
     public String vacanciesGet(Model model, @RequestParam(name = "page", defaultValue = "0") Integer page) {
         model.addAttribute("pageTitle", "Вакансии");
-        model.addAttribute("page", page);
         model.addAttribute("url", "vacancies");
         model.addAttribute("size", vacancyService.getCount());
+        model.addAttribute("page", page);
         model.addAttribute("vacancies", vacancyService.getActivePageVacancies(page));
         model.addAttribute("categories", categoryService.getCategoriesList());
         return "vacancy/vacancies";

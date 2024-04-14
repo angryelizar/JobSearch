@@ -22,7 +22,7 @@ function addEducationOnClick(){
     </div>
     <label for="EducationInfos[${index}].degree" class="form-label">Образование:</label>
     <input type="text" class="form-control" id="EducationInfos[${index}].degree"
-           name="EducationInfos[0].degree">
+           name="EducationInfos[${index}].degree">
         <label for="EducationInfos[${index}].program" class="form-label">Специальность:</label>
         <input type="text" class="form-control" id="EducationInfos[${index}].program"
                name="EducationInfos[${index}].program">
@@ -81,7 +81,7 @@ function addWorkOnClick() {
 <label for="WorkExperienceInfos[${index}].position" class="form-label">Должность:</label>
 <input type="text" class="form-control" id="WorkExperienceInfos[${index}].position"
     name="WorkExperienceInfos[${index}].position">
-<label for="WorkExperienceInfo.responsibilities" class="form-label">Обязанности:</label>
+<label for="WorkExperienceInfos[${index}]responsibilities" class="form-label">Обязанности:</label>
 <input type="text" class="form-control" id="WorkExperienceInfos[${index}].responsibilities"
     name="WorkExperienceInfos[${index}].responsibilities">`;
     let module = event.target.parentNode;

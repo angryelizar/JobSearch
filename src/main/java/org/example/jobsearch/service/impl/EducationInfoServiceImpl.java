@@ -12,6 +12,7 @@ import org.example.jobsearch.service.EducationInfoService;
 import org.example.jobsearch.util.DateUtil;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,6 +87,36 @@ public class EducationInfoServiceImpl implements EducationInfoService {
             );
         }
         return pageEducationInfoDtos;
+    }
+
+    @Override
+    public boolean isValid(EducationInfoDto curDto) {
+        String institution = curDto.getInstitution();
+        String program = curDto.getProgram();
+        String degree = curDto.getDegree();
+        LocalDate startDate = curDto.getStartDate();
+        LocalDate endDate = curDto.getEndDate();
+        if (institution == null || institution.isEmpty() || institution.isBlank() || institution.length() > 100){
+            log.error("Невалидное название учебного заведения");
+            return false;
+        }
+        if (program == null || program.isBlank() || program.isEmpty() || program.length() > 100){
+            log.error("Невалидное название специализации");
+            return false;
+        }
+        if (degree == null || degree.isBlank() || degree.isEmpty() || degree.length() > 100){
+            log.error("Невалидный уровень образования");
+            return false;
+        }
+        if (startDate == null || startDate.isAfter(endDate)){
+            log.error("Невалидная дата начала обучения");
+            return false;
+        }
+        if (endDate == null || endDate.isBefore(startDate)){
+            log.error("Невалидная дата конца обучения");
+            return false;
+        }
+        return true;
     }
 
 

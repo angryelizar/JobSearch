@@ -6,7 +6,7 @@
             <form action="/resumes/add" method="post">
                 <div class="mb-3">
                     <label for="name" class="form-label">Название резюме</label>
-                    <input type="text" class="form-control" id="name" name="name" aria-describedby="nameHelp">
+                    <input type="text" class="form-control" id="name" name="name" aria-describedby="nameHelp" required>
                 </div>
                 <div class="mb-3">
                     <label for="categoryId" class="form-label">Категория</label>

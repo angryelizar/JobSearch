@@ -110,14 +110,14 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     public Page<PageResumeDto> getActivePageResumes(Integer page) {
         List<PageResumeDto> resumes = getActivePageResumes();
-        if (page < 0){
+        if (page < 0) {
             page = 0;
         }
         return toPage(resumes, PageRequest.of(page, 5));
     }
 
     private Page<PageResumeDto> toPage(List<PageResumeDto> resumes, Pageable pageable) {
-        if (pageable.getOffset() >= resumes.size()){
+        if (pageable.getOffset() >= resumes.size()) {
             log.error("Я пока не понял как эту ситуацию обработать....");
             return Page.empty();
         }
@@ -250,7 +250,7 @@ public class ResumeServiceImpl implements ResumeService {
             throw new ResumeException("Такой вакансии нет! ID " + id);
         }
         Resume resume = resumeDao.getResumeById(id).get();
-        if (!Objects.equals(resume.getApplicantId(), userDao.getUserByEmail(auth.getName()).get().getId())){
+        if (!Objects.equals(resume.getApplicantId(), userDao.getUserByEmail(auth.getName()).get().getId())) {
             log.info("Была попытка удалить чужую вакансию с ID " + id);
             throw new ResumeException("Это не ваше резюме - вы не можете его удалить!");
         }
@@ -301,26 +301,43 @@ public class ResumeServiceImpl implements ResumeService {
                 .updateTime(LocalDateTime.now())
                 .build();
         Long resumeId = resumeDao.createResume(resume);
-
-//        WorkExperienceInfo workExperienceInfo = WorkExperienceInfo.builder()
-//                .resumeId(resumeId)
-//                .years(pageResumeDto.getWorkExperienceInfo().getYears())
-//                .companyName(pageResumeDto.getWorkExperienceInfo().getCompanyName())
-//                .position(pageResumeDto.getWorkExperienceInfo().getPosition())
-//                .responsibilities(pageResumeDto.getWorkExperienceInfo().getResponsibilities())
-//                .build();
-//        workExperienceInfoDao.createWorkExperienceInfo(workExperienceInfo);
-//
-//        EducationInfo educationInfo = EducationInfo.builder()
-//                .resumeId(resumeId)
-//                .institution(pageResumeDto.getEducationInfo().getInstitution())
-//                .program(pageResumeDto.getEducationInfo().getProgram())
-//                .degree(pageResumeDto.getEducationInfo().getDegree())
-//                .startDate(pageResumeDto.getEducationInfo().getStartDate())
-//                .endDate(pageResumeDto.getEducationInfo().getEndDate())
-//                .build();
-//        educationInfoDao.createEducationInfo(educationInfo);
-
+        List<WorkExperienceInfoDto> workExperienceInfoDtos = pageResumeDto.getWorkExperienceInfos();
+        List<EducationInfoDto> educationInfoDtos = pageResumeDto.getEducationInfos();
+        if (!workExperienceInfoDtos.isEmpty()) {
+            for (WorkExperienceInfoDto curDto : workExperienceInfoDtos) {
+                if (!workExperienceInfoService.isValid(curDto)) {
+                    log.error("Информация об опыте работы невалидна и не будет добавлена");
+                    log.error(curDto.toString());
+                } else if (workExperienceInfoService.isValid(curDto)) {
+                    WorkExperienceInfo info = WorkExperienceInfo.builder()
+                            .companyName(curDto.getCompanyName())
+                            .resumeId(resumeId)
+                            .responsibilities(curDto.getResponsibilities())
+                            .position(curDto.getPosition())
+                            .years(curDto.getYears())
+                            .build();
+                    workExperienceInfoDao.createWorkExperienceInfo(info);
+                }
+            }
+        }
+        if (!educationInfoDtos.isEmpty()) {
+            for (EducationInfoDto curDto : educationInfoDtos) {
+                if (!educationInfoService.isValid(curDto)) {
+                    log.error("Информация об обучении невалидна и не будет добавлена");
+                    log.error(curDto.toString());
+                } else if (educationInfoService.isValid(curDto)) {
+                    EducationInfo educationInfo = EducationInfo.builder()
+                            .resumeId(resumeId)
+                            .startDate(curDto.getStartDate())
+                            .endDate(curDto.getEndDate())
+                            .institution(curDto.getInstitution())
+                            .program(curDto.getProgram())
+                            .degree(curDto.getDegree())
+                            .build();
+                    educationInfoDao.createEducationInfo(educationInfo);
+                }
+            }
+        }
         if (!whatsapp.isEmpty() && !whatsapp.isBlank()) {
             contactInfoService.addContactInfo(
                     ContactInfoDto.builder()
@@ -390,7 +407,7 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     public Page<PageResumeDto> getPageResumeByCategoryId(Long id, Integer page) {
         List<PageResumeDto> result = getPageResumeByCategoryId(id);
-        if (page < 0){
+        if (page < 0) {
             page = 0;
         }
         return toPage(result, PageRequest.of(page, 5));
