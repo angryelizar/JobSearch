@@ -84,31 +84,31 @@
                 <h4 class="mb-3">Ссылки на соц. сети</h4>
                 <div class="module w-100">
                     <div class="item w-50 d-inline p-3">
-                        <label for="telegram">
+                        <label for="telegram" class="m-2">
                             <input class="rounded-1"  type="text" id="telegram" name="telegram" placeholder="t.me/.....">
                             <i class="bi bi-telegram fs-5"></i>
                         </label>
                     </div>
                     <div class="item w-50 d-inline p-3">
-                        <label for="whatsapp">
+                        <label for="whatsapp" class="m-2">
                             <input class="rounded-1"  type="text" id="whatsapp" name="whatsapp" placeholder="wa.me/.....">
                             <i class="bi bi-whatsapp fs-5"></i>
                         </label>
                     </div>
                     <div class="item w-50 d-inline p-3">
-                        <label for="telephone">
+                        <label for="telephone" class="m-2">
                             <input class="rounded-1"  type="text" id="telephone" name="telephone" placeholder="+996XXXXXXXXX">
                             <i class="bi bi-telephone fs-5"></i>
                         </label>
                     </div>
                     <div class="item w-50 d-inline p-3">
-                        <label for="linkedin">
+                        <label for="linkedin" class="m-2">
                             <input class="rounded-1"  type="text" id="linkedin" name="linkedin" placeholder="linkedin.com/...">
                             <i class="bi bi-linkedin fs-5"></i>
                         </label>
                     </div>
                     <div class="item w-50 d-inline p-3">
-                        <label for="email">
+                        <label for="email" class="m-2">
                             <input class="rounded-1" type="text" id="email" name="email" placeholder="sobaka@sobaka.kg">
                             <i class="bi bi-envelope fs-5"></i>
                         </label>
