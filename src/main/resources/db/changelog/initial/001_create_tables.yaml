@@ -391,6 +391,20 @@ databaseChangeLog:
                     foreignKeyName: fk_responded_applicants_messages
                     references: responded_applicants(id)
               - column:
+                  name: to_from
+                  type: long
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_users_to_from_messages
+                    references: users(id)
+              - column:
+                  name: from_to
+                  type: long
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_users_from_to_messages
+                    references: users(id)
+              - column:
                   name: content
                   type: text
                   constraints:

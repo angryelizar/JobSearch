@@ -53,6 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("api/vacancies/resume").permitAll()
                         .requestMatchers("/profile").fullyAuthenticated()
                         .requestMatchers("/resumes").hasAnyAuthority(ADMIN, EMPLOYER)
+                        .requestMatchers("/messages").fullyAuthenticated()
 
                         .requestMatchers("/resumes/add").hasAuthority(APPLICANT)
                         .requestMatchers("resumes/edit").hasAuthority(APPLICANT)

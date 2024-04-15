@@ -24,6 +24,7 @@
                     <a class="nav-link" href="/vacancies">Вакансии</a>
                     <a class="nav-link" href="/employers">Работодатели</a>
                     <a class="nav-link" href="/resumes">Резюме</a>
+                    <a class="nav-link" href="/messages">Сообщения</a>
                     <a class="nav-link" href="/profile">Личный кабинет</a>
                 </div>
             </div>

@@ -24,7 +24,7 @@
                 <td>${response.status}</td>
                 <td><a class="text-decoration-none" href="/applicant/accept?resume=${response.resumeId}&vacancy=${response.vacancyId}"><i class="bi bi-check-lg"></i></a></td>
                 <td><a class="text-decoration-none" href="/applicant/deny?resume=${response.resumeId}&vacancy=${response.vacancyId}"><i class="bi bi-x-lg"></i></a></td>
-                <td><a class="text-decoration-none" href="/applicant/message"><i class="bi bi-envelope"></i></a></td>
+                <td><a class="text-decoration-none" href="/applicant/messages"><i class="bi bi-envelope"></i></a></td>
             </tr>
         </#list>
         </tbody>
