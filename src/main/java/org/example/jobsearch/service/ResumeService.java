@@ -59,4 +59,6 @@ public interface ResumeService {
     String getResumeNameById(Long id);
 
     User getAuthorByResumeId(Long id);
+
+    List<ProfilePageResumeDto> getPageResumesByAuthorId(Long id);
 }

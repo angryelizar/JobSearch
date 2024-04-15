@@ -30,4 +30,6 @@ public interface UserService {
     void createUser(UserDto userDto);
 
     void update(UserDto userDto);
+
+    UserDto getUserById(Long id);
 }

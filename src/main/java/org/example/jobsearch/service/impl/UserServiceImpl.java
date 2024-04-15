@@ -7,6 +7,7 @@ import org.example.jobsearch.config.AppConfig;
 import org.example.jobsearch.dao.UserDao;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.UserAlreadyRegisteredException;
+import org.example.jobsearch.exceptions.UserException;
 import org.example.jobsearch.exceptions.UserHaveTooLowAgeException;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.models.User;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -155,6 +157,22 @@ public class UserServiceImpl implements UserService {
         if (!userDto.getAvatarFile().isEmpty()){
             avatarImageService.upload(user.get(), userDto.getAvatarFile());
         }
+    }
+
+    @Override
+    @SneakyThrows
+    public UserDto getUserById(Long id) {
+        Optional<User> maybeUser = userDao.getUserById(id);
+        if (maybeUser.isEmpty()){
+            log.error("Был запрошен несуществующий пользователь с ID " + id);
+            throw new UserException("Такого пользователя нет!");
+        }
+        User user = maybeUser.get();
+        return UserDto.builder()
+                .name(user.getName())
+                .surname(user.getSurname())
+                .age(user.getAge())
+                .build();
     }
 
     public Long getAccountTypeIdByTypeString(String type) {

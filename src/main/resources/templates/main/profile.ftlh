@@ -36,6 +36,9 @@
     <span class="visually-hidden">Количество принятых откликов</span>
   </span><#else></#if> Отклики</a>
                     <#else>
+                    <a href="/employer/responses"
+                       class="text-center d-block p-3 border border-2 rounded-4 text-decoration-none text-black"
+                       style="height: 40%">Отклики</a>
                     </#if>
                 </div>
             </div>

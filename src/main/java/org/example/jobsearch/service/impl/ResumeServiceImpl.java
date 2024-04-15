@@ -473,6 +473,24 @@ public class ResumeServiceImpl implements ResumeService {
         return userDao.getUserById(authorId).get();
     }
 
+    @Override
+    public List<ProfilePageResumeDto> getPageResumesByAuthorId(Long id) {
+        List<Resume> resumes = getFullResumesByUserId(id);
+        List<ProfilePageResumeDto> pageResumeDtos = new ArrayList<>();
+        resumes.sort(Comparator.comparing(Resume::getUpdateTime).reversed());
+        for (Resume resume : resumes) {
+            pageResumeDtos.add(
+                    ProfilePageResumeDto.builder()
+                            .id(resume.getId())
+                            .name(resume.getName())
+                            .salary(resume.getSalary())
+                            .updateDate(DateUtil.getFormattedLocalDateTime(resume.getUpdateTime()))
+                            .build()
+            );
+        }
+        return pageResumeDtos;
+    }
+
     private List<ResumeDto> getResumeDtos(List<Resume> resumes) {
         List<ResumeDto> resumeDtos = new ArrayList<>();
         for (Resume rs : resumes) {
