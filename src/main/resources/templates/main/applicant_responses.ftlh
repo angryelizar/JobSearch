@@ -1,6 +1,6 @@
 <#import "../layout.ftlh" as main>
 <@main.layout>
-    <h1>Ваши отклики</h1>
+    <h1>Отклики на ваше резюме</h1>
     <table class="table">
         <thead>
         <tr>

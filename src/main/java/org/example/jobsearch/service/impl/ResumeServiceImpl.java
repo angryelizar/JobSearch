@@ -467,6 +467,12 @@ public class ResumeServiceImpl implements ResumeService {
         return resumeDao.getNameById(id);
     }
 
+    @Override
+    public User getAuthorByResumeId(Long id) {
+        Long authorId = resumeDao.getResumeById(id).get().getApplicantId();
+        return userDao.getUserById(authorId).get();
+    }
+
     private List<ResumeDto> getResumeDtos(List<Resume> resumes) {
         List<ResumeDto> resumeDtos = new ArrayList<>();
         for (Resume rs : resumes) {

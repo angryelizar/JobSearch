@@ -49,10 +49,17 @@ public class MainController {
     }
 
     @GetMapping("/applicant/responses")
-    public String responseGet(Model model, Authentication authentication){
+    public String responseApplicantGet(Model model, Authentication authentication){
         model.addAttribute("pageTitle", "Отклики");
-        model.addAttribute("responses", respondedApplicantsService.getResponsesByUser(authentication));
-        return "main/responses";
+        model.addAttribute("responses", respondedApplicantsService.getApplicantResponsesByUser(authentication));
+        return "main/applicant_responses";
+    }
+
+    @GetMapping("/employer/responses")
+    public String responseEmployerGet(Model model, Authentication authentication){
+        model.addAttribute("pageTitle", "Отклики");
+        model.addAttribute("responses", respondedApplicantsService.getEmployerResponsesByUser(authentication));
+        return "main/employer_responses";
     }
 
     @PostMapping("/profile")

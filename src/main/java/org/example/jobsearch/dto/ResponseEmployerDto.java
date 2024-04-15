@@ -9,10 +9,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseDto {
-    private String resumeName;
-    private Long resumedId;
+public class ResponseEmployerDto {
     private String vacancyName;
     private Long vacancyId;
+    private String resumeName;
+    private Long resumeId;
+    private String applicantName;
+    private Long applicantId;
     private String status;
 }
