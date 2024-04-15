@@ -49,6 +49,11 @@ public class VacancyController {
         return HttpStatus.ACCEPTED;
     }
 
+    @PostMapping("/resume")
+    public ResponseEntity<?> getResumesForVacancy(@RequestBody ResumesForVacancyDto resumesForVacancyDto){
+        return ResponseEntity.ok(vacancyService.getResumesForVacancy(resumesForVacancyDto));
+    }
+
     @DeleteMapping("/{id}")
     public HttpStatus deleteVacancyById(@PathVariable Long id) {
         vacancyService.deleteVacancyById(id);

@@ -14,6 +14,7 @@ import org.example.jobsearch.models.User;
 import org.example.jobsearch.service.AuthorityService;
 import org.example.jobsearch.service.AvatarImageService;
 import org.example.jobsearch.service.UserService;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -177,5 +178,20 @@ public class UserServiceImpl implements UserService {
 
     public Long getAccountTypeIdByTypeString(String type) {
         return authorityService.getAccountAuthorityByTypeString(type);
+    }
+
+    @Override
+    public boolean isApplicant (String email){
+        User user = getFullUserByEmail(email);
+        return user != null && user.getAccountType().equals("Соискатель");
+    }
+
+    @Override
+    public boolean isApplicantByAuth(Authentication auth) {
+        try {
+            return isApplicant(auth.getName());
+        } catch (NullPointerException e){
+            return false;
+        }
     }
 }

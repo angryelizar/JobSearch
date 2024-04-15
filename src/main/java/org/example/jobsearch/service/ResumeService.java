@@ -61,4 +61,6 @@ public interface ResumeService {
     User getAuthorByResumeId(Long id);
 
     List<ProfilePageResumeDto> getPageResumesByAuthorId(Long id);
+
+    Long getResumeCategoryByResumeId(Long resumeId);
 }

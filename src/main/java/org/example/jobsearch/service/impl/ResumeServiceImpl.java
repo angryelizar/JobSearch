@@ -491,6 +491,11 @@ public class ResumeServiceImpl implements ResumeService {
         return pageResumeDtos;
     }
 
+    @Override
+    public Long getResumeCategoryByResumeId(Long resumeId) {
+        return resumeDao.getResumeById(resumeId).get().getCategoryId();
+    }
+
     private List<ResumeDto> getResumeDtos(List<Resume> resumes) {
         List<ResumeDto> resumeDtos = new ArrayList<>();
         for (Resume rs : resumes) {

@@ -50,6 +50,7 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("api/vacancies/resume").permitAll()
                         .requestMatchers("/profile").fullyAuthenticated()
                         .requestMatchers("/resumes").hasAnyAuthority(ADMIN, EMPLOYER)
 

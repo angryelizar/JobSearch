@@ -39,7 +39,7 @@ public class RespondedApplicantDao {
         String sql = """
                 insert into RESPONDED_APPLICANTS
                 ( RESUME_ID, VACANCY_ID, CONFIRMATION)
-                values ( ?, ?, false )
+                values ( ?, ?, null )
                 """;
         template.update(sql, resumeId, vacancyId);
     }
