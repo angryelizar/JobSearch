@@ -80,12 +80,21 @@ public class RespondedApplicantDao {
 
     public Integer getApprovedResponsesNumber(Long id) {
         String sql = """
-               SELECT COUNT(*) FROM RESPONDED_APPLICANTS rs
-               WHERE RESUME_ID in (
-               SELECT ID 
-               FROM RESUMES
-               WHERE APPLICANT_ID = ?) and rs.CONFIRMATION = true;
-                """;
+                SELECT COUNT(*) FROM RESPONDED_APPLICANTS rs
+                WHERE RESUME_ID in (
+                SELECT ID 
+                FROM RESUMES
+                WHERE APPLICANT_ID = ?) and rs.CONFIRMATION = true;
+                 """;
         return template.queryForObject(sql, Integer.class, id);
+    }
+
+    public void acceptResponse(Long resume, Long vacancy) {
+        String sql = """
+                UPDATE RESPONDED_APPLICANTS
+                SET CONFIRMATION = TRUE
+                WHERE RESUME_ID = ? AND VACANCY_ID = ?
+                """;
+        template.update(sql, resume, vacancy);
     }
 }

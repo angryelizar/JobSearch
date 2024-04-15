@@ -10,10 +10,7 @@ import org.example.jobsearch.service.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -72,6 +69,12 @@ public class MainController {
         model.addAttribute("pageTitle", "Отклики");
         model.addAttribute("responses", respondedApplicantsService.getEmployerResponsesByUser(authentication));
         return "main/employer_responses";
+    }
+
+    @GetMapping("/applicant/accept")
+    public String acceptResponseEmployerGet(@RequestParam Long resume, @RequestParam Long vacancy, Authentication authentication){
+        respondedApplicantsService.acceptResponse(resume, vacancy, authentication);
+        return "redirect:/messages";
     }
 
     @PostMapping("/profile")

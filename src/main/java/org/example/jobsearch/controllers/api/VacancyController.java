@@ -20,7 +20,6 @@ import java.util.List;
 public class VacancyController {
     private final VacancyService vacancyService;
 
-
     @GetMapping("/search/employer")
     public ResponseEntity<List<ProfileAndVacancyDto>> getVacanciesByUserName(@RequestParam String name) {
         return ResponseEntity.ok(vacancyService.getVacanciesByEmployerName(name));

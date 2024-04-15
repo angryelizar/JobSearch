@@ -4,8 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.RespondedApplicantDao;
+import org.example.jobsearch.dao.ResumeDao;
+import org.example.jobsearch.dao.VacancyDao;
 import org.example.jobsearch.dto.ResponseApplicantDto;
 import org.example.jobsearch.dto.ResponseEmployerDto;
+import org.example.jobsearch.exceptions.ResumeException;
+import org.example.jobsearch.exceptions.UserException;
+import org.example.jobsearch.exceptions.VacancyException;
 import org.example.jobsearch.models.RespondApplicant;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.service.RespondedApplicantsService;
@@ -26,6 +31,8 @@ public class RespondedApplicantsServiceImpl implements RespondedApplicantsServic
     private final UserService userService;
     private final ResumeService resumeService;
     private final VacancyService vacancyService;
+    private final ResumeDao resumeDao;
+    private final VacancyDao vacancyDao;
 
     @Override
     @SneakyThrows
@@ -50,13 +57,28 @@ public class RespondedApplicantsServiceImpl implements RespondedApplicantsServic
         return getEmployerResponseDtos(list);
     }
 
+    @Override
+    @SneakyThrows
+    public void acceptResponse(Long resume, Long vacancy, Authentication authentication) {
+        if (!resumeDao.idIsExists(resume)){
+            throw new ResumeException("Резюме не существует");
+        }
+        if (!vacancyDao.isExists(vacancy)){
+            throw new VacancyException("Вакансии не существует");
+        }
+        if (userService.isApplicant(authentication.getName())){
+            throw new UserException("Пользователь не работодатель!");
+        }
+        respondedApplicantDao.acceptResponse(resume, vacancy);
+    }
+
     private List<ResponseEmployerDto> getEmployerResponseDtos(List<RespondApplicant> list) {
         List<ResponseEmployerDto> employerDtoList = new ArrayList<>();
         for (RespondApplicant cur : list) {
             User author = resumeService.getAuthorByResumeId(cur.getResumeId());
             employerDtoList.add(ResponseEmployerDto.builder()
                     .vacancyName(vacancyService.getNameById(cur.getVacancyId()))
-                    .vacancyId(cur.getId())
+                    .vacancyId(cur.getVacancyId())
                     .resumeId(cur.getResumeId())
                     .resumeName(resumeService.getResumeNameById(cur.getResumeId()))
                     .applicantId(author.getId())
