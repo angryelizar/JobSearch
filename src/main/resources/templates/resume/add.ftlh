@@ -24,10 +24,10 @@
                 <h4 class="mb-3 mt-2">Опыт работы</h4>
                 <div id="work-module" class="text-center work-module mb-3">
                     <div id="work-module-items" class="work-module-items w-100">
-                        <button id="work-add-button" class="fs-6 mb-2 rounded-4 btn btn-success text-decoration-none">Добавить еще</button>
+                        <button type="button" id="work-add-button" class="fs-6 mb-2 rounded-4 btn btn-success text-decoration-none">Добавить еще</button>
                         <div class="work-module-item pb-3 mt-2 border-top border-bottom">
                             <div class="work-module-buttons d-flex justify-content-center gap-3">
-                                <button id="work-delete-button" class="mt-2 fs-6 rounded-4 btn btn-danger text-decoration-none">Удалить</button>
+                                <button type="button" id="work-delete-button" class="mt-2 fs-6 rounded-4 btn btn-danger text-decoration-none">Удалить</button>
                             </div>
                             <label for="WorkExperienceInfo.years" class="form-label">Опыт работы на предыдущем
                                 месте:</label>
@@ -49,10 +49,10 @@
                 <h4 class="mb-3 mt-2">Образование</h4>
                 <div class="education-module mb-3">
                     <div class="education-module-items text-center">
-                        <button id="education-add-button" class="fs-6 rounded-4 btn btn-success text-decoration-none">Добавить еще</button>
+                        <button type="button" id="education-add-button" class="fs-6 rounded-4 btn btn-success text-decoration-none">Добавить еще</button>
                         <div class="education-module-item pb-3 mt-2 border-top border-bottom">
                             <div class="education-module-buttons d-flex justify-content-center gap-3">
-                                <button id="education-delete-button" class="mt-2 fs-6 rounded-4 btn btn-danger text-decoration-none">Удалить</button>
+                                <button type="button" id="education-delete-button" class="mt-2 fs-6 rounded-4 btn btn-danger text-decoration-none">Удалить</button>
                             </div>
                             <label for="EducationInfos[0].degree" class="form-label">Образование:</label>
                             <input type="text" class="form-control" id="EducationInfos[0].degree"
@@ -122,5 +122,5 @@
             </form>
         </div>
     </div>
-    <script src="../../static/scripts/add_resume.js"></script>
+    <script src="../scripts/add_resume.js"></script>
 </@main.layout>

@@ -368,7 +368,7 @@ databaseChangeLog:
                   name: confirmation
                   type: boolean
                   constraints:
-                    nullable: false
+                    nullable: true
   - changeSet:
       id: 01-create-messages-table
       author: angryelizar

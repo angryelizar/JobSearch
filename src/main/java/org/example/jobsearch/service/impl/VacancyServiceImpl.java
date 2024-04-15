@@ -419,6 +419,11 @@ public class VacancyServiceImpl implements VacancyService {
         return toPage(result, PageRequest.of(page, 5));
     }
 
+    @Override
+    public String getNameById(Long vacancyId) {
+        return vacancyDao.getNameById(vacancyId);
+    }
+
     private List<VacancyDto> getVacancyDtos(List<Vacancy> vacancies) {
         List<VacancyDto> vacancyDtos = new ArrayList<>();
         vacancies.forEach(e -> vacancyDtos.add(VacancyDto.builder()

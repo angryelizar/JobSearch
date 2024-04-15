@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.service.ProfileService;
+import org.example.jobsearch.service.RespondedApplicantsService;
 import org.example.jobsearch.service.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class MainController {
     private final UserService userService;
     private final ProfileService profileService;
+    private final RespondedApplicantsService respondedApplicantsService;
 
     @GetMapping
     public String homeGet() {
@@ -43,6 +45,13 @@ public class MainController {
         model.addAttribute("data", profileService.profileGet(auth));
         model.addAttribute("userId", userService.getFullUserByEmail(auth.getName()).getId());
         return "main/profile";
+    }
+
+    @GetMapping("/responses")
+    public String responseGet(Model model, Authentication authentication){
+        model.addAttribute("pageTitle", "Отклики");
+        model.addAttribute("responses", respondedApplicantsService.getResponsesByUser(authentication));
+        return "main/responses";
     }
 
     @PostMapping("/profile")

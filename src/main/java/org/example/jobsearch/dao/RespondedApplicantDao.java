@@ -43,4 +43,38 @@ public class RespondedApplicantDao {
                 """;
         template.update(sql, resumeId, vacancyId);
     }
+
+    public List<RespondApplicant> getByEmployerEmail(String email){
+        String sql = """
+                select * from RESPONDED_APPLICANTS ra
+                WHERE VACANCY_ID in (
+                    SELECT ID
+                    from VACANCIES
+                    where AUTHOR_ID = (
+                        select id
+                        from users
+                        where EMAIL = ?
+                        )
+                    );
+                """;
+
+        return template.query(sql, new BeanPropertyRowMapper<>(RespondApplicant.class), email);
+    }
+
+    public List<RespondApplicant> getByApplicantEmail(String email){
+        String sql = """
+                select * from RESPONDED_APPLICANTS ra
+                WHERE ra.RESUME_ID in (
+                    SELECT ID
+                    from RESUMES
+                    where APPLICANT_ID = (
+                        select id
+                        from users
+                        where EMAIL = ?
+                        )
+                    );
+                """;
+
+        return template.query(sql, new BeanPropertyRowMapper<>(RespondApplicant.class), email);
+    }
 }

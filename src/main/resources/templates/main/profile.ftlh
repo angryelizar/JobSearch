@@ -28,7 +28,7 @@
                 </div>
                 <div class="col-xxl-2 col-xl-3 col-lg-3 col-md-12 mt-3">
                     <#if data.user.accountType = "Соискатель">
-                        <a href="#"
+                        <a href="/responses"
                            class="text-center d-block p-3 border border-2 rounded-4 text-decoration-none text-black"
                            style="height: 40%">Отклики</a>
                     <#else>

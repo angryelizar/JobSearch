@@ -55,4 +55,5 @@ public interface ResumeService {
     Long resumeEditPost(UpdatePageResumeDto resumeDto, HttpServletRequest request, Authentication auth);
 
     Integer getCount();
+    String getResumeNameById(Long id);
 }

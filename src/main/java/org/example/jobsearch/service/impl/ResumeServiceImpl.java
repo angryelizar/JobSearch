@@ -462,6 +462,11 @@ public class ResumeServiceImpl implements ResumeService {
         return resumeDao.getCount();
     }
 
+    @Override
+    public String getResumeNameById(Long id) {
+        return resumeDao.getNameById(id);
+    }
+
     private List<ResumeDto> getResumeDtos(List<Resume> resumes) {
         List<ResumeDto> resumeDtos = new ArrayList<>();
         for (Resume rs : resumes) {

@@ -6,15 +6,11 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
-public class JobSearchApplication implements WebMvcConfigurer {
+public class JobSearchApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(JobSearchApplication.class, args);
     }
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry){
-        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
-    }
 
 }
