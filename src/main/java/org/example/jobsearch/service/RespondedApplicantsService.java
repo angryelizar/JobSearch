@@ -16,4 +16,6 @@ public interface RespondedApplicantsService {
     List<ResponseEmployerDto> getEmployerResponsesByUser(Authentication authentication);
 
     void acceptResponse(Long resume, Long vacancy, Authentication authentication);
+
+    void denyResponse(Long resume, Long vacancy, Authentication authentication);
 }

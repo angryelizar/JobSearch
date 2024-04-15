@@ -74,7 +74,15 @@ public class MainController {
     @GetMapping("/applicant/accept")
     public String acceptResponseEmployerGet(@RequestParam Long resume, @RequestParam Long vacancy, Authentication authentication){
         respondedApplicantsService.acceptResponse(resume, vacancy, authentication);
-        return "redirect:/messages";
+        return "redirect:/employer/responses";
+    }
+
+    @GetMapping("/applicant/deny")
+    public String denyResponseEmployerGet(@RequestParam Long resume, @RequestParam Long vacancy, Authentication authentication){
+        System.out.println("resume " + resume);
+        System.out.println("vacancy " + vacancy);
+        respondedApplicantsService.denyResponse(resume, vacancy, authentication);
+        return "redirect:/employer/responses";
     }
 
     @PostMapping("/profile")

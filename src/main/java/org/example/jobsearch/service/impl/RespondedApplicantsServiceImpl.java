@@ -72,6 +72,21 @@ public class RespondedApplicantsServiceImpl implements RespondedApplicantsServic
         respondedApplicantDao.acceptResponse(resume, vacancy);
     }
 
+    @Override
+    @SneakyThrows
+    public void denyResponse(Long resume, Long vacancy, Authentication authentication) {
+        if (!resumeDao.idIsExists(resume)){
+            throw new ResumeException("Резюме не существует");
+        }
+        if (!vacancyDao.isExists(vacancy)){
+            throw new VacancyException("Вакансии не существует");
+        }
+        if (userService.isApplicant(authentication.getName())){
+            throw new UserException("Пользователь не работодатель!");
+        }
+        respondedApplicantDao.denyResponse(resume, vacancy);
+    }
+
     private List<ResponseEmployerDto> getEmployerResponseDtos(List<RespondApplicant> list) {
         List<ResponseEmployerDto> employerDtoList = new ArrayList<>();
         for (RespondApplicant cur : list) {

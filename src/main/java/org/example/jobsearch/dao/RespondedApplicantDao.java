@@ -97,4 +97,13 @@ public class RespondedApplicantDao {
                 """;
         template.update(sql, resume, vacancy);
     }
+
+    public void denyResponse(Long resume, Long vacancy) {
+        String sql = """
+                UPDATE RESPONDED_APPLICANTS
+                SET CONFIRMATION = FALSE
+                WHERE RESUME_ID = ? AND VACANCY_ID = ?
+                """;
+        template.update(sql, resume, vacancy);
+    }
 }
