@@ -44,10 +44,11 @@ public class MainController {
         model.addAttribute("pageTitle", "Профиль");
         model.addAttribute("data", profileService.profileGet(auth));
         model.addAttribute("userId", userService.getFullUserByEmail(auth.getName()).getId());
+        model.addAttribute("approvedNumber", respondedApplicantsService.getApprovedResponsesNumber(auth));
         return "main/profile";
     }
 
-    @GetMapping("/responses")
+    @GetMapping("/applicant/responses")
     public String responseGet(Model model, Authentication authentication){
         model.addAttribute("pageTitle", "Отклики");
         model.addAttribute("responses", respondedApplicantsService.getResponsesByUser(authentication));

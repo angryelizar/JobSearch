@@ -9,4 +9,6 @@ import java.util.List;
 @Service
 public interface RespondedApplicantsService {
     List<ResponseDto> getResponsesByUser(Authentication authentication);
+
+    Integer getApprovedResponsesNumber(Authentication authentication);
 }

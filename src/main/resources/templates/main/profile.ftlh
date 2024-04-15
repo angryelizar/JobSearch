@@ -28,9 +28,13 @@
                 </div>
                 <div class="col-xxl-2 col-xl-3 col-lg-3 col-md-12 mt-3">
                     <#if data.user.accountType = "Соискатель">
-                        <a href="/responses"
-                           class="text-center d-block p-3 border border-2 rounded-4 text-decoration-none text-black"
-                           style="height: 40%">Отклики</a>
+                        <a href="/applicant/responses"
+                           class="text-center btn position-relative d-block p-3 border border-2 rounded-4 text-decoration-none text-black"
+                           style="height: 40%"><#if approvedNumber gt 0><span
+                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+    ${approvedNumber}
+    <span class="visually-hidden">Количество принятых откликов</span>
+  </span><#else></#if> Отклики</a>
                     <#else>
                     </#if>
                 </div>
@@ -53,7 +57,8 @@
                                     <a href="resumes/update?id=${resume.id}"
                                        class="text-light card-link btn btn-secondary"
                                        style="width: 40%; font-size: 10px">Обновить</a>
-                                    <a href="/resumes/edit/${resume.id}" class="card-link btn btn-secondary" style="width: 40%; font-size: 10px">Редактировать</a>
+                                    <a href="/resumes/edit/${resume.id}" class="card-link btn btn-secondary"
+                                       style="width: 40%; font-size: 10px">Редактировать</a>
                                 </div>
                             </div>
                         </div>

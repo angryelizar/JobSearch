@@ -31,14 +31,15 @@ public class RespondedApplicantsServiceImpl implements RespondedApplicantsServic
     @SneakyThrows
     public List<ResponseDto> getResponsesByUser(Authentication authentication) {
         User user = userService.getFullUserByEmail(authentication.getName());
-        List<RespondApplicant> respondApplicants;
-        if (Objects.equals(user.getAccountType(), "Работодатель")) {
-            respondApplicants = new ArrayList<>(respondedApplicantDao.getByEmployerEmail(user.getEmail()));
-        } else {
-            respondApplicants = new ArrayList<>(respondedApplicantDao.getByApplicantEmail(user.getEmail()));
-        }
-
+        List<RespondApplicant> respondApplicants = new ArrayList<>(respondedApplicantDao.getByApplicantEmail(user.getEmail()));
         return getResponseDtos(respondApplicants);
+    }
+
+    @Override
+    @SneakyThrows
+    public Integer getApprovedResponsesNumber(Authentication authentication) {
+        User user = userService.getFullUserByEmail(authentication.getName());
+        return respondedApplicantDao.getApprovedResponsesNumber(user.getId());
     }
 
     public List<ResponseDto> getResponseDtos(List<RespondApplicant> list) {
