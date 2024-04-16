@@ -185,4 +185,11 @@ public class ResumeDao {
                 """;
         return template.queryForObject(sql, String.class, id);
     }
+
+    public Integer getCountByAuthorId(Long authorId) {
+        String sql = """
+                SELECT COUNT(*) FROM RESUMES WHERE APPLICANT_ID = ?
+                """;
+        return template.queryForObject(sql, Integer.class, authorId);
+    }
 }

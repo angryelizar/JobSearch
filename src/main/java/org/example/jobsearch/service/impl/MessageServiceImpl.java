@@ -2,10 +2,13 @@ package org.example.jobsearch.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.jobsearch.dao.MessageDao;
 import org.example.jobsearch.dao.RespondedApplicantDao;
 import org.example.jobsearch.dao.UserDao;
 import org.example.jobsearch.dao.VacancyDao;
 import org.example.jobsearch.dto.ContactDto;
+import org.example.jobsearch.dto.MessageDto;
+import org.example.jobsearch.models.Message;
 import org.example.jobsearch.models.RespondApplicant;
 import org.example.jobsearch.service.*;
 import org.springframework.security.core.Authentication;
@@ -24,6 +27,7 @@ public class MessageServiceImpl implements MessageService {
     private final UserDao userDao;
     private final VacancyDao vacancyDao;
     private final ResumeService resumeService;
+    private final MessageDao messageDao;
 
     @Override
     public List<ContactDto> messagesGet(Authentication auth) {
@@ -48,6 +52,20 @@ public class MessageServiceImpl implements MessageService {
                         .name(name)
                         .build());
             }
+        }
+        return result;
+    }
+
+    @Override
+    public List<MessageDto> messageGetByRespondedApplicantId(Long id) {
+        List<Message> messageList = messageDao.messageGetByRespondedApplicantId(id);
+        List<MessageDto> result = new ArrayList<>();
+        for (Message cur : messageList) {
+            result.add(MessageDto.builder()
+                    .author(userDao.getUserNameById(cur.getFromTo()))
+                    .dateTime(cur.getDateTime())
+                    .content(cur.getContent())
+                    .build());
         }
         return result;
     }

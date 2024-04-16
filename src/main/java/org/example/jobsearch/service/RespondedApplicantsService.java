@@ -18,4 +18,12 @@ public interface RespondedApplicantsService {
     void acceptResponse(Long resume, Long vacancy, Authentication authentication);
 
     void denyResponse(Long resume, Long vacancy, Authentication authentication);
+
+    String getEmployerNameById(Long id);
+
+    Integer getCountOfVacancies(Long id);
+
+    String getApplicantNameById(Long id);
+
+    Integer getCountOfResumes(Long id);
 }

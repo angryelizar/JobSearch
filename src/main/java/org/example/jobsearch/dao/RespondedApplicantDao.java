@@ -106,4 +106,12 @@ public class RespondedApplicantDao {
                 """;
         template.update(sql, resume, vacancy);
     }
+
+    public RespondApplicant getById(Long id) {
+        String sql = """
+                SELECT * FROM RESPONDED_APPLICANTS
+                WHERE ID = ?
+                """;
+        return template.queryForObject(sql, new BeanPropertyRowMapper<>(RespondApplicant.class), id);
+    }
 }

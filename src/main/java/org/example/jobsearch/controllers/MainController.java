@@ -53,6 +53,17 @@ public class MainController {
         return "main/messages";
     }
 
+    @GetMapping("/message/response/{id}")
+    public String messageGet(@PathVariable Long id, Model model){
+        model.addAttribute("pageTitle", "Переписка");
+        model.addAttribute("employerName", respondedApplicantsService.getEmployerNameById(id));
+        model.addAttribute("employerCountOfVacancies", respondedApplicantsService.getCountOfVacancies(id));
+        model.addAttribute("applicantName", respondedApplicantsService.getApplicantNameById(id));
+        model.addAttribute("applicantCountOfResumes", respondedApplicantsService.getCountOfResumes(id));
+        model.addAttribute("messages", messageService.messageGetByRespondedApplicantId(id));
+        return "main/message";
+    }
+
     @GetMapping("/applicant/{id}")
     public String applicantGet(@PathVariable Long id, Model model){
         model.addAttribute("applicant", userService.getUserById(id));
@@ -84,8 +95,6 @@ public class MainController {
 
     @GetMapping("/applicant/deny")
     public String denyResponseEmployerGet(@RequestParam Long resume, @RequestParam Long vacancy, Authentication authentication){
-        System.out.println("resume " + resume);
-        System.out.println("vacancy " + vacancy);
         respondedApplicantsService.denyResponse(resume, vacancy, authentication);
         return "redirect:/employer/responses";
     }

@@ -223,4 +223,11 @@ public class VacancyDao {
                 """;
         return template.queryForObject(sql, String.class, vacancyId);
     }
+
+    public Integer getCountByAuthorId(Long authorId) {
+        String sql = """
+                SELECT COUNT(*) FROM VACANCIES WHERE AUTHOR_ID = ?
+                """;
+        return template.queryForObject(sql, Integer.class, authorId);
+    }
 }
