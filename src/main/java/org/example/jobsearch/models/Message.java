@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 public class Message {
     private Long id;
     private Long respondApplicantId;
+    private Long toFrom;
+    private Long fromTo;
     private String content;
     private LocalDateTime dateTime;
 }

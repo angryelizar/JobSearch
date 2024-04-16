@@ -20,19 +20,20 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
-                    <a class="nav-link active" aria-current="page" href="#">Главная</a>
+                    <a class="nav-link active" aria-current="page" href="/">Главная</a>
                     <a class="nav-link" href="/vacancies">Вакансии</a>
                     <a class="nav-link" href="/employers">Работодатели</a>
                     <a class="nav-link" href="/resumes">Резюме</a>
+                    <a class="nav-link" href="/messages">Сообщения</a>
                     <a class="nav-link" href="/profile">Личный кабинет</a>
                 </div>
             </div>
         </div>
     </nav>
-    <div class="container mt-3 mb-3">
+    <div class="pb-5 container mt-3 mb-3">
         <#nested>
     </div>
-    <footer class="navbar bg-primary bg-body-tertiary" data-bs-theme="dark">
+    <footer class="position-fixed bottom-0 w-100 navbar bg-primary bg-body-tertiary" data-bs-theme="dark">
         <div class="container-fluid">
     <span class="navbar-text">
       Job Search, 2024

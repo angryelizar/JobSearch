@@ -27,7 +27,7 @@ public class VacancyDao {
     private final JdbcTemplate template;
     private final ResumeDao resumeDao;
 
-    public Integer getCount(){
+    public Integer getCount() {
         String sql = """
                 select count(*)
                 from VACANCIES;
@@ -214,5 +214,20 @@ public class VacancyDao {
                 WHERE ID = ?
                 """;
         template.update(sql, date, id);
+    }
+
+    public String getNameById(Long vacancyId) {
+        String sql = """
+                SELECT NAME FROM VACANCIES
+                WHERE ID = ?
+                """;
+        return template.queryForObject(sql, String.class, vacancyId);
+    }
+
+    public Integer getCountByAuthorId(Long authorId) {
+        String sql = """
+                SELECT COUNT(*) FROM VACANCIES WHERE AUTHOR_ID = ?
+                """;
+        return template.queryForObject(sql, Integer.class, authorId);
     }
 }

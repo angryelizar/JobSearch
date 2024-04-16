@@ -1,12 +1,14 @@
 package org.example.jobsearch.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.UserDao;
 import org.example.jobsearch.dao.WorkExperienceInfoDao;
 import org.example.jobsearch.dto.PageWorkExperienceInfo;
 import org.example.jobsearch.dto.WorkExperienceInfoDto;
 import org.example.jobsearch.exceptions.ResumeException;
+import org.example.jobsearch.exceptions.VacancyException;
 import org.example.jobsearch.models.WorkExperienceInfo;
 import org.example.jobsearch.service.WorkExperienceInfoService;
 import org.springframework.stereotype.Service;
@@ -75,5 +77,31 @@ public class WorkExperienceInfoServiceImpl implements WorkExperienceInfoService 
             );
         }
         return pageWorkExperienceInfos;
+    }
+
+    @Override
+    @SneakyThrows
+    public boolean isValid(WorkExperienceInfoDto workExperienceInfo) {
+        Integer years = workExperienceInfo.getYears();
+        String companyName = workExperienceInfo.getCompanyName();
+        String position = workExperienceInfo.getPosition();
+        String responsibilities = workExperienceInfo.getResponsibilities();
+        if (years == null || years <= 0 || years > 100) {
+            log.error("Невалидный возраст");
+            return false;
+        }
+        if (companyName == null ||companyName.isBlank() || companyName.isEmpty() || companyName.length() >= 100) {
+            log.error("Невалидное название компании");
+            return false;
+        }
+        if (position == null || position.isBlank() || position.isEmpty() || position.length() >= 100) {
+            log.error("Невалидное название позиции");
+            return false;
+        }
+        if (responsibilities == null || responsibilities.isBlank() || responsibilities.isEmpty() || responsibilities.length() >= 100) {
+            log.error("Невалидный текст обязанностей");
+            return false;
+        }
+        return true;
     }
 }

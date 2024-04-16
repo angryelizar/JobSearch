@@ -61,4 +61,8 @@ public interface VacancyService {
 
     List<PageVacancyDto> getPageVacancyByCategoryId(Long categoryId);
     Page<PageVacancyDto> getPageVacancyByCategoryId(Long categoryId, int page);
+
+    String getNameById(Long vacancyId);
+
+    List<AjaxResumeDto> getResumesForVacancy(ResumesForVacancyDto resumesForVacancyDto);
 }

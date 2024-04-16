@@ -50,16 +50,20 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("api/vacancies/resume").permitAll()
                         .requestMatchers("/profile").fullyAuthenticated()
                         .requestMatchers("/resumes").hasAnyAuthority(ADMIN, EMPLOYER)
+                        .requestMatchers(HttpMethod.POST, "/messages/**").fullyAuthenticated()
 
                         .requestMatchers("/resumes/add").hasAuthority(APPLICANT)
                         .requestMatchers("resumes/edit").hasAuthority(APPLICANT)
                         .requestMatchers("/resumes/delete").hasAuthority(APPLICANT)
+                        .requestMatchers("/applicant/responses").hasAuthority(APPLICANT)
 
                         .requestMatchers("/vacancies/add").hasAuthority(EMPLOYER)
                         .requestMatchers("/vacancies/edit").hasAuthority(EMPLOYER)
                         .requestMatchers("/vacancies/delete").hasAuthority(EMPLOYER)
+                        .requestMatchers("/employer/responses").hasAuthority(EMPLOYER)
 
                         .requestMatchers(HttpMethod.GET, "api/vacancies/inactive").hasAnyAuthority(ADMIN, EMPLOYER)
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()

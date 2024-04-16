@@ -5,6 +5,7 @@ import org.example.jobsearch.exceptions.UserAlreadyRegisteredException;
 import org.example.jobsearch.exceptions.UserHaveTooLowAgeException;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.models.User;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,4 +31,9 @@ public interface UserService {
     void createUser(UserDto userDto);
 
     void update(UserDto userDto);
+
+    UserDto getUserById(Long id);
+    boolean isApplicant (String email);
+
+    boolean isApplicantByAuth(Authentication auth);
 }

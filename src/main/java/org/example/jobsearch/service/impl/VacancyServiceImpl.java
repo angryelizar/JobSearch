@@ -8,6 +8,8 @@ import org.example.jobsearch.dao.*;
 import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.*;
 import org.example.jobsearch.models.*;
+import org.example.jobsearch.service.ResumeService;
+import org.example.jobsearch.service.UserService;
 import org.example.jobsearch.service.VacancyService;
 import org.example.jobsearch.util.DateUtil;
 import org.springframework.data.domain.Page;
@@ -34,6 +36,8 @@ public class VacancyServiceImpl implements VacancyService {
     private final ResumeDao resumeDao;
     private final EducationInfoDao educationInfoDao;
     private final WorkExperienceInfoDao workExperienceInfoDao;
+    private final UserService userService;
+    private final ResumeService resumeService;
 
     @Override
     public List<VacancyDto> getVacanciesByApplicantId(Long id) throws VacancyNotFoundException, ResumeNotFoundException {
@@ -417,6 +421,34 @@ public class VacancyServiceImpl implements VacancyService {
             page = 0;
         }
         return toPage(result, PageRequest.of(page, 5));
+    }
+
+    @Override
+    public String getNameById(Long vacancyId) {
+        return vacancyDao.getNameById(vacancyId);
+    }
+
+    @Override
+    @SneakyThrows
+    public List<AjaxResumeDto> getResumesForVacancy(ResumesForVacancyDto resumesForVacancyDto) {
+        log.error(resumesForVacancyDto.toString());
+        User user = userService.getFullUserByEmail(resumesForVacancyDto.getUserEmail());
+        Long categoryId = getVacancyCategoryByVacancyId(resumesForVacancyDto.getVacancyId());
+        List<Resume> userResumes = resumeService.getFullResumesByUserId(user.getId());
+        List<AjaxResumeDto> result = new ArrayList<>();
+        for (Resume curr : userResumes) {
+            if (curr.getIsActive() && Objects.equals(curr.getCategoryId(), categoryId)) {
+                result.add(AjaxResumeDto.builder()
+                        .resumeName(curr.getName())
+                        .resumeId(curr.getId())
+                        .build());
+            }
+        }
+        return result;
+    }
+
+    private Long getVacancyCategoryByVacancyId(Long vacancyId) {
+        return vacancyDao.getVacancyById(vacancyId).get().getCategoryId();
     }
 
     private List<VacancyDto> getVacancyDtos(List<Vacancy> vacancies) {

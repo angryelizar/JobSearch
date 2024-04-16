@@ -20,7 +20,6 @@ import java.util.List;
 public class VacancyController {
     private final VacancyService vacancyService;
 
-
     @GetMapping("/search/employer")
     public ResponseEntity<List<ProfileAndVacancyDto>> getVacanciesByUserName(@RequestParam String name) {
         return ResponseEntity.ok(vacancyService.getVacanciesByEmployerName(name));
@@ -47,6 +46,11 @@ public class VacancyController {
     public HttpStatus editVacancy(@PathVariable Long id, @RequestBody @Valid UpdateVacancyDto updateVacancyDto) {
         vacancyService.editVacancy(id, updateVacancyDto);
         return HttpStatus.ACCEPTED;
+    }
+
+    @PostMapping("/resume")
+    public ResponseEntity<?> getResumesForVacancy(@RequestBody ResumesForVacancyDto resumesForVacancyDto){
+        return ResponseEntity.ok(vacancyService.getResumesForVacancy(resumesForVacancyDto));
     }
 
     @DeleteMapping("/{id}")
