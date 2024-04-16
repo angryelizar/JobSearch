@@ -20,9 +20,11 @@ function onSendResponse(select, vacancy_id) {
         .then(data => {
             console.log("Успех!");
             console.log(data);
+            window.location.href = "/applicant/responses"
         })
         .catch(error => {
             console.error('Ошибка:', error);
+            alert(error)
         });
 }
 
