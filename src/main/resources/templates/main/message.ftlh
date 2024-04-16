@@ -20,9 +20,12 @@
                     </div>
                 </div>
             </#list>
-            <form action="#">
+            <form action="/message/response" method="post">
                 <div class="mb-3">
-                    <textarea type="password" class="form-control" id="messageText"></textarea>
+                    <textarea type="password" class="form-control" name="messageText" id="messageText"></textarea>
+                    <input type="text" class="d-none" name="messageAuthor" value="${fromTo}">
+                    <input type="text" class="d-none" name="messageRecipient" value="${toFrom}">
+                    <input type="text" class="d-none" name="respondApplicant" value="${id}">
                 </div>
                 <button type="submit" class="btn btn-dark">Отправить</button>
             </form>

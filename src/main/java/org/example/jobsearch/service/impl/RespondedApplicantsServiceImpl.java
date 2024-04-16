@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -118,6 +119,18 @@ public class RespondedApplicantsServiceImpl implements RespondedApplicantsServic
         Resume resume = resumeDao.getResumeById(rs.getResumeId()).get();
         Long authorId = resume.getApplicantId();
         return resumeDao.getCountByAuthorId(authorId);
+    }
+
+    @Override
+    public Long getRecipientId(Long respondedApplicantId, Long authorId) {
+        RespondApplicant rs = respondedApplicantDao.getById(respondedApplicantId);
+        Resume resume = resumeDao.getResumeById(rs.getResumeId()).get();
+        Vacancy vacancy = vacancyDao.getVacancyById(rs.getVacancyId()).get();
+        if (Objects.equals(authorId, resume.getApplicantId())){
+            return vacancy.getAuthorId();
+        } else {
+            return resume.getApplicantId();
+        }
     }
 
     private List<ResponseEmployerDto> getEmployerResponseDtos(List<RespondApplicant> list) {

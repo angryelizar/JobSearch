@@ -20,4 +20,12 @@ public class MessageDao {
                 """;
         return template.query(sql, new BeanPropertyRowMapper<>(Message.class), id);
     }
+
+    public void create(Message message) {
+        String sql = """
+                INSERT INTO MESSAGES (RESPONDED_APPLICANTS, TO_FROM, FROM_TO, CONTENT, DATE_TIME)
+                VALUES (?, ?, ?, ?, ?);
+                """;
+        template.update(sql, message.getRespondApplicantId(), message.getToFrom(), message.getFromTo(), message.getContent(), message.getDateTime());
+    }
 }

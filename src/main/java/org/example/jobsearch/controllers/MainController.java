@@ -1,6 +1,7 @@
 package org.example.jobsearch.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.example.jobsearch.dto.SendMessageDto;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.service.*;
@@ -54,14 +55,23 @@ public class MainController {
     }
 
     @GetMapping("/message/response/{id}")
-    public String messageGet(@PathVariable Long id, Model model){
+    public String messageGet(@PathVariable Long id, Model model, Authentication auth) throws UserNotFoundException {
         model.addAttribute("pageTitle", "Переписка");
         model.addAttribute("employerName", respondedApplicantsService.getEmployerNameById(id));
         model.addAttribute("employerCountOfVacancies", respondedApplicantsService.getCountOfVacancies(id));
         model.addAttribute("applicantName", respondedApplicantsService.getApplicantNameById(id));
         model.addAttribute("applicantCountOfResumes", respondedApplicantsService.getCountOfResumes(id));
         model.addAttribute("messages", messageService.messageGetByRespondedApplicantId(id));
+        model.addAttribute("fromTo", userService.getFullUserByEmail(auth.getName()).getId());
+        model.addAttribute("toFrom", respondedApplicantsService.getRecipientId(id, userService.getFullUserByEmail(auth.getName()).getId()));
         return "main/message";
+    }
+
+    @PostMapping("/message/response")
+    public String messagePost(@ModelAttribute  SendMessageDto messageDto, Model model, Authentication auth) {
+        model.addAttribute("pageTitle", "Переписка");
+        messageService.sendMessage(messageDto, auth);
+        return "redirect:/message/response/" + messageDto.getRespondApplicant();
     }
 
     @GetMapping("/applicant/{id}")

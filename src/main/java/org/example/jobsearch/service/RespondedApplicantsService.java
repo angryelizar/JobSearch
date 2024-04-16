@@ -26,4 +26,6 @@ public interface RespondedApplicantsService {
     String getApplicantNameById(Long id);
 
     Integer getCountOfResumes(Long id);
+
+    Long getRecipientId(Long respondedApplicantId, Long authorId);
 }

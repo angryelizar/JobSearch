@@ -1,6 +1,7 @@
 package org.example.jobsearch.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.MessageDao;
 import org.example.jobsearch.dao.RespondedApplicantDao;
@@ -8,14 +9,19 @@ import org.example.jobsearch.dao.UserDao;
 import org.example.jobsearch.dao.VacancyDao;
 import org.example.jobsearch.dto.ContactDto;
 import org.example.jobsearch.dto.MessageDto;
+import org.example.jobsearch.dto.SendMessageDto;
+import org.example.jobsearch.exceptions.UserException;
 import org.example.jobsearch.models.Message;
 import org.example.jobsearch.models.RespondApplicant;
+import org.example.jobsearch.models.User;
 import org.example.jobsearch.service.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -68,5 +74,25 @@ public class MessageServiceImpl implements MessageService {
                     .build());
         }
         return result;
+    }
+
+    @Override
+    @SneakyThrows
+    public void sendMessage(SendMessageDto messageDto, Authentication auth) {
+        User user = userDao.getUserByEmail(auth.getName()).get();
+        if (!Objects.equals(user.getId(), messageDto.getMessageAuthor())){
+            throw new UserException("Вы пытаетесь выдать себя за другого пользователя!");
+        }
+        if (messageDto.getMessageText().isBlank() || messageDto.getMessageText().isEmpty()){
+            throw new UserException("Нельзя отправлять пустой текст");
+        }
+        Message message = Message.builder()
+                .content(messageDto.getMessageText())
+                .fromTo(messageDto.getMessageAuthor())
+                .toFrom(messageDto.getMessageRecipient())
+                .dateTime(LocalDateTime.now())
+                .respondApplicantId(messageDto.getRespondApplicant())
+                .build();
+        messageDao.create(message);
     }
 }
