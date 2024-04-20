@@ -9,13 +9,13 @@
                             <div class="text-center mb-3">
                                 <a class="navbar-brand fs-1" href="/">Job Search</a>
                             </div>
-                            <h2 class="fs-6 fw-normal text-center text-secondary mb-4">Sign in to your account</h2>
+                            <h2 class="fs-6 fw-normal text-center text-secondary mb-4">Войдите в профиль</h2>
                             <form action="/login" method="post">
                                 <div class="row gy-2 overflow-hidden">
                                     <div class="col-12">
                                         <div class="form-floating mb-3">
-                                            <input type="email" class="form-control" name="email" id="email" placeholder="name@example.com" required>
-                                            <label for="email" class="form-label">Email</label>
+                                            <input type="email" class="form-control" name="username" id="username" placeholder="name@example.com" required>
+                                            <label for="username" class="form-label">Email</label>
                                         </div>
                                     </div>
                                     <div class="col-12">

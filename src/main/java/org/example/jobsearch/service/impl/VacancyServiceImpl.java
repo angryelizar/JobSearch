@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -254,6 +255,9 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public List<PageVacancyDto> getActivePageVacancies() {
+        log.error("Зашли в метод");
+        log.error(SecurityContextHolder.getContext().getAuthentication().getName());
+        log.error("Пошли дальше");
         List<Vacancy> vacancies = vacancyDao.getActiveVacancies();
         vacancies.sort(Comparator.comparing(Vacancy::getUpdateTime).reversed());
         List<PageVacancyDto> pageVacancyDtos = new ArrayList<>();
