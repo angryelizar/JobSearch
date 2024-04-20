@@ -109,6 +109,12 @@ public class MainController {
         return "redirect:/employer/responses";
     }
 
+    @GetMapping("/login")
+    public String loginGet(Model model){
+        model.addAttribute("pageTitle", "Вход в JobSearch");
+        return "main/login";
+    }
+
     @PostMapping("/profile")
     public String profilePost(UserDto userDto) {
         userService.update(userDto);
