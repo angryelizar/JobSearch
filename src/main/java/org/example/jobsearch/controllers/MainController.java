@@ -53,6 +53,13 @@ public class MainController {
         return "main/profile";
     }
 
+    @GetMapping("/login-failed")
+    public String loginFailedGet(Model model) {
+        model.addAttribute("pageTitle", "Вход не удался");
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        return "main/login-failed";
+    }
+
     @GetMapping("messages")
     public String messagesGet(Model model, Authentication auth) {
         model.addAttribute("pageTitle", "Сообщения");

@@ -27,8 +27,9 @@
                     <input type="text" class="d-none" name="messageRecipient" value="${toFrom}">
                     <input type="text" class="d-none" name="respondApplicant" value="${id}">
                 </div>
-                <button type="submit" class="btn btn-dark">Отправить</button>
+                <button id = "submitButton" type="submit" class="btn btn-dark">Отправить</button>
             </form>
         </div>
     </div>
+    <script src="../../scripts/message.js"></script>
 </@main.layout>
