@@ -4,11 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.config.AppConfig;
+import org.example.jobsearch.dao.ResumeDao;
 import org.example.jobsearch.dao.UserDao;
 import org.example.jobsearch.dao.VacancyDao;
+import org.example.jobsearch.dto.ApplicantInfoDto;
 import org.example.jobsearch.dto.EmployerInfoDto;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.*;
+import org.example.jobsearch.models.Resume;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.models.Vacancy;
 import org.example.jobsearch.service.AuthorityService;
@@ -30,6 +33,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
     private final VacancyDao vacancyDao;
+    private final ResumeDao resumeDao;
     private final AuthorityService authorityService;
     private final AvatarImageService avatarImageService;
     private final PasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -156,7 +160,7 @@ public class UserServiceImpl implements UserService {
         userDao.changeEmailOfUser(userDto.getEmail(), userId);
         userDao.changePasswordOfUser(encoder.encode(userDto.getPassword()), userId);
         userDao.changePhoneOfUser(userDto.getPhoneNumber(), userId);
-        if (!userDto.getAvatarFile().isEmpty()){
+        if (!userDto.getAvatarFile().isEmpty()) {
             avatarImageService.upload(user.get(), userDto.getAvatarFile());
         }
     }
@@ -165,7 +169,7 @@ public class UserServiceImpl implements UserService {
     @SneakyThrows
     public UserDto getUserById(Long id) {
         Optional<User> maybeUser = userDao.getUserById(id);
-        if (maybeUser.isEmpty()){
+        if (maybeUser.isEmpty()) {
             log.error("Был запрошен несуществующий пользователь с ID " + id);
             throw new UserException("Такого пользователя нет!");
         }
@@ -182,7 +186,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean isApplicant (String email){
+    public boolean isApplicant(String email) {
         User user = getFullUserByEmail(email);
         return user != null && user.getAccountType().equals("Соискатель");
     }
@@ -191,7 +195,7 @@ public class UserServiceImpl implements UserService {
     public boolean isApplicantByAuth(Authentication auth) {
         try {
             return isApplicant(auth.getName());
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             return false;
         }
     }
@@ -200,12 +204,12 @@ public class UserServiceImpl implements UserService {
     @SneakyThrows
     public EmployerInfoDto getEmployerInfoByVacancyId(Long id) {
         Optional<Vacancy> maybeVacancy = vacancyDao.getVacancyById(id);
-        if (maybeVacancy.isEmpty()){
+        if (maybeVacancy.isEmpty()) {
             throw new VacancyException("Вакансии с ID " + id + " не существует!");
         }
         Vacancy vacancy = maybeVacancy.get();
         Optional<User> maybeUser = userDao.getUserById(vacancy.getAuthorId());
-        if (maybeUser.isEmpty()){
+        if (maybeUser.isEmpty()) {
             throw new UserNotFoundException("Пользователя с ID " + maybeVacancy.get().getAuthorId() + " не существует!");
         }
         User user = maybeUser.get();
@@ -215,6 +219,29 @@ public class UserServiceImpl implements UserService {
                 .name(user.getName())
                 .avatar(user.getAvatar())
                 .activeVacancies(count)
+                .build();
+    }
+
+    @Override
+    @SneakyThrows
+    public ApplicantInfoDto getApplicantInfoByResumeId(Long id) {
+        Optional<Resume> maybeResume = resumeDao.getResumeById(id);
+        if (maybeResume.isEmpty()) {
+            throw new ResumeException("Резюме с ID " + id + "не существует");
+        }
+        Resume resume = maybeResume.get();
+        Optional<User> maybeUser = userDao.getUserById(resume.getApplicantId());
+        if (maybeUser.isEmpty()) {
+            throw new UserNotFoundException("Юзера с ID " + id + " не существует!");
+        }
+        User user = maybeUser.get();
+        Integer count = resumeDao.getCountByAuthorId(user.getId());
+        return ApplicantInfoDto.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .surname(user.getSurname())
+                .avatar(user.getAvatar())
+                .activeResumes(count)
                 .build();
     }
 }

@@ -14,22 +14,25 @@
         <div class="col-12 col-md-2 me-auto ms-auto">
             <#if userAuth??>
                 <#if isApplicant == true>
-                    <button type="button" id = "responseButton" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal">
+                    <button type="button" id="responseButton" class="btn btn-success" data-bs-toggle="modal"
+                            data-bs-target="#modal">
                         Откликнуться
                     </button><#else></#if>
             </#if>
             <div class="employer-info mt-2">
                 <h5>О работодателе:</h5>
                 <div class="d-flex justify-content-between align-items-center">
-                    <div><img class="rounded-3 p-1" src="/api/users/${employer.id}/avatar" alt="${employer.name}" style="max-width: 80px"></div>
+                    <div><img class="rounded-3 p-1" src="/api/users/${employer.id}/avatar" alt="${employer.name}"
+                              style="max-width: 80px"></div>
                     <div><h4 class="p-1">${employer.name}</h4></div>
                 </div>
                 <#if employer.activeVacancies gt 0>
                     <span class="d-block">У ${employer.name} сейчас открыто ${employer.activeVacancies} вакансий</span>
-                    <#else>
+                <#else>
                     <span class="d-block">У ${employer.name} сейчас нет открытых вакансий</span>
                 </#if>
-                <a href="/employer/${employer.id}" class="text-decoration-none text-center">Узнать больше про ${employer.name}</a>
+                <a href="/employer/${employer.id}" class="text-decoration-none text-center">Узнать больше
+                    про ${employer.name}</a>
             </div>
         </div>
         <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -39,13 +42,15 @@
                         <h1 class="modal-title fs-5" id="exampleModalLabel">Оставить отклик на вакансию</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
                     </div>
-                        <div class="modal-body">
-                            <input type="text" class="d-none" id="userEmail"
-                                   value="<#if isApplicant == true>${userAuth.getName()}<#else></#if>">
-                        </div>
+                    <div class="modal-body">
+                        <input type="text" class="d-none" id="userEmail"
+                               value="<#if isApplicant == true>${userAuth.getName()}<#else></#if>">
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                        <button type="button" form="response" id="respondButton" class="btn btn-primary">Отправить отклик</button>
+                        <button type="button" form="response" id="respondButton" class="btn btn-primary">Отправить
+                            отклик
+                        </button>
                     </div>
                 </div>
             </div>

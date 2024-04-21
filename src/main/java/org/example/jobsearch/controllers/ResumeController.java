@@ -21,6 +21,7 @@ public class ResumeController {
     private final CategoryService categoryService;
     private static final String PAGE_TITLE = "pageTitle";
     private static final String CATEGORIES = "categories";
+    private final UserService userService;
 
     @GetMapping()
     public String resumesGet(Model model, @RequestParam(name = "page", defaultValue = "0") Integer page) {
@@ -55,6 +56,7 @@ public class ResumeController {
         model.addAttribute("workExperience", workExperienceInfoService.getPageWorkExperienceByResumeId(id));
         model.addAttribute("educationInfo", educationInfoService.getPageEducationInfoByResumeId(id));
         model.addAttribute("contactInfo", contactInfoService.getPageContactInfoByResumeId(id));
+        model.addAttribute("applicant", userService.getApplicantInfoByResumeId(id));
         return "resume/resume";
     }
 
