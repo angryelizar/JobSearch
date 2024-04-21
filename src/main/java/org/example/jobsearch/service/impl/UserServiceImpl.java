@@ -5,12 +5,12 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.config.AppConfig;
 import org.example.jobsearch.dao.UserDao;
+import org.example.jobsearch.dao.VacancyDao;
+import org.example.jobsearch.dto.EmployerInfoDto;
 import org.example.jobsearch.dto.UserDto;
-import org.example.jobsearch.exceptions.UserAlreadyRegisteredException;
-import org.example.jobsearch.exceptions.UserException;
-import org.example.jobsearch.exceptions.UserHaveTooLowAgeException;
-import org.example.jobsearch.exceptions.UserNotFoundException;
+import org.example.jobsearch.exceptions.*;
 import org.example.jobsearch.models.User;
+import org.example.jobsearch.models.Vacancy;
 import org.example.jobsearch.service.AuthorityService;
 import org.example.jobsearch.service.AvatarImageService;
 import org.example.jobsearch.service.UserService;
@@ -29,6 +29,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
+    private final VacancyDao vacancyDao;
     private final AuthorityService authorityService;
     private final AvatarImageService avatarImageService;
     private final PasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -193,5 +194,27 @@ public class UserServiceImpl implements UserService {
         } catch (NullPointerException e){
             return false;
         }
+    }
+
+    @Override
+    @SneakyThrows
+    public EmployerInfoDto getEmployerInfoByVacancyId(Long id) {
+        Optional<Vacancy> maybeVacancy = vacancyDao.getVacancyById(id);
+        if (maybeVacancy.isEmpty()){
+            throw new VacancyException("Вакансии с ID " + id + " не существует!");
+        }
+        Vacancy vacancy = maybeVacancy.get();
+        Optional<User> maybeUser = userDao.getUserById(vacancy.getAuthorId());
+        if (maybeUser.isEmpty()){
+            throw new UserNotFoundException("Пользователя с ID " + maybeVacancy.get().getAuthorId() + " не существует!");
+        }
+        User user = maybeUser.get();
+        Integer count = vacancyDao.getCountByAuthorId(user.getId());
+        return EmployerInfoDto.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .avatar(user.getAvatar())
+                .activeVacancies(count)
+                .build();
     }
 }

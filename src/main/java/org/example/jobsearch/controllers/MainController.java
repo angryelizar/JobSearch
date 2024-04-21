@@ -18,6 +18,7 @@ public class MainController {
     private final ProfileService profileService;
     private final RespondedApplicantsService respondedApplicantsService;
     private final ResumeService resumeService;
+    private final VacancyService vacancyService;
     private final MessageService messageService;
 
     @GetMapping
@@ -81,6 +82,15 @@ public class MainController {
         model.addAttribute("resumes", resumeService.getPageResumesByAuthorId(id));
         model.addAttribute("pageTitle", "Профиль соискателя");
         return "main/applicant";
+    }
+
+    @GetMapping("/employer/{id}")
+    public String employerGet(@PathVariable Long id, Model model){
+        model.addAttribute("employer", userService.getUserById(id));
+        model.addAttribute("employerId", id);
+        model.addAttribute("vacancies", vacancyService.getPageVacanciesByAuthorId(id));
+        model.addAttribute("pageTitle", "Профиль работодателя");
+        return "main/employer";
     }
 
     @GetMapping("/applicant/responses")

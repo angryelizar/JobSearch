@@ -1,8 +1,9 @@
 let modalBody = document.querySelector(".modal-body");
-window.addEventListener('load', onLoad);
+let responseButton = document.getElementById('responseButton');
+responseButton.addEventListener('click', onLoad);
 
 function onSendResponse(select, vacancy_id) {
-    let selectedItem = select.value; // Получаем значение выбранной опции
+    let selectedItem = select.value;
     const data = {
         resumeId: selectedItem,
         vacancyId: vacancy_id
@@ -44,7 +45,7 @@ function printDataOnModal(data) {
     }
     let vacancy_id = parseInt(document.location.pathname.split("/").pop());
     let button = document.getElementById('respondButton');
-    button.addEventListener("click", function() { // Используем функцию обратного вызова
+    button.addEventListener("click", function() {
         onSendResponse(formSelect, vacancy_id);
     });
 }

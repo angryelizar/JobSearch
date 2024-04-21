@@ -9,7 +9,7 @@
         </div>
         <div class="mb-3">
             <label for="surname" class="form-label">Ваша фамилия</label>
-            <input type="text" class="form-control" id="surname" name="surname" aria-describedby="surnameHelp" required>
+            <input type="text" class="form-control" id="surname" name="surname" aria-describedby="surnameHelp">
         </div>
         <div class="mb-3">
             <label for="age" class="form-label">Ваш возраст</label>

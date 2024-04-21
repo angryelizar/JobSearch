@@ -45,6 +45,7 @@ public class VacancyController {
         model.addAttribute("pageTitle", "Вакансия");
         model.addAttribute("vacancy", vacancyService.getPageVacancyById(id));
         model.addAttribute("isApplicant", userService.isApplicantByAuth(auth));
+        model.addAttribute("employer", userService.getEmployerInfoByVacancyId(id));
         model.addAttribute("userAuth", auth);
         return "vacancy/vacancy";
     }
