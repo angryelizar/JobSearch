@@ -9,6 +9,7 @@ import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.service.CategoryService;
 import org.example.jobsearch.service.UserService;
 import org.example.jobsearch.service.VacancyService;
+import org.example.jobsearch.util.AuthenticatedUserProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +22,7 @@ public class VacancyController {
     private final VacancyService vacancyService;
     private final CategoryService categoryService;
     private final UserService userService;
+    private final AuthenticatedUserProvider authenticatedUserProvider;
 
     @GetMapping()
     public String vacanciesGet(Model model, @RequestParam(name = "page", defaultValue = "0") Integer page) {
@@ -30,6 +32,7 @@ public class VacancyController {
         model.addAttribute("page", page);
         model.addAttribute("vacancies", vacancyService.getActivePageVacancies(page));
         model.addAttribute("categories", categoryService.getCategoriesList());
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         return "vacancy/vacancies";
     }
 
@@ -37,6 +40,7 @@ public class VacancyController {
     public String addGet(Model model) {
         model.addAttribute("pageTitle", "Создать вакансию");
         model.addAttribute("categories", categoryService.getCategoriesList());
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         return "vacancy/add";
     }
 
@@ -46,6 +50,7 @@ public class VacancyController {
         model.addAttribute("vacancy", vacancyService.getPageVacancyById(id));
         model.addAttribute("isApplicant", userService.isApplicantByAuth(auth));
         model.addAttribute("employer", userService.getEmployerInfoByVacancyId(id));
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         model.addAttribute("userAuth", auth);
         return "vacancy/vacancy";
     }
@@ -55,6 +60,7 @@ public class VacancyController {
         model.addAttribute("pageTitle", "Редактирование вакансии");
         model.addAttribute("vacancy", vacancyService.vacancyEditGet(id, authentication));
         model.addAttribute("categories", categoryService.getCategoriesList());
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         return "vacancy/edit";
     }
 

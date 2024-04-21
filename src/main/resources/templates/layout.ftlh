@@ -13,20 +13,39 @@
     </head>
     <body>
     <nav class="navbar bg-primary navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
-        <div class="container">
+        <div class="container-fluid">
             <a class="navbar-brand" href="/">Job Search</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
-                    aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div class="navbar-nav">
-                    <a class="nav-link active" aria-current="page" href="/">Главная</a>
-                    <a class="nav-link" href="/vacancies">Вакансии</a>
-                    <a class="nav-link" href="/employers">Работодатели</a>
-                    <a class="nav-link" href="/resumes">Резюме</a>
-                    <a class="nav-link" href="/messages">Сообщения</a>
-                    <a class="nav-link" href="/profile">Личный кабинет</a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/vacancies">Вакансии</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/resumes">Резюме</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/employers">Работодатели</a>
+                    </li>
+                </ul>
+                <div class="text-secondary-emphasis d-flex justify-content-center align-items-center" style="gap: 10px">
+                    <#if isAuthenticated??>
+                        <#if isAuthenticated == true>
+                            <div class="nav-item"><a class="fs-2 nav-link" href="/profile"><i
+                                            class="bi bi-person-circle"></i></a></div>
+                            <div class="nav-item"><a class="fs-2 nav-link" href="/messages"><i
+                                            class="bi bi-envelope-open"></i></a></div>
+                            <div class="nav-item"><a class="fs-2 nav-link" href="/logout"><i
+                                            class="bi bi-box-arrow-left"></i></a></div>
+                        <#else>
+                            <div class="nav-item"><a class="nav-link" href="/login">Войти</a></div>
+                            <div class="nav-item"><a class="nav-link" href="/registration">Регистрация</a></div>
+                        </#if>
+                    </#if>
                 </div>
             </div>
         </div>

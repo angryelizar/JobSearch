@@ -82,6 +82,7 @@ public class UserServiceImpl implements UserService {
         List<User> users = userDao.getEmployersUsers();
         List<UserDto> userDtos = new ArrayList<>();
         users.forEach(e -> userDtos.add(UserDto.builder()
+                        .id(e.getId())
                 .name(e.getName())
                 .surname(e.getSurname())
                 .accountType(e.getAccountType())

@@ -25,4 +25,9 @@ public class AuthenticatedUserProvider {
         }
         return null;
     }
+
+    public boolean isAuthenticated() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return !(authentication instanceof AnonymousAuthenticationToken);
+    }
 }

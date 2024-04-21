@@ -5,6 +5,7 @@ import org.example.jobsearch.dto.SendMessageDto;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.service.*;
+import org.example.jobsearch.util.AuthenticatedUserProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,7 @@ public class MainController {
     private final ResumeService resumeService;
     private final VacancyService vacancyService;
     private final MessageService messageService;
+    private final AuthenticatedUserProvider authenticatedUserProvider;
 
     @GetMapping
     public String homeGet() {
@@ -30,12 +32,14 @@ public class MainController {
     public String employersGet(Model model) {
         model.addAttribute("pageTitle", "Работодатели");
         model.addAttribute("employers", userService.getEmployersUsers());
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         return "main/employers";
     }
 
     @GetMapping("/registration")
     public String registrationGet(Model model) {
         model.addAttribute("pageTitle", "Регистрация");
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         return "main/registration";
     }
 
@@ -45,13 +49,15 @@ public class MainController {
         model.addAttribute("data", profileService.profileGet(auth));
         model.addAttribute("userId", userService.getFullUserByEmail(auth.getName()).getId());
         model.addAttribute("approvedNumber", respondedApplicantsService.getApprovedResponsesNumber(auth));
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         return "main/profile";
     }
 
     @GetMapping("messages")
-    public String messagesGet(Model model, Authentication auth){
+    public String messagesGet(Model model, Authentication auth) {
         model.addAttribute("pageTitle", "Сообщения");
         model.addAttribute("contacts", messageService.messagesGet(auth));
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         return "main/messages";
     }
 
@@ -65,64 +71,76 @@ public class MainController {
         model.addAttribute("messages", messageService.messageGetByRespondedApplicantId(id));
         model.addAttribute("fromTo", userService.getFullUserByEmail(auth.getName()).getId());
         model.addAttribute("toFrom", respondedApplicantsService.getRecipientId(id, userService.getFullUserByEmail(auth.getName()).getId()));
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         return "main/message";
     }
 
     @PostMapping("/message/response")
-    public String messagePost(@ModelAttribute  SendMessageDto messageDto, Model model, Authentication auth) {
+    public String messagePost(@ModelAttribute SendMessageDto messageDto, Model model, Authentication auth) {
         model.addAttribute("pageTitle", "Переписка");
         messageService.sendMessage(messageDto, auth);
         return "redirect:/message/response/" + messageDto.getRespondApplicant();
     }
 
     @GetMapping("/applicant/{id}")
-    public String applicantGet(@PathVariable Long id, Model model){
+    public String applicantGet(@PathVariable Long id, Model model) {
         model.addAttribute("applicant", userService.getUserById(id));
         model.addAttribute("applicantId", id);
         model.addAttribute("resumes", resumeService.getPageResumesByAuthorId(id));
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         model.addAttribute("pageTitle", "Профиль соискателя");
         return "main/applicant";
     }
 
     @GetMapping("/employer/{id}")
-    public String employerGet(@PathVariable Long id, Model model){
+    public String employerGet(@PathVariable Long id, Model model) {
         model.addAttribute("employer", userService.getUserById(id));
         model.addAttribute("employerId", id);
         model.addAttribute("vacancies", vacancyService.getPageVacanciesByAuthorId(id));
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         model.addAttribute("pageTitle", "Профиль работодателя");
         return "main/employer";
     }
 
     @GetMapping("/applicant/responses")
-    public String responseApplicantGet(Model model, Authentication authentication){
+    public String responseApplicantGet(Model model, Authentication authentication) {
         model.addAttribute("pageTitle", "Отклики");
         model.addAttribute("responses", respondedApplicantsService.getApplicantResponsesByUser(authentication));
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         return "main/applicant_responses";
     }
 
     @GetMapping("/employer/responses")
-    public String responseEmployerGet(Model model, Authentication authentication){
+    public String responseEmployerGet(Model model, Authentication authentication) {
         model.addAttribute("pageTitle", "Отклики");
         model.addAttribute("responses", respondedApplicantsService.getEmployerResponsesByUser(authentication));
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         return "main/employer_responses";
     }
 
     @GetMapping("/applicant/accept")
-    public String acceptResponseEmployerGet(@RequestParam Long resume, @RequestParam Long vacancy, Authentication authentication){
+    public String acceptResponseEmployerGet(@RequestParam Long resume, @RequestParam Long vacancy, Authentication authentication) {
         respondedApplicantsService.acceptResponse(resume, vacancy, authentication);
         return "redirect:/employer/responses";
     }
 
     @GetMapping("/applicant/deny")
-    public String denyResponseEmployerGet(@RequestParam Long resume, @RequestParam Long vacancy, Authentication authentication){
+    public String denyResponseEmployerGet(@RequestParam Long resume, @RequestParam Long vacancy, Authentication authentication) {
         respondedApplicantsService.denyResponse(resume, vacancy, authentication);
         return "redirect:/employer/responses";
     }
 
     @GetMapping("/login")
-    public String loginGet(Model model){
-        model.addAttribute("pageTitle", "Вход в JobSearch");
-        return "main/login";
+    public String loginGet(Model model) {
+        boolean isAuthenticated = authenticatedUserProvider.isAuthenticated();
+        if (!isAuthenticated) {
+            model.addAttribute("pageTitle", "Вход в JobSearch");
+            model.addAttribute("isAuthenticated", isAuthenticated);
+            return "main/login";
+        }
+        model.addAttribute("pageTitle", "Что-то пошло не так");
+        model.addAttribute("isAuthenticated", isAuthenticated);
+        return "redirect:/error/403";
     }
 
     @PostMapping("/profile")

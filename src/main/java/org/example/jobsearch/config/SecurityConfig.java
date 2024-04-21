@@ -59,7 +59,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("api/vacancies/resume").permitAll()
+                        .requestMatchers("/login").anonymous()
+                        .requestMatchers("/registration").anonymous()
                         .requestMatchers("/profile").fullyAuthenticated()
+                        .requestMatchers("/messages").fullyAuthenticated()
                         .requestMatchers("/resumes").hasAnyAuthority(ADMIN, EMPLOYER)
                         .requestMatchers(HttpMethod.POST, "/messages/**").fullyAuthenticated()
 
