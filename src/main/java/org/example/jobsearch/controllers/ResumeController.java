@@ -64,6 +64,7 @@ public class ResumeController {
         model.addAttribute("contactInfo", contactInfoService.getPageContactInfoByResumeId(id));
         model.addAttribute("applicant", userService.getApplicantInfoByResumeId(id));
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isPermitted", resumeService.resumeShowPermitted(id, authenticatedUserProvider.getAuthenticatedUser()));
         return "resume/resume";
     }
 

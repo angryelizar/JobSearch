@@ -496,6 +496,22 @@ public class ResumeServiceImpl implements ResumeService {
         return resumeDao.getResumeById(resumeId).get().getCategoryId();
     }
 
+    @Override
+    @SneakyThrows
+    public Boolean resumeShowPermitted(Long id, User authenticatedUser) {
+        if (Objects.equals(authenticatedUser.getAccountType(), "Администратор") || "Работодатель".equals(authenticatedUser.getAccountType())) {
+            return true;
+        }
+        Optional<Resume> maybeResume = resumeDao.getResumeById(id);
+        if (maybeResume.isEmpty()) {
+            throw new ResumeException("Такого резюме нет! ID " + id);
+        }
+        if (Objects.equals(maybeResume.get().getApplicantId(), authenticatedUser.getId())){
+            return true;
+        }
+        return false;
+    }
+
     private List<ResumeDto> getResumeDtos(List<Resume> resumes) {
         List<ResumeDto> resumeDtos = new ArrayList<>();
         for (Resume rs : resumes) {
