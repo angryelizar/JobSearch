@@ -22,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +83,7 @@ public class UserServiceImpl implements UserService {
         List<User> users = userDao.getEmployersUsers();
         List<UserDto> userDtos = new ArrayList<>();
         users.forEach(e -> userDtos.add(UserDto.builder()
-                        .id(e.getId())
+                .id(e.getId())
                 .name(e.getName())
                 .surname(e.getSurname())
                 .accountType(e.getAccountType())
@@ -161,9 +162,17 @@ public class UserServiceImpl implements UserService {
         userDao.changeEmailOfUser(userDto.getEmail(), userId);
         userDao.changePasswordOfUser(encoder.encode(userDto.getPassword()), userId);
         userDao.changePhoneOfUser(userDto.getPhoneNumber(), userId);
-        if (!userDto.getAvatarFile().isEmpty()) {
-            avatarImageService.upload(user.get(), userDto.getAvatarFile());
+        MultipartFile file = userDto.getAvatarFile();
+        if (file.isEmpty()) {
+            throw new UserException("Нельзя отправлять пустой файл!");
         }
+        if (file.getSize() > 1000000) {
+            throw new UserException("Нельзя отправлять файл больше 1000 килобайт!");
+        }
+        if (!file.getOriginalFilename().endsWith(".jpeg") && !file.getOriginalFilename().endsWith(".jpg") && !file.getOriginalFilename().endsWith(".png")) {
+            throw new UserException("Разрешены к загрузке только картинки .jpeg, .jpg и .png!");
+        }
+        avatarImageService.upload(user.get(), file);
     }
 
     @Override
