@@ -153,7 +153,7 @@ public class UserServiceImpl implements UserService {
         var user = userDao.getUserByEmail(userDto.getEmail());
         if (user.isEmpty()) {
             log.error("Запрошен несуществующий пользователь с e-mail " + userDto.getEmail());
-            throw new UserNotFoundException("Такого пользователя нет!");
+            throw new ServiceException("Такого пользователя нет!");
         }
         Long userId = user.get().getId();
         userDao.changeNameOfUser(userDto.getName(), userId);
@@ -164,13 +164,13 @@ public class UserServiceImpl implements UserService {
         userDao.changePhoneOfUser(userDto.getPhoneNumber(), userId);
         MultipartFile file = userDto.getAvatarFile();
         if (file.isEmpty()) {
-            throw new UserException("Нельзя отправлять пустой файл!");
+            throw new AvatarException("Нельзя отправлять пустой файл!");
         }
         if (file.getSize() > 1000000) {
-            throw new UserException("Нельзя отправлять файл больше 1000 килобайт!");
+            throw new AvatarException("Нельзя отправлять файл больше 1000 килобайт!");
         }
         if (!file.getOriginalFilename().endsWith(".jpeg") && !file.getOriginalFilename().endsWith(".jpg") && !file.getOriginalFilename().endsWith(".png")) {
-            throw new UserException("Разрешены к загрузке только картинки .jpeg, .jpg и .png!");
+            throw new AvatarException("Разрешены к загрузке только картинки .jpeg, .jpg и .png!");
         }
         avatarImageService.upload(user.get(), file);
     }
