@@ -1,4 +1,5 @@
 <#import "../layout.ftlh" as main>
+<#assign formatter = "HH:mm, d MMMM, yyyy">
 <@main.layout>
     <div class="row">
         <div class="col-12 col-md-4">

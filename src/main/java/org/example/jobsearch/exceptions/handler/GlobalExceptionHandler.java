@@ -25,6 +25,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorService.makeResponse(exception), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(UserException.class)
+    @ResponseBody
+    public ResponseEntity<ErrorResponseBody> userAlreadyRegistered(UserException exception) {
+        return new ResponseEntity<>(errorService.makeResponse(exception), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(UserHaveTooLowAgeException.class)
     @ResponseBody
     public ResponseEntity<ErrorResponseBody> userHaveTooLowAge(UserHaveTooLowAgeException exception) {

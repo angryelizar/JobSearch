@@ -58,6 +58,7 @@ public class SecurityConfig {
                         .permitAll())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("api/messages/**").fullyAuthenticated()
                         .requestMatchers("api/vacancies/resume").permitAll()
                         .requestMatchers("/login").anonymous()
                         .requestMatchers("/registration").anonymous()
