@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -322,7 +323,6 @@ public class VacancyServiceImpl implements VacancyService {
     public Long addVacancyFromForm(CreatePageVacancyDto vacancyPageDto, HttpServletRequest request, Authentication auth) {
         String isActive = request.getParameter("isActive");
         vacancyPageDto.setIsActive("on".equals(isActive));
-        log.info(String.valueOf(vacancyPageDto));
         Long authorId = userDao.getUserByEmail(auth.getName()).get().getId();
         return vacancyDao.createVacancy(Vacancy.builder()
                 .name(vacancyPageDto.getName())
@@ -431,7 +431,6 @@ public class VacancyServiceImpl implements VacancyService {
     @Override
     @SneakyThrows
     public List<AjaxResumeDto> getResumesForVacancy(ResumesForVacancyDto resumesForVacancyDto) {
-        log.error(resumesForVacancyDto.toString());
         User user = userService.getFullUserByEmail(resumesForVacancyDto.getUserEmail());
         Long categoryId = getVacancyCategoryByVacancyId(resumesForVacancyDto.getVacancyId());
         List<Resume> userResumes = resumeService.getFullResumesByUserId(user.getId());
@@ -443,6 +442,22 @@ public class VacancyServiceImpl implements VacancyService {
                         .resumeId(curr.getId())
                         .build());
             }
+        }
+        return result;
+    }
+
+    @Override
+    public List<ProfilePageVacancyDto> getPageVacanciesByAuthorId(Long id) {
+        List<Vacancy> vacancyList = vacancyDao.getActiveVacanciesByAuthorId(id);
+        List<ProfilePageVacancyDto> result = new ArrayList<>();
+        for (int i = 0; i < vacancyList.size(); i++) {
+            Vacancy cur = vacancyList.get(i);
+            result.add(ProfilePageVacancyDto.builder()
+                            .id(cur.getId())
+                            .name(cur.getName())
+                            .salary(cur.getSalary())
+                            .updateDate(DateUtil.getFormattedLocalDateTime(cur.getUpdateTime()))
+                    .build());
         }
         return result;
     }

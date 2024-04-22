@@ -47,46 +47,54 @@
             <h3 class="text-start mt-3"><#if data.user.accountType = "Соискатель">Резюме<#else>Вакансии</#if>:</h3>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 mt-3 g-3">
                 <#if data.user.accountType = "Соискатель">
-                    <#list data.resumes as resume>
-                        <div class="col">
-                            <div class="card" style="min-height: 255px;">
-                                <div class="card-body">
-                                    <h5 class="card-title"><a class="text-decoration-none"
-                                                              href="resumes/${resume.id}">${resume.name}</a></h5>
-                                    <h6 class="card-subtitle mb-2 text-body-secondary">Оклад: ${resume.salary}</h6>
-                                    <p class="card-text">Обновлено: ${resume.updateDate}</p>
-                                </div>
-                                <div class="card-footer bg-transparent border-top-0">
-                                    <a href="resumes/update?id=${resume.id}"
-                                       class="text-light card-link btn btn-secondary"
-                                       style="width: 40%; font-size: 10px">Обновить</a>
-                                    <a href="/resumes/edit/${resume.id}" class="card-link btn btn-secondary"
-                                       style="width: 40%; font-size: 10px">Редактировать</a>
+                    <#if data.resumes?has_content>
+                        <#list data.resumes as resume>
+                            <div class="col">
+                                <div class="card" style="min-height: 255px;">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><a class="text-decoration-none"
+                                                                  href="resumes/${resume.id}">${resume.name}</a></h5>
+                                        <h6 class="card-subtitle mb-2 text-body-secondary">Оклад: ${resume.salary}</h6>
+                                        <p class="card-text">Обновлено: ${resume.updateDate}</p>
+                                    </div>
+                                    <div class="card-footer bg-transparent border-top-0">
+                                        <a href="resumes/update?id=${resume.id}"
+                                           class="text-light card-link btn btn-secondary"
+                                           style="width: 40%; font-size: 10px">Обновить</a>
+                                        <a href="/resumes/edit/${resume.id}" class="card-link btn btn-secondary"
+                                           style="width: 40%; font-size: 10px">Редактировать</a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </#list>
+                        </#list>
+                        <#else>
+                        <p>Вы не создавали резюме - попробуйте, это не сложно!</p>
+                    </#if>
                 <#else>
-                    <#list data.vacancies as vacancy>
-                        <div class="col">
-                            <div class="card" style="min-height: 255px;">
-                                <div class="card-body">
-                                    <h5 class="card-title"><a class="text-decoration-none"
-                                                              href="vacancies/${vacancy.id}">${vacancy.name}</a></h5>
-                                    <h6 class="card-subtitle mb-2 text-body-secondary">Оклад: ${vacancy.salary}</h6>
-                                    <p class="card-text">Обновлено: ${vacancy.updateDate}</p>
+                    <#if data.vacancies?has_content>
+                        <#list data.vacancies as vacancy>
+                            <div class="col">
+                                <div class="card" style="min-height: 255px;">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><a class="text-decoration-none"
+                                                                  href="vacancies/${vacancy.id}">${vacancy.name}</a></h5>
+                                        <h6 class="card-subtitle mb-2 text-body-secondary">Оклад: ${vacancy.salary}</h6>
+                                        <p class="card-text">Обновлено: ${vacancy.updateDate}</p>
 
-                                </div>
-                                <div class="card-footer bg-transparent border-top-0">
-                                    <a href="/vacancies/update?id=${vacancy.id}"
-                                       class="text-light card-link btn btn-secondary"
-                                       style="width: 40%; font-size: 10px">Обновить</a>
-                                    <a href="/vacancies/edit/${vacancy.id}" class="card-link btn btn-secondary"
-                                       style="width: 40%; font-size: 10px">Редактировать</a>
+                                    </div>
+                                    <div class="card-footer bg-transparent border-top-0">
+                                        <a href="/vacancies/update?id=${vacancy.id}"
+                                           class="text-light card-link btn btn-secondary"
+                                           style="width: 40%; font-size: 10px">Обновить</a>
+                                        <a href="/vacancies/edit/${vacancy.id}" class="card-link btn btn-secondary"
+                                           style="width: 40%; font-size: 10px">Редактировать</a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </#list>
+                        </#list>
+                        <#else>
+                        <p>Вы пока не создавали вакансии - может исправим это?</p>
+                    </#if>
                 </#if>
             </div>
         </div>

@@ -1,5 +1,7 @@
 package org.example.jobsearch.service;
 
+import org.example.jobsearch.dto.ApplicantInfoDto;
+import org.example.jobsearch.dto.EmployerInfoDto;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.UserAlreadyRegisteredException;
 import org.example.jobsearch.exceptions.UserHaveTooLowAgeException;
@@ -36,4 +38,8 @@ public interface UserService {
     boolean isApplicant (String email);
 
     boolean isApplicantByAuth(Authentication auth);
+
+    EmployerInfoDto getEmployerInfoByVacancyId(Long id);
+
+    ApplicantInfoDto getApplicantInfoByResumeId(Long id);
 }

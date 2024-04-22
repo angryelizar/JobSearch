@@ -10,6 +10,7 @@ import org.example.jobsearch.dao.VacancyDao;
 import org.example.jobsearch.dto.ContactDto;
 import org.example.jobsearch.dto.MessageDto;
 import org.example.jobsearch.dto.SendMessageDto;
+import org.example.jobsearch.exceptions.EmptyMessageException;
 import org.example.jobsearch.exceptions.UserException;
 import org.example.jobsearch.models.Message;
 import org.example.jobsearch.models.RespondApplicant;
@@ -84,7 +85,7 @@ public class MessageServiceImpl implements MessageService {
             throw new UserException("Вы пытаетесь выдать себя за другого пользователя!");
         }
         if (messageDto.getMessageText().isBlank() || messageDto.getMessageText().isEmpty()){
-            throw new UserException("Нельзя отправлять пустой текст");
+            throw new EmptyMessageException("Нельзя отправлять пустой текст");
         }
         Message message = Message.builder()
                 .content(messageDto.getMessageText())

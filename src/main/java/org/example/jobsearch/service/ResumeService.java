@@ -63,4 +63,6 @@ public interface ResumeService {
     List<ProfilePageResumeDto> getPageResumesByAuthorId(Long id);
 
     Long getResumeCategoryByResumeId(Long resumeId);
+
+    Boolean resumeShowPermitted(Long id, User authenticatedUser);
 }

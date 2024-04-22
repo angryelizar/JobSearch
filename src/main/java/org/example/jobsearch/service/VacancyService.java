@@ -65,4 +65,6 @@ public interface VacancyService {
     String getNameById(Long vacancyId);
 
     List<AjaxResumeDto> getResumesForVacancy(ResumesForVacancyDto resumesForVacancyDto);
+
+    List<ProfilePageVacancyDto> getPageVacanciesByAuthorId(Long id);
 }

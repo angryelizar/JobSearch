@@ -4,20 +4,24 @@
     <div class="row">
         <@pagination.pagination></@pagination.pagination>
         <div class="col-12 col-md-10 d-flex flex-column gap-3">
-            <#list resumes.content as resume>
-                <div class="card">
-                    <div class="card-header">
-                        ${resume.category}
+            <#if resumes.content?has_content>
+                <#list resumes.content as resume>
+                    <div class="card">
+                        <div class="card-header">
+                            ${resume.category}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">${resume.name}</h5>
+                            <h3 class="card-title">${resume.salary}</h3>
+                            <p class="card-text">${resume.author}</p>
+                            <p>${resume.updatedDate}</p>
+                            <a href="/resumes/${resume.id}" class="btn btn-dark">Подробнее</a>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <h5 class="card-title">${resume.name}</h5>
-                        <h3 class="card-title">${resume.salary}</h3>
-                        <p class="card-text">${resume.author}</p>
-                        <p>${resume.updatedDate}</p>
-                        <a href="/resumes/${resume.id}" class="btn btn-dark">Подробнее</a>
-                    </div>
-                </div>
-            </#list>
+                </#list>
+                <#else>
+                <p class="text-center mt-5">На сайте пока нет активных резюме</p>
+            </#if>
         </div>
         <div class="col-12 col-md-2">
             <form action="/resumes/category" method="post">
@@ -25,9 +29,11 @@
                 <div class="mb-3">
                     <label for="categoryId" class="form-label">Категория</label>
                     <select id="categoryId" class="form-select" name="categoryId">
-                        <#list categories as category>
-                            <option value="${category.id}">${category.name}</option>
-                        </#list>
+                        <#if categories?has_content>
+                            <#list categories as category>
+                                <option value="${category.id}">${category.name}</option>
+                            </#list>
+                        </#if>
                     </select>
                 </div>
                 <button type="submit" class="btn btn-secondary">Отправить</button>

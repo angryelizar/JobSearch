@@ -186,7 +186,15 @@ public class VacancyDao {
     public List<Vacancy> getVacanciesByAuthorId(Long id) {
         String sql = """
                 select * from VACANCIES
-                where AUTHOR_ID = ?
+                where AUTHOR_ID = ? 
+                """;
+        return template.query(sql, new BeanPropertyRowMapper<>(Vacancy.class), id);
+    }
+
+    public List<Vacancy> getActiveVacanciesByAuthorId(Long id) {
+        String sql = """
+                select * from VACANCIES
+                where AUTHOR_ID = ? and IS_ACTIVE = true;
                 """;
         return template.query(sql, new BeanPropertyRowMapper<>(Vacancy.class), id);
     }
