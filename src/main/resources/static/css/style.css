@@ -1,11 +1,5 @@
-.gradient-custom {
-    background: #6a11cb;
-    background: -webkit-linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
-    background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1))
-}
-
 .messages-block {
-    min-height: 200px; /* Минимальная высота блока */
-    max-height: 400px; /* Максимальная высота блока, чтобы предотвратить излишнюю прокрутку */
-    overflow-y: auto; /* Добавляет вертикальную прокрутку */
+    min-height: 200px;
+    max-height: 400px;
+    overflow-y: auto;
 }
