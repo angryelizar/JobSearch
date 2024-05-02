@@ -3,6 +3,8 @@ package org.example.jobsearch.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -24,4 +26,8 @@ public class User {
     private String avatar;
     @Column(name = "ACCOUNT_TYPE")
     private String accountType;
+    private boolean enabled;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "author")
+    private List<Vacancy> vacancies;
 }

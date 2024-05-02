@@ -5,7 +5,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.RespondedApplicantDao;
 import org.example.jobsearch.dao.ResumeDao;
-import org.example.jobsearch.dao.VacancyDao;
 import org.example.jobsearch.dto.ResponseApplicantDto;
 import org.example.jobsearch.dto.ResponseEmployerDto;
 import org.example.jobsearch.exceptions.ResumeException;
@@ -16,6 +15,7 @@ import org.example.jobsearch.models.Resume;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.models.Vacancy;
 import org.example.jobsearch.repositories.UserRepository;
+import org.example.jobsearch.repositories.VacancyRepository;
 import org.example.jobsearch.service.RespondedApplicantsService;
 import org.example.jobsearch.service.ResumeService;
 import org.example.jobsearch.service.UserService;
@@ -36,8 +36,8 @@ public class RespondedApplicantsServiceImpl implements RespondedApplicantsServic
     private final ResumeService resumeService;
     private final VacancyService vacancyService;
     private final ResumeDao resumeDao;
-    private final VacancyDao vacancyDao;
     private final UserRepository userRepository;
+    private final VacancyRepository vacancyRepository;
 
     @Override
     @SneakyThrows
@@ -68,7 +68,7 @@ public class RespondedApplicantsServiceImpl implements RespondedApplicantsServic
         if (!resumeDao.idIsExists(resume)){
             throw new ResumeException("Резюме не существует");
         }
-        if (!vacancyDao.isExists(vacancy)){
+        if (!vacancyRepository.existsById(vacancy)){
             throw new VacancyException("Вакансии не существует");
         }
         if (userService.isApplicant(authentication.getName())){
@@ -83,7 +83,7 @@ public class RespondedApplicantsServiceImpl implements RespondedApplicantsServic
         if (!resumeDao.idIsExists(resume)){
             throw new ResumeException("Резюме не существует");
         }
-        if (!vacancyDao.isExists(vacancy)){
+        if (!vacancyRepository.existsById(vacancy)){
             throw new VacancyException("Вакансии не существует");
         }
         if (userService.isApplicant(authentication.getName())){
@@ -95,17 +95,17 @@ public class RespondedApplicantsServiceImpl implements RespondedApplicantsServic
     @Override
     public String getEmployerNameById(Long id) {
         RespondApplicant rs = respondedApplicantDao.getById(id);
-        Vacancy vacancy = vacancyDao.getVacancyById(rs.getVacancyId()).get();
-        User author = userRepository.findById(vacancy.getAuthorId()).get();
+        Vacancy vacancy = vacancyRepository.findById(rs.getVacancyId()).get();
+        User author = vacancy.getAuthor();
         return author.getName() + " " + author.getSurname();
     }
 
     @Override
     public Integer getCountOfVacancies(Long id) {
         RespondApplicant rs = respondedApplicantDao.getById(id);
-        Vacancy vacancy = vacancyDao.getVacancyById(rs.getVacancyId()).get();
-        Long authorId = vacancy.getAuthorId();
-        return vacancyDao.getCountByAuthorId(authorId);
+        Vacancy vacancy = vacancyRepository.findById(rs.getVacancyId()).get();
+        Long authorId = vacancy.getAuthor().getId();
+        return vacancyRepository.getCountVacanciesByAuthorId(authorId);
     }
 
     @Override
@@ -128,9 +128,9 @@ public class RespondedApplicantsServiceImpl implements RespondedApplicantsServic
     public Long getRecipientId(Long respondedApplicantId, Long authorId) {
         RespondApplicant rs = respondedApplicantDao.getById(respondedApplicantId);
         Resume resume = resumeDao.getResumeById(rs.getResumeId()).get();
-        Vacancy vacancy = vacancyDao.getVacancyById(rs.getVacancyId()).get();
+        Vacancy vacancy = vacancyRepository.findById(rs.getVacancyId()).get();
         if (Objects.equals(authorId, resume.getApplicantId())){
-            return vacancy.getAuthorId();
+            return vacancy.getAuthor().getId();
         } else {
             return resume.getApplicantId();
         }

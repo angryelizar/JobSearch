@@ -5,7 +5,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.MessageDao;
 import org.example.jobsearch.dao.RespondedApplicantDao;
-import org.example.jobsearch.dao.VacancyDao;
 import org.example.jobsearch.dto.ContactDto;
 import org.example.jobsearch.dto.MessageDto;
 import org.example.jobsearch.dto.SendMessageDto;
@@ -15,6 +14,7 @@ import org.example.jobsearch.models.Message;
 import org.example.jobsearch.models.RespondApplicant;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.repositories.UserRepository;
+import org.example.jobsearch.repositories.VacancyRepository;
 import org.example.jobsearch.service.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -31,10 +31,10 @@ public class MessageServiceImpl implements MessageService {
     private final UserService userService;
     private final RespondedApplicantDao respondedApplicantDao;
     private final VacancyService vacancyService;
-    private final VacancyDao vacancyDao;
     private final ResumeService resumeService;
     private final MessageDao messageDao;
     private final UserRepository userRepository;
+    private final VacancyRepository vacancyRepository;
 
     @Override
     public List<ContactDto> messagesGet(Authentication auth) {
@@ -45,7 +45,7 @@ public class MessageServiceImpl implements MessageService {
                 result.add(ContactDto.builder()
                         .respondedApplicantId(cur.getId())
                         .vacancyName(vacancyService.getNameById(cur.getVacancyId()))
-                        .name(userRepository.findById(vacancyDao.getVacancyById(cur.getVacancyId()).get().getAuthorId()).get().getName() + " " + userRepository.findById(vacancyDao.getVacancyById(cur.getVacancyId()).get().getAuthorId()).get().getSurname())
+                        .name(userRepository.findById(vacancyRepository.findById(cur.getVacancyId()).get().getAuthor().getId()).get().getName() + " " + userRepository.findById(vacancyRepository.findById(cur.getVacancyId()).get().getAuthor().getId()).get().getSurname())
                         .build());
             }
         } else {

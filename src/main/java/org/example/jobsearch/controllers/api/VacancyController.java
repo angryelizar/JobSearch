@@ -68,16 +68,6 @@ public class VacancyController {
         }
     }
 
-    @GetMapping("/applicant/{id}")
-    public ResponseEntity<?> getVacanciesByApplicantId(@PathVariable Long id) {
-        try {
-            List<VacancyDto> vacancyDtos = vacancyService.getVacanciesByApplicantId(id);
-            return ResponseEntity.ok().body(vacancyDtos);
-        } catch (VacancyNotFoundException | ResumeNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-    }
-
     @GetMapping("/category/{id}")
     public ResponseEntity<?> getVacanciesByCategoryId(@PathVariable Long id) {
         try {
@@ -91,16 +81,6 @@ public class VacancyController {
     @GetMapping("/{id}/responded-applicants")
     public ResponseEntity<List<RespondedResumeDto>> getRespondedResumesByVacancyId(@PathVariable Long id) {
         return ResponseEntity.ok(vacancyService.getRespondedResumesByVacancyId(id));
-    }
-
-    @GetMapping("/{id}/users")
-    public ResponseEntity<?> getApplicantsByVacancyId(@PathVariable Long id) {
-        try {
-            List<UserDto> userDtos = vacancyService.getApplicantsByVacancyId(id);
-            return ResponseEntity.ok().body(userDtos);
-        } catch (UserNotFoundException | ResumeNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
     }
 
     @GetMapping()

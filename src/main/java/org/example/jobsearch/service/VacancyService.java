@@ -13,8 +13,6 @@ import java.util.List;
 @Service
 public interface VacancyService {
 
-    List<VacancyDto> getVacanciesByApplicantId(Long id) throws VacancyNotFoundException, ResumeNotFoundException;
-
     List<VacancyDto> getVacancies();
 
     List<VacancyDto> getActiveVacancies();
@@ -22,8 +20,6 @@ public interface VacancyService {
     List<VacancyDto> getInActiveVacancies();
 
     List<VacancyDto> getVacanciesByCategoryId(Long id) throws VacancyNotFoundException;
-
-    List<UserDto> getApplicantsByVacancyId(Long id) throws UserNotFoundException, ResumeNotFoundException;
 
     void createVacancy(Authentication auth, VacancyDto vacancyDto);
 

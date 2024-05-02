@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.ResumeDao;
-import org.example.jobsearch.dao.VacancyDao;
 import org.example.jobsearch.dto.ApplicantInfoDto;
 import org.example.jobsearch.dto.EmployerInfoDto;
 import org.example.jobsearch.dto.UserDto;
@@ -13,6 +12,7 @@ import org.example.jobsearch.models.Resume;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.models.Vacancy;
 import org.example.jobsearch.repositories.UserRepository;
+import org.example.jobsearch.repositories.VacancyRepository;
 import org.example.jobsearch.service.AuthorityService;
 import org.example.jobsearch.service.AvatarImageService;
 import org.example.jobsearch.service.UserService;
@@ -31,12 +31,12 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final VacancyDao vacancyDao;
     private final ResumeDao resumeDao;
     private final AuthorityService authorityService;
     private final AvatarImageService avatarImageService;
     private final PasswordEncoder encoder = new BCryptPasswordEncoder();
     private final UserRepository userRepository;
+    private final VacancyRepository vacancyRepository;
 
     @Override
     public List<UserDto> getUsersByName(String name) throws UserNotFoundException {
@@ -139,8 +139,9 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDto.getEmail());
         user.setPhoneNumber(userDto.getPhoneNumber());
         user.setPassword(encoder.encode(userDto.getPassword()));
-        user.setAvatar(userDto.getAvatar());
+        user.setAvatar("default_avatar.jpeg");
         user.setAccountType(userDto.getAccountType());
+        user.setEnabled(true);
         Long userId = userRepository.save(user).getId();
         authorityService.add(userId, getAccountTypeIdByTypeString(user.getAccountType()));
     }
@@ -213,17 +214,17 @@ public class UserServiceImpl implements UserService {
     @Override
     @SneakyThrows
     public EmployerInfoDto getEmployerInfoByVacancyId(Long id) {
-        Optional<Vacancy> maybeVacancy = vacancyDao.getVacancyById(id);
+        Optional<Vacancy> maybeVacancy = vacancyRepository.findById(id);
         if (maybeVacancy.isEmpty()) {
             throw new VacancyException("Вакансии с ID " + id + " не существует!");
         }
         Vacancy vacancy = maybeVacancy.get();
-        Optional<User> maybeUser = userRepository.findById(vacancy.getAuthorId());
+        Optional<User> maybeUser = userRepository.findById(vacancy.getAuthor().getId());
         if (maybeUser.isEmpty()) {
-            throw new UserNotFoundException("Пользователя с ID " + maybeVacancy.get().getAuthorId() + " не существует!");
+            throw new UserNotFoundException("Пользователя с ID " + maybeVacancy.get().getAuthor().getId() + " не существует!");
         }
         User user = maybeUser.get();
-        Integer count = vacancyDao.getCountByAuthorId(user.getId());
+        Integer count = vacancyRepository.getCountVacanciesByAuthorId(user.getId());
         return EmployerInfoDto.builder()
                 .id(user.getId())
                 .name(user.getName())

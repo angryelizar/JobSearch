@@ -46,9 +46,6 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @SneakyThrows
     public ProfilePageDto profileGet(Authentication authentication) {
-        log.error("Зашли в метод");
-        log.error(SecurityContextHolder.getContext().getAuthentication().getName());
-        log.error("Пошли дальше");
         ProfilePageDto profilePageDTO = new ProfilePageDto();
         User user = userService.getFullUserByEmail(authentication.getName());
         profilePageDTO.setUser(

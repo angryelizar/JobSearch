@@ -115,12 +115,12 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: name
-                  type: text
+                  type: varchar(5000)
                   constraints:
                     nullable: false
               - column:
                   name: description
-                  type: text
+                  type: varchar(5000)
                   constraints:
                     nullable: false
               - column:
