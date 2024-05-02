@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.example.jobsearch.dao.*;
 import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.*;
 import org.example.jobsearch.models.*;
