@@ -14,6 +14,7 @@ import org.example.jobsearch.models.Resume;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.models.WorkExperienceInfo;
 import org.example.jobsearch.repositories.CategoryRepository;
+import org.example.jobsearch.repositories.EducationInfoRepository;
 import org.example.jobsearch.repositories.ResumeRepository;
 import org.example.jobsearch.repositories.UserRepository;
 import org.example.jobsearch.service.ContactInfoService;
@@ -36,13 +37,13 @@ import java.util.*;
 @Slf4j
 public class ResumeServiceImpl implements ResumeService {
     private final WorkExperienceInfoDao workExperienceInfoDao;
-    private final EducationInfoDao educationInfoDao;
     private final WorkExperienceInfoService workExperienceInfoService;
     private final EducationInfoService educationInfoService;
     private final ContactInfoService contactInfoService;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final ResumeRepository resumeRepository;
+    private final EducationInfoRepository educationInfoRepository;
 
     @Override
     public List<ResumeDto> getResumes() {
@@ -173,10 +174,11 @@ public class ResumeServiceImpl implements ResumeService {
                 .createdTime(LocalDateTime.now())
                 .updateTime(LocalDateTime.now())
                 .build()).getId();
+        Resume createdResume = resumeRepository.findById(resumeId).get();
         if (!resumeDto.getEducationInfos().isEmpty()) {
-            resumeDto.getEducationInfos().forEach(e -> educationInfoDao.createEducationInfo(
+            resumeDto.getEducationInfos().forEach(e -> educationInfoRepository.save(
                     EducationInfo.builder()
-                            .resumeId(resumeId)
+                            .resume(createdResume)
                             .institution(e.getInstitution())
                             .program(e.getProgram())
                             .startDate(e.getStartDate())
@@ -220,14 +222,15 @@ public class ResumeServiceImpl implements ResumeService {
         resume.setUpdateTime(LocalDateTime.now());
         resumeRepository.save(resume);
         if (!updateResumeDto.getEducationInfos().isEmpty()) {
-            updateResumeDto.getEducationInfos().forEach(e -> educationInfoDao.editEducationInfo(
+            updateResumeDto.getEducationInfos().forEach(e -> educationInfoRepository.save(
                     EducationInfo.builder()
+                            .resume(resume)
                             .institution(e.getInstitution())
                             .program(e.getProgram())
                             .startDate(e.getStartDate())
                             .endDate(e.getEndDate())
                             .degree(e.getDegree())
-                            .build(), id
+                            .build()
             ));
         }
         if (!updateResumeDto.getWorkExperienceInfos().isEmpty()) {
@@ -308,6 +311,7 @@ public class ResumeServiceImpl implements ResumeService {
                 .updateTime(LocalDateTime.now())
                 .build();
         Long resumeId = resumeRepository.save(resume).getId();
+        Resume createdResume = resumeRepository.findById(resumeId).get();
         List<WorkExperienceInfoDto> workExperienceInfoDtos = pageResumeDto.getWorkExperienceInfos();
         List<EducationInfoDto> educationInfoDtos = pageResumeDto.getEducationInfos();
         if (!workExperienceInfoDtos.isEmpty()) {
@@ -334,14 +338,14 @@ public class ResumeServiceImpl implements ResumeService {
                     log.error(curDto.toString());
                 } else if (educationInfoService.isValid(curDto)) {
                     EducationInfo educationInfo = EducationInfo.builder()
-                            .resumeId(resumeId)
+                            .resume(createdResume)
                             .startDate(curDto.getStartDate())
                             .endDate(curDto.getEndDate())
                             .institution(curDto.getInstitution())
                             .program(curDto.getProgram())
                             .degree(curDto.getDegree())
                             .build();
-                    educationInfoDao.createEducationInfo(educationInfo);
+                    educationInfoRepository.save(educationInfo);
                 }
             }
         }
@@ -514,7 +518,7 @@ public class ResumeServiceImpl implements ResumeService {
         if (maybeResume.isEmpty()) {
             throw new ResumeException("Такого резюме нет! ID " + id);
         }
-        if (Objects.equals(maybeResume.get().getApplicant().getId(), authenticatedUser.getId())){
+        if (Objects.equals(maybeResume.get().getApplicant().getId(), authenticatedUser.getId())) {
             return true;
         }
         return false;
@@ -532,7 +536,7 @@ public class ResumeServiceImpl implements ResumeService {
                             .isActive(rs.getIsActive())
                             .createdTime(rs.getCreatedTime())
                             .updateTime(rs.getUpdateTime())
-                            .educationInfos(educationInfoService.getDtos(educationInfoDao.getEducationInfoByResumeId(rs.getId())))
+                            .educationInfos(educationInfoService.getDtos(educationInfoRepository.educationInfoByResumeId(rs.getId())))
                             .workExperienceInfos(workExperienceInfoService.getDtos(workExperienceInfoDao.getWorkExperienceByResumeId(rs.getId())))
                             .contactInfos(contactInfoService.getContactInfosByResumeId(rs.getId()))
                             .build()

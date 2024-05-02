@@ -8,10 +8,7 @@ import org.example.jobsearch.dao.*;
 import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.*;
 import org.example.jobsearch.models.*;
-import org.example.jobsearch.repositories.CategoryRepository;
-import org.example.jobsearch.repositories.ResumeRepository;
-import org.example.jobsearch.repositories.UserRepository;
-import org.example.jobsearch.repositories.VacancyRepository;
+import org.example.jobsearch.repositories.*;
 import org.example.jobsearch.service.CategoryService;
 import org.example.jobsearch.service.ResumeService;
 import org.example.jobsearch.service.UserService;
@@ -36,7 +33,6 @@ import java.util.Objects;
 @Slf4j
 public class VacancyServiceImpl implements VacancyService {
     private final RespondedApplicantDao respondedApplicantDao;
-    private final EducationInfoDao educationInfoDao;
     private final WorkExperienceInfoDao workExperienceInfoDao;
     private final UserService userService;
     private final ResumeService resumeService;
@@ -45,6 +41,7 @@ public class VacancyServiceImpl implements VacancyService {
     private final UserRepository userRepository;
     private final VacancyRepository vacancyRepository;
     private final ResumeRepository resumeRepository;
+    private final EducationInfoRepository educationInfoRepository;
 
     @Override
     public Integer getCount(){
@@ -178,7 +175,7 @@ public class VacancyServiceImpl implements VacancyService {
                             .isActive(resume.getIsActive())
                             .createdTime(resume.getCreatedTime())
                             .updateTime(resume.getUpdateTime())
-                            .educationInfos(educationInfoDao.getEducationInfoByResumeId(resume.getId()))
+                            .educationInfos(educationInfoRepository.educationInfoByResumeId(resume.getId()))
                             .workExperienceInfos(workExperienceInfoDao.getWorkExperienceByResumeId(resume.getId()))
                             .build()
             );

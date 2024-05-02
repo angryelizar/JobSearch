@@ -272,12 +272,12 @@ databaseChangeLog:
                     references: resumes(id)
               - column:
                   name: institution
-                  type: text
+                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:
                   name: program
-                  type: text
+                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:
@@ -292,7 +292,7 @@ databaseChangeLog:
                     nullable: true
               - column:
                   name: degree
-                  type: text
+                  type: varchar(255)
                   constraints:
                     nullable: false
   - changeSet:
