@@ -3,7 +3,6 @@ package org.example.jobsearch.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.example.jobsearch.dao.WorkExperienceInfoDao;
 import org.example.jobsearch.dto.PageWorkExperienceInfo;
 import org.example.jobsearch.dto.WorkExperienceInfoDto;
 import org.example.jobsearch.exceptions.ResumeException;
@@ -11,6 +10,7 @@ import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.models.WorkExperienceInfo;
 import org.example.jobsearch.repositories.UserRepository;
+import org.example.jobsearch.repositories.WorkExperienceInfoRepository;
 import org.example.jobsearch.service.WorkExperienceInfoService;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +21,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class WorkExperienceInfoServiceImpl implements WorkExperienceInfoService {
-    private final WorkExperienceInfoDao workExperienceInfoDao;
+    private final WorkExperienceInfoRepository workExperienceInfoRepository;
     private final UserRepository userRepository;
 
     @SneakyThrows
@@ -67,7 +67,7 @@ public class WorkExperienceInfoServiceImpl implements WorkExperienceInfoService 
 
     @Override
     public List<PageWorkExperienceInfo> getPageWorkExperienceByResumeId(Long id) {
-        List<WorkExperienceInfo> workExperienceInfos = workExperienceInfoDao.getWorkExperienceByResumeId(id);
+        List<WorkExperienceInfo> workExperienceInfos = workExperienceInfoRepository.findByResumeId(id);
         List<PageWorkExperienceInfo> pageWorkExperienceInfos = new ArrayList<>();
         for (WorkExperienceInfo currInf : workExperienceInfos) {
             pageWorkExperienceInfos.add(

@@ -13,10 +13,7 @@ import org.example.jobsearch.models.EducationInfo;
 import org.example.jobsearch.models.Resume;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.models.WorkExperienceInfo;
-import org.example.jobsearch.repositories.CategoryRepository;
-import org.example.jobsearch.repositories.EducationInfoRepository;
-import org.example.jobsearch.repositories.ResumeRepository;
-import org.example.jobsearch.repositories.UserRepository;
+import org.example.jobsearch.repositories.*;
 import org.example.jobsearch.service.ContactInfoService;
 import org.example.jobsearch.service.EducationInfoService;
 import org.example.jobsearch.service.ResumeService;
@@ -36,7 +33,6 @@ import java.util.*;
 @RequiredArgsConstructor
 @Slf4j
 public class ResumeServiceImpl implements ResumeService {
-    private final WorkExperienceInfoDao workExperienceInfoDao;
     private final WorkExperienceInfoService workExperienceInfoService;
     private final EducationInfoService educationInfoService;
     private final ContactInfoService contactInfoService;
@@ -44,6 +40,7 @@ public class ResumeServiceImpl implements ResumeService {
     private final UserRepository userRepository;
     private final ResumeRepository resumeRepository;
     private final EducationInfoRepository educationInfoRepository;
+    private final WorkExperienceInfoRepository workExperienceInfoRepository;
 
     @Override
     public List<ResumeDto> getResumes() {
@@ -188,9 +185,9 @@ public class ResumeServiceImpl implements ResumeService {
             ));
         }
         if (!resumeDto.getWorkExperienceInfos().isEmpty()) {
-            resumeDto.getWorkExperienceInfos().forEach(e -> workExperienceInfoDao.createWorkExperienceInfo(
+            resumeDto.getWorkExperienceInfos().forEach(e -> workExperienceInfoRepository.save(
                     WorkExperienceInfo.builder()
-                            .resumeId(resumeId)
+                            .resume(createdResume)
                             .years(e.getYears())
                             .companyName(e.getCompanyName())
                             .position(e.getPosition())
@@ -234,13 +231,14 @@ public class ResumeServiceImpl implements ResumeService {
             ));
         }
         if (!updateResumeDto.getWorkExperienceInfos().isEmpty()) {
-            updateResumeDto.getWorkExperienceInfos().forEach(e -> workExperienceInfoDao.editWorkExperienceInfo(
+            updateResumeDto.getWorkExperienceInfos().forEach(e -> workExperienceInfoRepository.save(
                     WorkExperienceInfo.builder()
+                            .resume(resume)
                             .years(e.getYears())
                             .companyName(e.getCompanyName())
                             .position(e.getPosition())
                             .responsibilities(e.getResponsibilities())
-                            .build(), id
+                            .build()
             ));
         }
     }
@@ -322,12 +320,12 @@ public class ResumeServiceImpl implements ResumeService {
                 } else if (workExperienceInfoService.isValid(curDto)) {
                     WorkExperienceInfo info = WorkExperienceInfo.builder()
                             .companyName(curDto.getCompanyName())
-                            .resumeId(resumeId)
+                            .resume(createdResume)
                             .responsibilities(curDto.getResponsibilities())
                             .position(curDto.getPosition())
                             .years(curDto.getYears())
                             .build();
-                    workExperienceInfoDao.createWorkExperienceInfo(info);
+                    workExperienceInfoRepository.save(info);
                 }
             }
         }
@@ -537,7 +535,7 @@ public class ResumeServiceImpl implements ResumeService {
                             .createdTime(rs.getCreatedTime())
                             .updateTime(rs.getUpdateTime())
                             .educationInfos(educationInfoService.getDtos(educationInfoRepository.educationInfoByResumeId(rs.getId())))
-                            .workExperienceInfos(workExperienceInfoService.getDtos(workExperienceInfoDao.getWorkExperienceByResumeId(rs.getId())))
+                            .workExperienceInfos(workExperienceInfoService.getDtos(workExperienceInfoRepository.findByResumeId(rs.getId())))
                             .contactInfos(contactInfoService.getContactInfosByResumeId(rs.getId()))
                             .build()
             );

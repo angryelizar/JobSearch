@@ -33,7 +33,7 @@ import java.util.Objects;
 @Slf4j
 public class VacancyServiceImpl implements VacancyService {
     private final RespondedApplicantDao respondedApplicantDao;
-    private final WorkExperienceInfoDao workExperienceInfoDao;
+    private final WorkExperienceInfoRepository workExperienceInfoRepository;
     private final UserService userService;
     private final ResumeService resumeService;
     private final CategoryService categoryService;
@@ -176,7 +176,7 @@ public class VacancyServiceImpl implements VacancyService {
                             .createdTime(resume.getCreatedTime())
                             .updateTime(resume.getUpdateTime())
                             .educationInfos(educationInfoRepository.educationInfoByResumeId(resume.getId()))
-                            .workExperienceInfos(workExperienceInfoDao.getWorkExperienceByResumeId(resume.getId()))
+                            .workExperienceInfos(workExperienceInfoRepository.findByResumeId(resume.getId()))
                             .build()
             );
         }

@@ -323,17 +323,17 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: company_name
-                  type: text
+                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:
                   name: position
-                  type: text
+                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:
                   name: responsibilities
-                  type: text
+                  type: varchar(255)
                   constraints:
                     nullable: false
   - changeSet:
