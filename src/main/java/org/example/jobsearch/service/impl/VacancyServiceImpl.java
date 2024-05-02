@@ -9,6 +9,7 @@ import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.*;
 import org.example.jobsearch.models.*;
 import org.example.jobsearch.repositories.CategoryRepository;
+import org.example.jobsearch.repositories.ResumeRepository;
 import org.example.jobsearch.repositories.UserRepository;
 import org.example.jobsearch.repositories.VacancyRepository;
 import org.example.jobsearch.service.CategoryService;
@@ -35,7 +36,6 @@ import java.util.Objects;
 @Slf4j
 public class VacancyServiceImpl implements VacancyService {
     private final RespondedApplicantDao respondedApplicantDao;
-    private final ResumeDao resumeDao;
     private final EducationInfoDao educationInfoDao;
     private final WorkExperienceInfoDao workExperienceInfoDao;
     private final UserService userService;
@@ -44,6 +44,7 @@ public class VacancyServiceImpl implements VacancyService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final VacancyRepository vacancyRepository;
+    private final ResumeRepository resumeRepository;
 
     @Override
     public Integer getCount(){
@@ -165,14 +166,14 @@ public class VacancyServiceImpl implements VacancyService {
         List<RespondApplicant> respondedApplicants = new ArrayList<>(respondedApplicantDao.getRespondedApplicantsByVacancyId(id));
         List<RespondedResumeDto> respondedResumeDtos = new ArrayList<>();
         for (RespondApplicant respondedApplicant : respondedApplicants) {
-            Resume resume = resumeDao.getResumeById(respondedApplicant.getResumeId()).get();
-            User applicant = userRepository.findById(resume.getApplicantId()).get();
+            Resume resume = resumeRepository.findById(respondedApplicant.getResumeId()).get();
+            User applicant = resume.getApplicant();
             respondedResumeDtos.add(
                     RespondedResumeDto.builder()
                             .name(resume.getName())
                             .applicantName(applicant.getName())
                             .applicantSurname(applicant.getSurname())
-                            .category(categoryRepository.findById(resume.getCategoryId()).get().getName())
+                            .category(resume.getCategory().getName())
                             .salary(resume.getSalary())
                             .isActive(resume.getIsActive())
                             .createdTime(resume.getCreatedTime())
@@ -193,7 +194,7 @@ public class VacancyServiceImpl implements VacancyService {
     @Override
     @SneakyThrows
     public void respondToVacancy(RespondedApplicantDto respondedApplicantDto) {
-        if (!resumeDao.idIsExists(respondedApplicantDto.getResumeId())) {
+        if (!resumeRepository.existsById(respondedApplicantDto.getResumeId())) {
             throw new ResumeException("Резюме не существует!");
         }
         if (!vacancyRepository.existsById(respondedApplicantDto.getVacancyId())) {
@@ -427,7 +428,7 @@ public class VacancyServiceImpl implements VacancyService {
         List<Resume> userResumes = resumeService.getFullResumesByUserId(user.getId());
         List<AjaxResumeDto> result = new ArrayList<>();
         for (Resume curr : userResumes) {
-            if (curr.getIsActive() && Objects.equals(curr.getCategoryId(), categoryId)) {
+            if (curr.getIsActive() && Objects.equals(curr.getCategory().getId(), categoryId)) {
                 result.add(AjaxResumeDto.builder()
                         .resumeName(curr.getName())
                         .resumeId(curr.getId())

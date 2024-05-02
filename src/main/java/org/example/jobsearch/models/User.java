@@ -30,4 +30,7 @@ public class User {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "author")
     private List<Vacancy> vacancies;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "applicant")
+    private List<Resume> resumes;
 }

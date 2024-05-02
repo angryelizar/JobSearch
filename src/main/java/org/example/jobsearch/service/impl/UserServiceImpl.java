@@ -3,7 +3,6 @@ package org.example.jobsearch.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.example.jobsearch.dao.ResumeDao;
 import org.example.jobsearch.dto.ApplicantInfoDto;
 import org.example.jobsearch.dto.EmployerInfoDto;
 import org.example.jobsearch.dto.UserDto;
@@ -11,6 +10,7 @@ import org.example.jobsearch.exceptions.*;
 import org.example.jobsearch.models.Resume;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.models.Vacancy;
+import org.example.jobsearch.repositories.ResumeRepository;
 import org.example.jobsearch.repositories.UserRepository;
 import org.example.jobsearch.repositories.VacancyRepository;
 import org.example.jobsearch.service.AuthorityService;
@@ -31,12 +31,12 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final ResumeDao resumeDao;
     private final AuthorityService authorityService;
     private final AvatarImageService avatarImageService;
     private final PasswordEncoder encoder = new BCryptPasswordEncoder();
     private final UserRepository userRepository;
     private final VacancyRepository vacancyRepository;
+    private final ResumeRepository resumeRepository;
 
     @Override
     public List<UserDto> getUsersByName(String name) throws UserNotFoundException {
@@ -236,17 +236,17 @@ public class UserServiceImpl implements UserService {
     @Override
     @SneakyThrows
     public ApplicantInfoDto getApplicantInfoByResumeId(Long id) {
-        Optional<Resume> maybeResume = resumeDao.getResumeById(id);
+        Optional<Resume> maybeResume = resumeRepository.findById(id);
         if (maybeResume.isEmpty()) {
             throw new ResumeException("Резюме с ID " + id + "не существует");
         }
         Resume resume = maybeResume.get();
-        Optional<User> maybeUser = userRepository.findById(resume.getApplicantId());
+        Optional<User> maybeUser = userRepository.findById(resume.getApplicant().getId());
         if (maybeUser.isEmpty()) {
             throw new UserNotFoundException("Юзера с ID " + id + " не существует!");
         }
         User user = maybeUser.get();
-        Integer count = resumeDao.getCountByAuthorId(user.getId());
+        Integer count = resumeRepository.countByApplicantId(user.getId());
         return ApplicantInfoDto.builder()
                 .id(user.getId())
                 .name(user.getName())

@@ -186,7 +186,7 @@ databaseChangeLog:
                     references: users(id)
               - column:
                   name: name
-                  type: text
+                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:
