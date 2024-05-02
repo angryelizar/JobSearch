@@ -363,6 +363,8 @@ public class VacancyServiceImpl implements VacancyService {
         }
         String isActive = request.getParameter("isActive");
         Vacancy updatedVacancy = Vacancy.builder()
+                .id(id)
+                .author(vacancy.getAuthor())
                 .name(vacancyDto.getName())
                 .description(vacancyDto.getDescription())
                 .category(categoryRepository.findById(vacancyDto.getCategoryId()).get())
@@ -370,6 +372,7 @@ public class VacancyServiceImpl implements VacancyService {
                 .expFrom(vacancyDto.getExpFrom())
                 .expTo(vacancyDto.getExpTo())
                 .isActive("on".equals(isActive))
+                .createdTime(vacancy.getCreatedTime())
                 .updateTime(LocalDateTime.now())
                 .build();
         vacancyRepository.save(updatedVacancy);
