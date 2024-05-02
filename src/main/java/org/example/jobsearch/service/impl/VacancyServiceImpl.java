@@ -8,6 +8,8 @@ import org.example.jobsearch.dao.*;
 import org.example.jobsearch.dto.*;
 import org.example.jobsearch.exceptions.*;
 import org.example.jobsearch.models.*;
+import org.example.jobsearch.repositories.*;
+import org.example.jobsearch.service.CategoryService;
 import org.example.jobsearch.service.ResumeService;
 import org.example.jobsearch.service.UserService;
 import org.example.jobsearch.service.VacancyService;
@@ -30,51 +32,43 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Slf4j
 public class VacancyServiceImpl implements VacancyService {
-    private final VacancyDao vacancyDao;
-    private final CategoryDao categoryDao;
-    private final UserDao userDao;
-    private final RespondedApplicantDao respondedApplicantDao;
-    private final ResumeDao resumeDao;
-    private final EducationInfoDao educationInfoDao;
-    private final WorkExperienceInfoDao workExperienceInfoDao;
+    private final WorkExperienceInfoRepository workExperienceInfoRepository;
     private final UserService userService;
     private final ResumeService resumeService;
-
-    @Override
-    public List<VacancyDto> getVacanciesByApplicantId(Long id) throws VacancyNotFoundException, ResumeNotFoundException {
-        List<Vacancy> vacancies = vacancyDao.getVacanciesByApplicantId(id);
-        if (vacancies.isEmpty()) {
-            throw new VacancyNotFoundException("Пользователь либо не откликался на вакансии - либо его нет :(");
-        }
-        return getVacancyDtos(vacancies);
-    }
+    private final CategoryService categoryService;
+    private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
+    private final VacancyRepository vacancyRepository;
+    private final ResumeRepository resumeRepository;
+    private final EducationInfoRepository educationInfoRepository;
+    private final RespondedApplicantRepository respondedApplicantRepository;
 
     @Override
     public Integer getCount(){
-        return vacancyDao.getCount();
+        return vacancyRepository.findAll().size();
     }
 
     @Override
     public List<VacancyDto> getVacancies() {
-        List<Vacancy> vacancies = vacancyDao.getVacancies();
+        List<Vacancy> vacancies = vacancyRepository.findAll();
         return getVacancyDtos(vacancies);
     }
 
     @Override
     public List<VacancyDto> getActiveVacancies() {
-        List<Vacancy> vacancies = vacancyDao.getActiveVacancies();
+        List<Vacancy> vacancies = vacancyRepository.searchVacanciesByIsActiveEquals(true);
         return getVacancyDtos(vacancies);
     }
 
     @Override
     public List<VacancyDto> getInActiveVacancies() {
-        List<Vacancy> vacancies = vacancyDao.getInActiveVacancies();
+        List<Vacancy> vacancies = vacancyRepository.searchVacanciesByIsActiveEquals(false);
         return getVacancyDtos(vacancies);
     }
 
     @Override
     public List<VacancyDto> getVacanciesByCategoryId(Long id) throws VacancyNotFoundException {
-        List<Vacancy> vacancies = vacancyDao.getVacanciesByCategoryId(id);
+        List<Vacancy> vacancies = vacancyRepository.getVacanciesByCategoryId(id);
         if (vacancies.isEmpty()) {
             throw new VacancyNotFoundException("Вакансий в данной категории не найдено");
         }
@@ -82,24 +76,9 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public List<UserDto> getApplicantsByVacancyId(Long id) throws UserNotFoundException, ResumeNotFoundException {
-        List<User> users = vacancyDao.getApplicantsByVacancyId(id);
-        if (users.isEmpty()) {
-            throw new UserNotFoundException("На эту вакансию никто не откликался!");
-        }
-        List<UserDto> userDtos = new ArrayList<>();
-        users.forEach(e -> userDtos.add(UserDto.builder()
-                .name(e.getName())
-                .surname(e.getSurname())
-                .accountType(e.getAccountType())
-                .build()));
-        return userDtos;
-    }
-
-    @Override
     @SneakyThrows
     public void createVacancy(Authentication auth, VacancyDto vacancyDto) {
-        if (Boolean.FALSE.equals(categoryDao.isExists(vacancyDto.getCategoryId()))) {
+        if (Boolean.FALSE.equals(categoryService.isExistsById(vacancyDto.getCategoryId()))) {
             throw new VacancyException("Выбранной категории не существует");
         }
         if (vacancyDto.getSalary() <= 0) {
@@ -111,33 +90,33 @@ public class VacancyServiceImpl implements VacancyService {
         Vacancy vacancy = Vacancy.builder()
                 .name(vacancyDto.getName())
                 .description(vacancyDto.getDescription())
-                .categoryId(vacancyDto.getCategoryId())
+                .category(categoryRepository.findById(vacancyDto.getCategoryId()).get())
                 .salary(vacancyDto.getSalary())
                 .expFrom(vacancyDto.getExpFrom())
                 .expTo(vacancyDto.getExpTo())
                 .isActive(vacancyDto.getIsActive())
-                .authorId(userDao.getUserByEmail(auth.getName()).get().getId())
+                .author(userRepository.getUserByEmail(auth.getName()).get())
                 .createdTime(LocalDateTime.now())
                 .updateTime(LocalDateTime.now())
                 .build();
-        vacancyDao.createVacancy(vacancy);
+        vacancyRepository.save(vacancy);
     }
 
     @Override
     public VacancyDto getVacancyById(Long id) throws VacancyNotFoundException {
-        if (vacancyDao.getVacancyById(id).isEmpty()) {
+        if (vacancyRepository.findById(id).isEmpty()) {
             throw new VacancyNotFoundException("Вакансия не найдена");
         }
-        return getVacancyDto(vacancyDao.getVacancyById(id).get());
+        return getVacancyDto(vacancyRepository.findById(id).get());
     }
 
     @Override
     @SneakyThrows
     public void editVacancy(Long id, UpdateVacancyDto updateVacancyDto) {
-        if (!vacancyDao.isExists(id)) {
+        if (!vacancyRepository.existsById(id)) {
             throw new VacancyException("Такой вакансии нет - нечего редактировать!");
         }
-        if (Boolean.FALSE.equals(categoryDao.isExists(updateVacancyDto.getCategoryId()))) {
+        if (Boolean.FALSE.equals(categoryService.isExistsById(updateVacancyDto.getCategoryId()))) {
             throw new VacancyException("Выбранной категории не существует");
         }
         if (updateVacancyDto.getSalary() <= 0) {
@@ -149,54 +128,55 @@ public class VacancyServiceImpl implements VacancyService {
         Vacancy vacancy = Vacancy.builder()
                 .name(updateVacancyDto.getName())
                 .description(updateVacancyDto.getDescription())
-                .categoryId(updateVacancyDto.getCategoryId())
+                .category(categoryRepository.findById(updateVacancyDto.getCategoryId()).get())
                 .salary(updateVacancyDto.getSalary())
                 .expFrom(updateVacancyDto.getExpFrom())
                 .expTo(updateVacancyDto.getExpTo())
                 .isActive(updateVacancyDto.getIsActive())
                 .updateTime(LocalDateTime.now())
                 .build();
-        vacancyDao.editVacancy(id, vacancy);
+        vacancyRepository.save(vacancy);
     }
 
     @Override
     public void deleteVacancyById(Long id) {
-        vacancyDao.deleteVacancyById(id);
+        vacancyRepository.deleteById(id);
     }
 
     @Override
     @SneakyThrows
     public void deleteVacancyById(Long id, Authentication authentication) {
-        if (!vacancyDao.isExists(id)){
+        if (!vacancyRepository.existsById(id)){
             log.error("Вакансии с ID " + id + " не существует");
             throw new VacancyException("Такой вакансии нет");
         }
-        Vacancy vacancy = vacancyDao.getVacancyById(id).get();
-        if (!Objects.equals(vacancy.getAuthorId(), userDao.getUserByEmail(authentication.getName()).get().getId())){
+        Vacancy vacancy = vacancyRepository.findById(id).get();
+        if (!Objects.equals(vacancy.getAuthor().getId(), userRepository.getUserByEmail(authentication.getName()).get().getId())){
             log.error("Была попытка удалить чужую вакансию");
             throw new VacancyException("Это не ваша вакансия!");
         }
-        vacancyDao.deleteVacancyById(id);
+        vacancyRepository.deleteById(id);
     }
 
     @Override
     public List<RespondedResumeDto> getRespondedResumesByVacancyId(Long id) {
-        List<RespondApplicant> respondedApplicants = new ArrayList<>(respondedApplicantDao.getRespondedApplicantsByVacancyId(id));
+        List<RespondApplicant> respondedApplicants = new ArrayList<>(respondedApplicantRepository.getRespondedApplicantsByVacancyId(id));
         List<RespondedResumeDto> respondedResumeDtos = new ArrayList<>();
         for (RespondApplicant respondedApplicant : respondedApplicants) {
-            Resume resume = resumeDao.getResumeById(respondedApplicant.getResumeId()).get();
+            Resume resume = respondedApplicant.getResume();
+            User applicant = resume.getApplicant();
             respondedResumeDtos.add(
                     RespondedResumeDto.builder()
                             .name(resume.getName())
-                            .applicantName(userDao.getUserNameById(resume.getApplicantId()))
-                            .applicantSurname(userDao.getSurnameNameById(resume.getApplicantId()))
-                            .category(categoryDao.getCategoryNameById(resume.getCategoryId()))
+                            .applicantName(applicant.getName())
+                            .applicantSurname(applicant.getSurname())
+                            .category(resume.getCategory().getName())
                             .salary(resume.getSalary())
                             .isActive(resume.getIsActive())
                             .createdTime(resume.getCreatedTime())
                             .updateTime(resume.getUpdateTime())
-                            .educationInfos(educationInfoDao.getEducationInfoByResumeId(resume.getId()))
-                            .workExperienceInfos(workExperienceInfoDao.getWorkExperienceByResumeId(resume.getId()))
+                            .educationInfos(educationInfoRepository.educationInfoByResumeId(resume.getId()))
+                            .workExperienceInfos(workExperienceInfoRepository.findByResumeId(resume.getId()))
                             .build()
             );
         }
@@ -205,33 +185,36 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public List<VacancyDto> getVacanciesByQuery(String query) {
-        return getVacancyDtos(vacancyDao.getVacanciesByQuery(query));
+        return getVacancyDtos(vacancyRepository.getVacanciesByQuery(query));
     }
 
     @Override
     @SneakyThrows
     public void respondToVacancy(RespondedApplicantDto respondedApplicantDto) {
-        if (!resumeDao.idIsExists(respondedApplicantDto.getResumeId())) {
+        if (!resumeRepository.existsById(respondedApplicantDto.getResumeId())) {
             throw new ResumeException("Резюме не существует!");
         }
-        if (!vacancyDao.isExists(respondedApplicantDto.getVacancyId())) {
+        if (!vacancyRepository.existsById(respondedApplicantDto.getVacancyId())) {
             throw new VacancyException("Вакансии не существует!");
         }
-        if (respondedApplicantDao.isExists(respondedApplicantDto.getResumeId(), respondedApplicantDto.getVacancyId())) {
+        if (respondedApplicantRepository.isExists(respondedApplicantDto.getResumeId(), respondedApplicantDto.getVacancyId()) > 0) {
             throw new VacancyException("Соискатель уже откликался на эту вакансию!");
         }
-        respondedApplicantDao.respondToVacancy(respondedApplicantDto.getResumeId(), respondedApplicantDto.getVacancyId());
+        respondedApplicantRepository.save(RespondApplicant.builder()
+                        .resume(resumeRepository.findById(respondedApplicantDto.getResumeId()).get())
+                        .vacancy(vacancyRepository.findById(respondedApplicantDto.getVacancyId()).get())
+                .build());
     }
 
     @Override
     public List<ProfileAndVacancyDto> getVacanciesByEmployerName(String employer) {
-        List<User> users = new ArrayList<>(userDao.getUsersByName(employer));
+        List<User> users = new ArrayList<>(userRepository.findByName(employer));
         List<ProfileAndVacancyDto> vacAndUsers = new ArrayList<>();
         for (User currUsr : users) {
             vacAndUsers.add(ProfileAndVacancyDto.builder()
                     .name(currUsr.getName())
                     .surname(currUsr.getSurname())
-                    .vacancyDtos(getVacancyDtos(vacancyDao.getVacanciesByAuthorId(currUsr.getId())))
+                    .vacancyDtos(getVacancyDtos(vacancyRepository.findVacanciesByAuthorId(currUsr.getId())))
                     .build());
         }
         return vacAndUsers;
@@ -239,14 +222,16 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public List<Vacancy> getVacanciesByEmployerId(Long id) {
-        return vacancyDao.getVacanciesByAuthorId(id);
+        return vacancyRepository.findVacanciesByAuthorId(id);
     }
 
     @Override
     @SneakyThrows
     public void update(Long id) {
-        if (vacancyDao.isExists(id)) {
-            vacancyDao.update(LocalDateTime.now(), id);
+        if (vacancyRepository.existsById(id)) {
+            Vacancy vacancy = vacancyRepository.findById(id).get();
+            vacancy.setUpdateTime(LocalDateTime.now());
+            vacancyRepository.save(vacancy);
         } else {
             log.error("Была запрошена несуществующая вакансия с ID " + id);
             throw new VacancyException("Такой вакансии нет!");
@@ -255,18 +240,19 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public List<PageVacancyDto> getActivePageVacancies() {
-        List<Vacancy> vacancies = vacancyDao.getActiveVacancies();
+        List<Vacancy> vacancies = vacancyRepository.searchVacanciesByIsActiveEquals(true);
         vacancies.sort(Comparator.comparing(Vacancy::getUpdateTime).reversed());
         List<PageVacancyDto> pageVacancyDtos = new ArrayList<>();
         for (Vacancy vacancy : vacancies) {
+            User author = vacancy.getAuthor();
             pageVacancyDtos.add(
                     PageVacancyDto
                             .builder()
                             .id(vacancy.getId())
                             .name(vacancy.getName())
                             .description(vacancy.getDescription())
-                            .category(categoryDao.getCategoryNameById(vacancy.getCategoryId()))
-                            .author(userDao.getUserNameById(vacancy.getAuthorId()))
+                            .category(vacancy.getCategory().getName())
+                            .author(author.getName() + " " + author.getSurname())
                             .salary(vacancy.getSalary())
                             .expFrom(vacancy.getExpFrom())
                             .expTo(vacancy.getExpTo())
@@ -300,14 +286,15 @@ public class VacancyServiceImpl implements VacancyService {
     @Override
     @SneakyThrows
     public PageVacancyDto getPageVacancyById(Long id) {
-        if (vacancyDao.isExists(id)) {
-            Vacancy vacancy = vacancyDao.getVacancyById(id).get();
+        if (vacancyRepository.existsById(id)) {
+            Vacancy vacancy = vacancyRepository.findById(id).get();
+            User author = vacancy.getAuthor();
             return PageVacancyDto
                     .builder()
                     .name(vacancy.getName())
                     .description(vacancy.getDescription())
-                    .author(userDao.getUserNameById(vacancy.getAuthorId()))
-                    .category(categoryDao.getCategoryNameById(vacancy.getCategoryId()))
+                    .author(author.getName() + " " + author.getSurname())
+                    .category(vacancy.getCategory().getName())
                     .salary(vacancy.getSalary())
                     .expFrom(vacancy.getExpFrom())
                     .expTo(vacancy.getExpTo())
@@ -323,30 +310,31 @@ public class VacancyServiceImpl implements VacancyService {
     public Long addVacancyFromForm(CreatePageVacancyDto vacancyPageDto, HttpServletRequest request, Authentication auth) {
         String isActive = request.getParameter("isActive");
         vacancyPageDto.setIsActive("on".equals(isActive));
-        Long authorId = userDao.getUserByEmail(auth.getName()).get().getId();
-        return vacancyDao.createVacancy(Vacancy.builder()
+        User author = userRepository.getUserByEmail(auth.getName()).get();
+
+        return vacancyRepository.save(Vacancy.builder()
                 .name(vacancyPageDto.getName())
                 .description(vacancyPageDto.getDescription())
-                .categoryId(vacancyPageDto.getCategoryId())
+                .category(categoryRepository.findById(vacancyPageDto.getCategoryId()).get())
                 .salary(vacancyPageDto.getSalary())
                 .expTo(vacancyPageDto.getExpTo())
                 .expFrom(vacancyPageDto.getExpFrom())
-                .authorId(authorId)
+                .author(author)
                 .isActive(vacancyPageDto.getIsActive())
                 .createdTime(LocalDateTime.now())
                 .updateTime(LocalDateTime.now())
-                .build());
+                .build()).getId();
     }
 
     @Override
     @SneakyThrows
     public PageVacancyDto vacancyEditGet(Long id, Authentication authentication) {
-        if (!vacancyDao.isExists(id)){
+        if (!vacancyRepository.existsById(id)){
             log.error("Вакансии с ID " + id + " не существует");
             throw new VacancyException("Такой вакансии нет");
         }
-        Vacancy vacancy = vacancyDao.getVacancyById(id).get();
-        if (!Objects.equals(vacancy.getAuthorId(), userDao.getUserByEmail(authentication.getName()).get().getId())){
+        Vacancy vacancy = vacancyRepository.findById(id).get();
+        if (!Objects.equals(vacancy.getAuthor().getId(), userRepository.getUserByEmail(authentication.getName()).get().getId())){
             log.error("Была попытка отредактировать чужую вакансию");
             throw new VacancyException("Это не ваша вакансия!");
         }
@@ -365,46 +353,50 @@ public class VacancyServiceImpl implements VacancyService {
     @SneakyThrows
     public Long editVacancyFromForm(UpdatePageVacancyDto vacancyDto, HttpServletRequest request, Authentication auth) {
         Long id = vacancyDto.getId();
-        if (!vacancyDao.isExists(id)){
+        if (!vacancyRepository.existsById(id)){
             log.error("Вакансии с ID " + id + " не существует");
             throw new VacancyException("Такой вакансии нет");
         }
-        Vacancy vacancy = vacancyDao.getVacancyById(id).get();
-        if (!Objects.equals(vacancy.getAuthorId(), userDao.getUserByEmail(auth.getName()).get().getId())){
+        Vacancy vacancy = vacancyRepository.findById(id).get();
+        if (!Objects.equals(vacancy.getAuthor().getId(), userRepository.getUserByEmail(auth.getName()).get().getId())){
             log.error("Была попытка отредактировать чужую вакансию");
             throw new VacancyException("Это не ваша вакансия!");
         }
         String isActive = request.getParameter("isActive");
         Vacancy updatedVacancy = Vacancy.builder()
+                .id(id)
+                .author(vacancy.getAuthor())
                 .name(vacancyDto.getName())
                 .description(vacancyDto.getDescription())
-                .categoryId(vacancyDto.getCategoryId())
+                .category(categoryRepository.findById(vacancyDto.getCategoryId()).get())
                 .salary(vacancyDto.getSalary())
                 .expFrom(vacancyDto.getExpFrom())
                 .expTo(vacancyDto.getExpTo())
                 .isActive("on".equals(isActive))
+                .createdTime(vacancy.getCreatedTime())
                 .updateTime(LocalDateTime.now())
                 .build();
-        vacancyDao.editVacancy(id, updatedVacancy);
+        vacancyRepository.save(updatedVacancy);
         return id;
     }
 
     @Override
     @SneakyThrows
     public List<PageVacancyDto> getPageVacancyByCategoryId(Long categoryId) {
-        if (Boolean.FALSE.equals(categoryDao.isExists(categoryId))){
+        if (Boolean.FALSE.equals(categoryRepository.existsById(categoryId))){
             throw new VacancyException("Такой категории нет!");
         }
-        List<Vacancy> vacancies = vacancyDao.getActiveVacancies();
+        List<Vacancy> vacancies = vacancyRepository.searchVacanciesByIsActiveEquals(true);
         vacancies.sort(Comparator.comparing(Vacancy::getUpdateTime).reversed());
         List<PageVacancyDto> resultVacancies = new ArrayList<>();
         for (Vacancy curVac : vacancies) {
-            if (Objects.equals(curVac.getCategoryId(), categoryId)) {
+            User author = curVac.getAuthor();
+            if (Objects.equals(curVac.getCategory().getId(), categoryId)) {
                 resultVacancies.add(PageVacancyDto.builder()
                         .id(curVac.getId())
                         .name(curVac.getName())
-                        .author(userDao.getUserNameById(curVac.getAuthorId()))
-                        .category(categoryDao.getCategoryNameById(curVac.getCategoryId()))
+                        .author(author.getName() + " " + author.getSurname())
+                        .category(curVac.getCategory().getName())
                         .salary(curVac.getSalary())
                         .updateTime(DateUtil.getFormattedLocalDateTime(curVac.getUpdateTime()))
                         .build());
@@ -425,7 +417,7 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public String getNameById(Long vacancyId) {
-        return vacancyDao.getNameById(vacancyId);
+        return vacancyRepository.findById(vacancyId).get().getName();
     }
 
     @Override
@@ -436,7 +428,7 @@ public class VacancyServiceImpl implements VacancyService {
         List<Resume> userResumes = resumeService.getFullResumesByUserId(user.getId());
         List<AjaxResumeDto> result = new ArrayList<>();
         for (Resume curr : userResumes) {
-            if (curr.getIsActive() && Objects.equals(curr.getCategoryId(), categoryId)) {
+            if (curr.getIsActive() && Objects.equals(curr.getCategory().getId(), categoryId)) {
                 result.add(AjaxResumeDto.builder()
                         .resumeName(curr.getName())
                         .resumeId(curr.getId())
@@ -448,22 +440,21 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public List<ProfilePageVacancyDto> getPageVacanciesByAuthorId(Long id) {
-        List<Vacancy> vacancyList = vacancyDao.getActiveVacanciesByAuthorId(id);
+        List<Vacancy> vacancyList = vacancyRepository.getVacanciesByAuthorId(id);
         List<ProfilePageVacancyDto> result = new ArrayList<>();
-        for (int i = 0; i < vacancyList.size(); i++) {
-            Vacancy cur = vacancyList.get(i);
+        for (Vacancy cur : vacancyList) {
             result.add(ProfilePageVacancyDto.builder()
-                            .id(cur.getId())
-                            .name(cur.getName())
-                            .salary(cur.getSalary())
-                            .updateDate(DateUtil.getFormattedLocalDateTime(cur.getUpdateTime()))
+                    .id(cur.getId())
+                    .name(cur.getName())
+                    .salary(cur.getSalary())
+                    .updateDate(DateUtil.getFormattedLocalDateTime(cur.getUpdateTime()))
                     .build());
         }
         return result;
     }
 
     private Long getVacancyCategoryByVacancyId(Long vacancyId) {
-        return vacancyDao.getVacancyById(vacancyId).get().getCategoryId();
+        return vacancyRepository.findById(vacancyId).get().getCategory().getId();
     }
 
     private List<VacancyDto> getVacancyDtos(List<Vacancy> vacancies) {
@@ -486,7 +477,7 @@ public class VacancyServiceImpl implements VacancyService {
         return VacancyDto.builder()
                 .name(vacancy.getName())
                 .description(vacancy.getDescription())
-                .categoryId(vacancy.getCategoryId())
+                .categoryId(vacancy.getCategory().getId())
                 .salary(vacancy.getSalary())
                 .expFrom(vacancy.getExpFrom())
                 .expTo(vacancy.getExpTo())

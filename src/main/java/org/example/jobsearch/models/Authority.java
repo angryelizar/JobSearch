@@ -3,21 +3,19 @@ package org.example.jobsearch.models;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "CONTACT_TYPES")
-public class ContactType {
+@Table(name = "AUTHORITIES")
+public class Authority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String type;
+    private String authority;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "contactType")
-    private List<ContactInfo> contactsInfos;
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "authority")
+    private Role role;
 }

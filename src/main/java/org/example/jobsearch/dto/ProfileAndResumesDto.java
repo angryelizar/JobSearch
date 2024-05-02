@@ -13,7 +13,7 @@ import java.util.List;
 public class ProfileAndResumesDto {
     private String name;
     private String surname;
-    private Byte age;
+    private Integer age;
     private String email;
     List<ResumeDto> resumeDtos;
 }

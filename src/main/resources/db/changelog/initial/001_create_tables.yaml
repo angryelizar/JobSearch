@@ -115,12 +115,12 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: name
-                  type: text
+                  type: varchar(5000)
                   constraints:
                     nullable: false
               - column:
                   name: description
-                  type: text
+                  type: varchar(5000)
                   constraints:
                     nullable: false
               - column:
@@ -186,7 +186,7 @@ databaseChangeLog:
                     references: users(id)
               - column:
                   name: name
-                  type: text
+                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:
@@ -272,12 +272,12 @@ databaseChangeLog:
                     references: resumes(id)
               - column:
                   name: institution
-                  type: text
+                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:
                   name: program
-                  type: text
+                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:
@@ -292,7 +292,7 @@ databaseChangeLog:
                     nullable: true
               - column:
                   name: degree
-                  type: text
+                  type: varchar(255)
                   constraints:
                     nullable: false
   - changeSet:
@@ -323,17 +323,17 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: company_name
-                  type: text
+                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:
                   name: position
-                  type: text
+                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:
                   name: responsibilities
-                  type: text
+                  type: varchar(255)
                   constraints:
                     nullable: false
   - changeSet:
@@ -406,7 +406,7 @@ databaseChangeLog:
                     references: users(id)
               - column:
                   name: content
-                  type: text
+                  type: varchar(500)
                   constraints:
                     nullable: false
               - column:

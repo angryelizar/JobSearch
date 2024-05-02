@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class ProfileDto {
     private String name;
     private String surname;
-    private Byte age;
+    private Integer age;
     private String email;
     private String phoneNumber;
     private String avatar;

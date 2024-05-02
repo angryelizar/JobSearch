@@ -9,4 +9,6 @@ import java.util.List;
 @Service
 public interface CategoryService {
     List<CategoryDto> getCategoriesList();
+
+    Boolean isExistsById(Long categoryId);
 }

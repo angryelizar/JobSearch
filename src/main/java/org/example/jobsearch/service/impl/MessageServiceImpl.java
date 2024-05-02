@@ -3,10 +3,6 @@ package org.example.jobsearch.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.example.jobsearch.dao.MessageDao;
-import org.example.jobsearch.dao.RespondedApplicantDao;
-import org.example.jobsearch.dao.UserDao;
-import org.example.jobsearch.dao.VacancyDao;
 import org.example.jobsearch.dto.ContactDto;
 import org.example.jobsearch.dto.MessageDto;
 import org.example.jobsearch.dto.SendMessageDto;
@@ -15,6 +11,9 @@ import org.example.jobsearch.exceptions.UserException;
 import org.example.jobsearch.models.Message;
 import org.example.jobsearch.models.RespondApplicant;
 import org.example.jobsearch.models.User;
+import org.example.jobsearch.repositories.MessageRepository;
+import org.example.jobsearch.repositories.RespondedApplicantRepository;
+import org.example.jobsearch.repositories.UserRepository;
 import org.example.jobsearch.service.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -29,33 +28,31 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
     private final UserService userService;
-    private final RespondedApplicantDao respondedApplicantDao;
-    private final VacancyService vacancyService;
-    private final UserDao userDao;
-    private final VacancyDao vacancyDao;
-    private final ResumeService resumeService;
-    private final MessageDao messageDao;
+    private final UserRepository userRepository;
+    private final RespondedApplicantRepository respondedApplicantRepository;
+    private final MessageRepository messageRepository;
 
     @Override
     public List<ContactDto> messagesGet(Authentication auth) {
         List<ContactDto> result = new ArrayList<>();
         if (userService.isApplicant(auth.getName())) {
-            List<RespondApplicant> list = respondedApplicantDao.getByApplicantEmail(auth.getName());
+            List<RespondApplicant> list = respondedApplicantRepository.findAllByApplicantEmail(auth.getName());
             for (RespondApplicant cur : list) {
                 result.add(ContactDto.builder()
                         .respondedApplicantId(cur.getId())
-                        .vacancyName(vacancyService.getNameById(cur.getVacancyId()))
-                        .name(userDao.getUserNameById(vacancyDao.getVacancyById(cur.getVacancyId()).get().getAuthorId()))
+                        .vacancyName(cur.getVacancy().getName())
+                        .name(cur.getVacancy().getAuthor().getName() + " " + cur.getVacancy().getAuthor().getSurname())
                         .build());
             }
         } else {
-            List<RespondApplicant> list = respondedApplicantDao.getByEmployerEmail(auth.getName());
+            List<RespondApplicant> list = respondedApplicantRepository.getByEmployerEmail(auth.getName());
             for (RespondApplicant cur : list) {
-                Long authorId = resumeService.getAuthorByResumeId(cur.getResumeId()).getId();
-                String name = userDao.getUserNameById(authorId) + " " + userDao.getSurnameNameById(authorId);
+                Long authorId = cur.getResume().getApplicant().getId();
+                User user = userRepository.findById(authorId).get();
+                String name = user.getName() + " " + user.getSurname();
                 result.add(ContactDto.builder()
                         .respondedApplicantId(cur.getId())
-                        .vacancyName(vacancyService.getNameById(cur.getVacancyId()))
+                        .vacancyName(cur.getVacancy().getName())
                         .name(name)
                         .build());
             }
@@ -65,11 +62,11 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public List<MessageDto> messageGetByRespondedApplicantId(Long id) {
-        List<Message> messageList = messageDao.messageGetByRespondedApplicantId(id);
+        List<Message> messageList = messageRepository.messageGetByRespondedApplicantId(id);
         List<MessageDto> result = new ArrayList<>();
         for (Message cur : messageList) {
             result.add(MessageDto.builder()
-                    .author(userDao.getUserNameById(cur.getFromTo()))
+                    .author(cur.getFromTo().getName() + " " + cur.getFromTo().getSurname())
                     .dateTime(cur.getDateTime())
                     .content(cur.getContent())
                     .build());
@@ -80,7 +77,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     @SneakyThrows
     public void sendMessage(SendMessageDto messageDto, Authentication auth) {
-        User user = userDao.getUserByEmail(auth.getName()).get();
+        User user = userRepository.getUserByEmail(auth.getName()).get();
         if (!Objects.equals(user.getId(), messageDto.getMessageAuthor())){
             throw new UserException("Вы пытаетесь выдать себя за другого пользователя!");
         }
@@ -89,11 +86,11 @@ public class MessageServiceImpl implements MessageService {
         }
         Message message = Message.builder()
                 .content(messageDto.getMessageText())
-                .fromTo(messageDto.getMessageAuthor())
-                .toFrom(messageDto.getMessageRecipient())
+                .fromTo(userRepository.findById(messageDto.getMessageAuthor()).get())
+                .toFrom(userRepository.findById(messageDto.getMessageRecipient()).get())
                 .dateTime(LocalDateTime.now())
-                .respondApplicantId(messageDto.getRespondApplicant())
+                .respondedApplicants(respondedApplicantRepository.findById(messageDto.getRespondApplicant()).get())
                 .build();
-        messageDao.create(message);
+        messageRepository.save(message);
     }
 }

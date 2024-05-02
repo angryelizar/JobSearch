@@ -2,18 +2,18 @@ package org.example.jobsearch.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.jobsearch.dao.EducationInfoDao;
-import org.example.jobsearch.dao.UserDao;
 import org.example.jobsearch.dto.EducationInfoDto;
 import org.example.jobsearch.dto.PageEducationInfoDto;
 import org.example.jobsearch.exceptions.ResumeException;
 import org.example.jobsearch.models.EducationInfo;
+import org.example.jobsearch.models.User;
+import org.example.jobsearch.repositories.EducationInfoRepository;
+import org.example.jobsearch.repositories.UserRepository;
 import org.example.jobsearch.service.EducationInfoService;
 import org.example.jobsearch.util.DateUtil;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class EducationInfoServiceImpl implements EducationInfoService {
-    private final UserDao userDao;
-    private final EducationInfoDao educationInfoDao;
+    private final EducationInfoRepository educationInfoRepository;
+    private final UserRepository userRepository;
 
     public List<EducationInfoDto> getDtos(List<EducationInfo> list) {
         List<EducationInfoDto> result = new ArrayList<>();
@@ -41,9 +41,9 @@ public class EducationInfoServiceImpl implements EducationInfoService {
     @Override
     public boolean isValid(List<EducationInfoDto> educationInfos, Long applicantId) {
         try {
-            Integer age = userDao.getUserAge(applicantId);
-            for (int i = 0; i < educationInfos.size(); i++) {
-                EducationInfoDto dto = educationInfos.get(i);
+            User author = userRepository.findById(applicantId).get();
+            Integer age = author.getAge();
+            for (EducationInfoDto dto : educationInfos) {
                 if (dto.getProgram().isBlank() || dto.getProgram().isEmpty()) {
                     throw new ResumeException("Поле с описанием учебы не может быть пустым!");
                 }
@@ -56,9 +56,9 @@ public class EducationInfoServiceImpl implements EducationInfoService {
                 if (dto.getStartDate() == null) {
                     throw new ResumeException("Поле с датой начала обучения не может быть пустым!");
                 }
-                if (age != null){
+                if (age != null) {
                     int res = dto.getEndDate().getYear() - dto.getStartDate().getYear();
-                    if (res > age){
+                    if (res > age) {
                         throw new ResumeException("Срок обучения не может быть больше возраста автора!");
                     }
                 }
@@ -72,10 +72,9 @@ public class EducationInfoServiceImpl implements EducationInfoService {
 
     @Override
     public List<PageEducationInfoDto> getPageEducationInfoByResumeId(Long id) {
-        List<EducationInfo> educationInfos = educationInfoDao.getEducationInfoByResumeId(id);
+        List<EducationInfo> educationInfos = educationInfoRepository.educationInfoByResumeId(id);
         List<PageEducationInfoDto> pageEducationInfoDtos = new ArrayList<>();
-        for (int i = 0; i < educationInfos.size(); i++) {
-            EducationInfo edInf = educationInfos.get(i);
+        for (EducationInfo edInf : educationInfos) {
             pageEducationInfoDtos.add(
                     PageEducationInfoDto
                             .builder()
@@ -119,8 +118,4 @@ public class EducationInfoServiceImpl implements EducationInfoService {
         return true;
     }
 
-
-    public boolean isDateRangeValid(LocalDateTime startDate, LocalDateTime endDate) {
-        return startDate.isBefore(endDate);
-    }
 }

@@ -13,6 +13,7 @@ import org.example.jobsearch.models.EducationInfo;
 import org.example.jobsearch.models.Resume;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.models.WorkExperienceInfo;
+import org.example.jobsearch.repositories.*;
 import org.example.jobsearch.service.ContactInfoService;
 import org.example.jobsearch.service.EducationInfoService;
 import org.example.jobsearch.service.ResumeService;
@@ -32,36 +33,36 @@ import java.util.*;
 @RequiredArgsConstructor
 @Slf4j
 public class ResumeServiceImpl implements ResumeService {
-    private final ResumeDao resumeDao;
-    private final UserDao userDao;
-    private final WorkExperienceInfoDao workExperienceInfoDao;
-    private final EducationInfoDao educationInfoDao;
-    private final CategoryDao categoryDao;
     private final WorkExperienceInfoService workExperienceInfoService;
     private final EducationInfoService educationInfoService;
     private final ContactInfoService contactInfoService;
+    private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
+    private final ResumeRepository resumeRepository;
+    private final EducationInfoRepository educationInfoRepository;
+    private final WorkExperienceInfoRepository workExperienceInfoRepository;
 
     @Override
     public List<ResumeDto> getResumes() {
-        List<Resume> resumes = resumeDao.getResumes();
+        List<Resume> resumes = resumeRepository.findAll();
         return getResumeDtos(resumes);
     }
 
     @Override
     public List<ResumeDto> getActiveResumes() {
-        List<Resume> resumes = resumeDao.getActiveResumes();
+        List<Resume> resumes = resumeRepository.findByIsActive(true);
         return getResumeDtos(resumes);
     }
 
     @Override
     public List<ResumeDto> getInActiveResumes() {
-        List<Resume> resumes = resumeDao.getInActiveResumes();
+        List<Resume> resumes = resumeRepository.findByIsActive(false);
         return getResumeDtos(resumes);
     }
 
     @Override
     public List<ResumeDto> getResumesByCategoryId(Long id) throws ResumeNotFoundException {
-        List<Resume> resumes = resumeDao.getResumesByCategoryId(id);
+        List<Resume> resumes = resumeRepository.findByCategoryId(id);
         if (resumes.isEmpty()) {
             throw new ResumeNotFoundException("Резюме в категории нет или категории не существует");
         }
@@ -70,7 +71,7 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     public List<ResumeDto> getResumesByUserId(Long id) throws ResumeNotFoundException {
-        List<Resume> resumes = resumeDao.getResumesByUserId(id);
+        List<Resume> resumes = resumeRepository.findByAuthorId(id);
         if (resumes.isEmpty()) {
             throw new ResumeNotFoundException("Пользователь с этим ID либо не публиковал резюме - либо его нет :(");
         }
@@ -79,27 +80,28 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     public List<Resume> getFullResumesByUserId(Long id) {
-        return resumeDao.getResumesByUserId(id);
+        return resumeRepository.findByAuthorId(id);
     }
 
     @Override
     public List<ResumeDto> getResumesByName(String query) {
-        List<Resume> resumes = resumeDao.getResumesByName(query);
+        List<Resume> resumes = resumeRepository.findByNameLike(query);
         return getResumeDtos(resumes);
     }
 
     @Override
     public List<PageResumeDto> getActivePageResumes() {
         List<PageResumeDto> pageResumeDtos = new ArrayList<>();
-        List<Resume> resumes = resumeDao.getActiveResumes();
+        List<Resume> resumes = resumeRepository.findByIsActive(true);
         resumes.sort(Comparator.comparing(Resume::getUpdateTime).reversed());
         for (Resume curRes : resumes) {
+            User author = curRes.getApplicant();
             pageResumeDtos.add(PageResumeDto
                     .builder()
                     .id(curRes.getId())
-                    .category(categoryDao.getCategoryNameById(curRes.getCategoryId()))
+                    .category(curRes.getCategory().getName())
                     .name(curRes.getName())
-                    .author(userDao.getUserNameById(curRes.getApplicantId()) + " " + userDao.getSurnameNameById(curRes.getApplicantId()))
+                    .author(author.getName() + " " + author.getSurname())
                     .updatedDate(DateUtil.getFormattedLocalDateTime(curRes.getUpdateTime()))
                     .salary(curRes.getSalary())
                     .build());
@@ -130,7 +132,7 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     public List<ProfileAndResumesDto> getResumesByApplicantName(String user) throws ResumeNotFoundException {
-        List<User> users = new ArrayList<>(userDao.getUsersByName(user));
+        List<User> users = new ArrayList<>(userRepository.findByName(user));
         List<ProfileAndResumesDto> resAndUsers = new ArrayList<>();
         for (User currUsr : users) {
             resAndUsers.add(
@@ -149,29 +151,31 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     @SneakyThrows
     public void createResume(Authentication authentication, ResumeDto resumeDto) {
-        if (userDao.userIsEmployer(resumeDto.getApplicantId()) || !userDao.idIsExists(resumeDto.getApplicantId())) {
+        User user = userRepository.findById(resumeDto.getApplicantId()).get();
+        if (user.getAccountType().equalsIgnoreCase("Работодатель") || !userRepository.existsById(resumeDto.getApplicantId())) {
             throw new ResumeException("Пользователь либо работодатель, либо его не существует!");
         }
-        if (Boolean.FALSE.equals(categoryDao.isExists(resumeDto.getCategoryId()))) {
+        if (Boolean.FALSE.equals(categoryRepository.existsById(resumeDto.getCategoryId()))) {
             throw new ResumeException("Выбранной вами категории не существует");
         }
         if (resumeDto.getSalary() <= 0) {
             throw new ResumeException("Зарплата не может быть меньше или равна нулю");
         }
-        Long applicantId = userDao.getUserByEmail(authentication.getName()).get().getId();
-        Long resumeId = resumeDao.createResume(Resume.builder()
-                .applicantId(applicantId)
+        User applicant = userRepository.getUserByEmail(authentication.getName()).get();
+        Long resumeId = resumeRepository.save(Resume.builder()
+                .applicant(applicant)
                 .name(resumeDto.getName())
-                .categoryId(resumeDto.getCategoryId())
+                .category(categoryRepository.findById(resumeDto.getCategoryId()).get())
                 .salary(resumeDto.getSalary())
                 .isActive(resumeDto.getIsActive())
                 .createdTime(LocalDateTime.now())
                 .updateTime(LocalDateTime.now())
-                .build());
+                .build()).getId();
+        Resume createdResume = resumeRepository.findById(resumeId).get();
         if (!resumeDto.getEducationInfos().isEmpty()) {
-            resumeDto.getEducationInfos().forEach(e -> educationInfoDao.createEducationInfo(
+            resumeDto.getEducationInfos().forEach(e -> educationInfoRepository.save(
                     EducationInfo.builder()
-                            .resumeId(resumeId)
+                            .resume(createdResume)
                             .institution(e.getInstitution())
                             .program(e.getProgram())
                             .startDate(e.getStartDate())
@@ -181,9 +185,9 @@ public class ResumeServiceImpl implements ResumeService {
             ));
         }
         if (!resumeDto.getWorkExperienceInfos().isEmpty()) {
-            resumeDto.getWorkExperienceInfos().forEach(e -> workExperienceInfoDao.createWorkExperienceInfo(
+            resumeDto.getWorkExperienceInfos().forEach(e -> workExperienceInfoRepository.save(
                     WorkExperienceInfo.builder()
-                            .resumeId(resumeId)
+                            .resume(createdResume)
                             .years(e.getYears())
                             .companyName(e.getCompanyName())
                             .position(e.getPosition())
@@ -201,67 +205,71 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     @SneakyThrows
     public void editResume(Long id, UpdateResumeDto updateResumeDto) {
-        if (Boolean.FALSE.equals(categoryDao.isExists(updateResumeDto.getCategoryId()))) {
+        if (Boolean.FALSE.equals(categoryRepository.existsById(updateResumeDto.getCategoryId()))) {
             throw new ResumeException("Выбранной вами категории не существует");
         }
         if (updateResumeDto.getSalary() <= 0) {
             throw new ResumeException("Зарплата не может быть меньше или равна нулю");
         }
-        resumeDao.editResume(Resume.builder()
-                .name(updateResumeDto.getName())
-                .categoryId(updateResumeDto.getCategoryId())
-                .salary(updateResumeDto.getSalary())
-                .isActive(updateResumeDto.getIsActive())
-                .updateTime(LocalDateTime.now())
-                .build(), id);
+        Resume resume = resumeRepository.findById(id).get();
+        resume.setName(updateResumeDto.getName());
+        resume.setSalary(updateResumeDto.getSalary());
+        resume.setCategory(categoryRepository.findById(updateResumeDto.getCategoryId()).get());
+        resume.setIsActive(updateResumeDto.getIsActive());
+        resume.setUpdateTime(LocalDateTime.now());
+        resumeRepository.save(resume);
         if (!updateResumeDto.getEducationInfos().isEmpty()) {
-            updateResumeDto.getEducationInfos().forEach(e -> educationInfoDao.editEducationInfo(
+            updateResumeDto.getEducationInfos().forEach(e -> educationInfoRepository.save(
                     EducationInfo.builder()
+                            .resume(resume)
                             .institution(e.getInstitution())
                             .program(e.getProgram())
                             .startDate(e.getStartDate())
                             .endDate(e.getEndDate())
                             .degree(e.getDegree())
-                            .build(), id
+                            .build()
             ));
         }
         if (!updateResumeDto.getWorkExperienceInfos().isEmpty()) {
-            updateResumeDto.getWorkExperienceInfos().forEach(e -> workExperienceInfoDao.editWorkExperienceInfo(
+            updateResumeDto.getWorkExperienceInfos().forEach(e -> workExperienceInfoRepository.save(
                     WorkExperienceInfo.builder()
+                            .resume(resume)
                             .years(e.getYears())
                             .companyName(e.getCompanyName())
                             .position(e.getPosition())
                             .responsibilities(e.getResponsibilities())
-                            .build(), id
+                            .build()
             ));
         }
     }
 
     @Override
     public void deleteResumeById(Long id) {
-        resumeDao.deleteResumeById(id);
+        resumeRepository.deleteById(id);
     }
 
     @Override
     @SneakyThrows
     public void deleteResumeById(Long id, Authentication auth) {
-        if (!resumeDao.idIsExists(id)) {
+        if (!resumeRepository.existsById(id)) {
             log.info("Была попытка удалить несуществующую вакансию с ID " + id);
             throw new ResumeException("Такой вакансии нет! ID " + id);
         }
-        Resume resume = resumeDao.getResumeById(id).get();
-        if (!Objects.equals(resume.getApplicantId(), userDao.getUserByEmail(auth.getName()).get().getId())) {
+        Resume resume = resumeRepository.findById(id).get();
+        if (!Objects.equals(resume.getApplicant().getId(), userRepository.getUserByEmail(auth.getName()).get().getId())) {
             log.info("Была попытка удалить чужую вакансию с ID " + id);
             throw new ResumeException("Это не ваше резюме - вы не можете его удалить!");
         }
-        resumeDao.deleteResumeById(id);
+        resumeRepository.deleteById(id);
     }
 
     @Override
     @SneakyThrows
     public void update(Long id) {
-        if (resumeDao.idIsExists(id)) {
-            resumeDao.setUpdateTime(LocalDateTime.now(), id);
+        if (resumeRepository.existsById(id)) {
+            Resume resume = resumeRepository.findById(id).get();
+            resume.setUpdateTime(LocalDateTime.now());
+            resumeRepository.save(resume);
         } else {
             log.error("Было запрошено несуществующее резюме с ID " + id);
             throw new ResumeException("Этого резюме не существует");
@@ -271,12 +279,12 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     @SneakyThrows
     public PageResumeDto getPageResumeById(Long id) {
-        if (resumeDao.idIsExists(id)) {
-            Resume resume = resumeDao.getResumeById(id).get();
+        if (resumeRepository.existsById(id)) {
+            Resume resume = resumeRepository.findById(id).get();
             return PageResumeDto.builder()
                     .name(resume.getName())
-                    .category(categoryDao.getCategoryNameById(resume.getCategoryId()))
-                    .author(userDao.getUserNameById(resume.getApplicantId()) + " " + userDao.getSurnameNameById(resume.getApplicantId()))
+                    .category(resume.getCategory().getName())
+                    .author(resume.getApplicant().getName() + " " + resume.getApplicant().getSurname())
                     .id(resume.getId())
                     .salary(resume.getSalary())
                     .updatedDate(DateUtil.getFormattedLocalDate(resume.getUpdateTime()))
@@ -292,15 +300,16 @@ public class ResumeServiceImpl implements ResumeService {
         String isActive = request.getParameter("isActive");
         pageResumeDto.setIsActive("on".equals(isActive));
         Resume resume = Resume.builder()
-                .applicantId(userDao.getUserByEmail(auth.getName()).get().getId())
+                .applicant(userRepository.getUserByEmail(auth.getName()).get())
                 .name(pageResumeDto.getName())
-                .categoryId(pageResumeDto.getCategoryId())
+                .category(categoryRepository.findById(pageResumeDto.getCategoryId()).get())
                 .salary(pageResumeDto.getSalary())
                 .isActive(pageResumeDto.getIsActive())
                 .createdTime(LocalDateTime.now())
                 .updateTime(LocalDateTime.now())
                 .build();
-        Long resumeId = resumeDao.createResume(resume);
+        Long resumeId = resumeRepository.save(resume).getId();
+        Resume createdResume = resumeRepository.findById(resumeId).get();
         List<WorkExperienceInfoDto> workExperienceInfoDtos = pageResumeDto.getWorkExperienceInfos();
         List<EducationInfoDto> educationInfoDtos = pageResumeDto.getEducationInfos();
         if (!workExperienceInfoDtos.isEmpty()) {
@@ -311,12 +320,12 @@ public class ResumeServiceImpl implements ResumeService {
                 } else if (workExperienceInfoService.isValid(curDto)) {
                     WorkExperienceInfo info = WorkExperienceInfo.builder()
                             .companyName(curDto.getCompanyName())
-                            .resumeId(resumeId)
+                            .resume(createdResume)
                             .responsibilities(curDto.getResponsibilities())
                             .position(curDto.getPosition())
                             .years(curDto.getYears())
                             .build();
-                    workExperienceInfoDao.createWorkExperienceInfo(info);
+                    workExperienceInfoRepository.save(info);
                 }
             }
         }
@@ -327,14 +336,14 @@ public class ResumeServiceImpl implements ResumeService {
                     log.error(curDto.toString());
                 } else if (educationInfoService.isValid(curDto)) {
                     EducationInfo educationInfo = EducationInfo.builder()
-                            .resumeId(resumeId)
+                            .resume(createdResume)
                             .startDate(curDto.getStartDate())
                             .endDate(curDto.getEndDate())
                             .institution(curDto.getInstitution())
                             .program(curDto.getProgram())
                             .degree(curDto.getDegree())
                             .build();
-                    educationInfoDao.createEducationInfo(educationInfo);
+                    educationInfoRepository.save(educationInfo);
                 }
             }
         }
@@ -383,20 +392,20 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     @SneakyThrows
     public List<PageResumeDto> getPageResumeByCategoryId(Long categoryId) {
-        if (Boolean.FALSE.equals(categoryDao.isExists(categoryId))) {
+        if (Boolean.FALSE.equals(categoryRepository.existsById(categoryId))) {
             throw new VacancyException("Такой категории нет!");
         }
-        List<Resume> resumes = resumeDao.getActiveResumes();
+        List<Resume> resumes = resumeRepository.findByIsActive(true);
         resumes.sort(Comparator.comparing(Resume::getUpdateTime).reversed());
         List<PageResumeDto> resumeDtos = new ArrayList<>();
         for (Resume curRes : resumes) {
-            if (Objects.equals(curRes.getCategoryId(), categoryId)) {
+            if (Objects.equals(curRes.getCategory().getId(), categoryId)) {
                 resumeDtos.add(PageResumeDto.builder()
                         .id(curRes.getId())
-                        .category(categoryDao.getCategoryNameById(curRes.getCategoryId()))
+                        .category(curRes.getCategory().getName())
                         .salary(curRes.getSalary())
                         .name(curRes.getName())
-                        .author(userDao.getUserNameById(curRes.getApplicantId()) + " " + userDao.getSurnameNameById((curRes.getApplicantId())))
+                        .author(curRes.getApplicant().getName() + " " + curRes.getApplicant().getSurname())
                         .updatedDate(DateUtil.getFormattedLocalDateTime(curRes.getUpdateTime()))
                         .build());
             }
@@ -416,12 +425,12 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     @SneakyThrows
     public PageResumeDto resumeEditGet(Long id, Authentication auth) {
-        if (!resumeDao.idIsExists(id)) {
+        if (!resumeRepository.existsById(id)) {
             log.info("Было запрошено несуществующее резюме с ID " + id);
             throw new ResumeException("Резюме с " + id + " не существует!");
         }
-        Resume resume = resumeDao.getResumeById(id).get();
-        if (!Objects.equals(resume.getApplicantId(), userDao.getUserByEmail(auth.getName()).get().getId())) {
+        Resume resume = resumeRepository.findById(id).get();
+        if (!Objects.equals(resume.getApplicant().getId(), userRepository.getUserByEmail(auth.getName()).get().getId())) {
             log.info("Была попытка отредактировать чужое резюме");
             throw new ResumeException("Нельзя отредактировать чужое резюме");
         }
@@ -436,41 +445,42 @@ public class ResumeServiceImpl implements ResumeService {
     @SneakyThrows
     public Long resumeEditPost(UpdatePageResumeDto resumeDto, HttpServletRequest request, Authentication auth) {
         Long id = resumeDto.getId();
-        if (!resumeDao.idIsExists(id)) {
+        if (!resumeRepository.existsById(id)) {
             log.info("Была попытка отредактировать несуществующее резюме");
             throw new ResumeException("Резюме с ID " + id + " не существует!");
         }
-        Resume resume = resumeDao.getResumeById(id).get();
-        if (!Objects.equals(resume.getApplicantId(), userDao.getUserByEmail(auth.getName()).get().getId())) {
+        Resume resume = resumeRepository.findById(id).get();
+        if (!Objects.equals(resume.getApplicant().getId(), userRepository.getUserByEmail(auth.getName()).get().getId())) {
             log.info("Была попытка отредактировать чужое резюме");
             throw new ResumeException("Нельзя отредактировать чужое резюме!");
         }
         String isActive = request.getParameter("isActive");
         Resume updateRes = Resume.builder()
+                .id(resume.getId())
                 .name(resumeDto.getName())
-                .categoryId(resumeDto.getCategoryId())
+                .applicant(resume.getApplicant())
+                .category(categoryRepository.findById(resumeDto.getCategoryId()).get())
                 .salary(resumeDto.getSalary())
                 .isActive("on".equals(isActive))
+                .createdTime(resume.getCreatedTime())
                 .updateTime(LocalDateTime.now())
                 .build();
-        resumeDao.editResume(updateRes, id);
-        return id;
+        return resumeRepository.save(updateRes).getId();
     }
 
     @Override
     public Integer getCount() {
-        return resumeDao.getCount();
+        return resumeRepository.findAll().size();
     }
 
     @Override
     public String getResumeNameById(Long id) {
-        return resumeDao.getNameById(id);
+        return resumeRepository.findById(id).get().getName();
     }
 
     @Override
     public User getAuthorByResumeId(Long id) {
-        Long authorId = resumeDao.getResumeById(id).get().getApplicantId();
-        return userDao.getUserById(authorId).get();
+        return resumeRepository.findById(id).get().getApplicant();
     }
 
     @Override
@@ -493,7 +503,7 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     public Long getResumeCategoryByResumeId(Long resumeId) {
-        return resumeDao.getResumeById(resumeId).get().getCategoryId();
+        return resumeRepository.findById(resumeId).get().getCategory().getId();
     }
 
     @Override
@@ -502,11 +512,11 @@ public class ResumeServiceImpl implements ResumeService {
         if (Objects.equals(authenticatedUser.getAccountType(), "Администратор") || "Работодатель".equals(authenticatedUser.getAccountType())) {
             return true;
         }
-        Optional<Resume> maybeResume = resumeDao.getResumeById(id);
+        Optional<Resume> maybeResume = resumeRepository.findById(id);
         if (maybeResume.isEmpty()) {
             throw new ResumeException("Такого резюме нет! ID " + id);
         }
-        if (Objects.equals(maybeResume.get().getApplicantId(), authenticatedUser.getId())){
+        if (Objects.equals(maybeResume.get().getApplicant().getId(), authenticatedUser.getId())) {
             return true;
         }
         return false;
@@ -517,15 +527,15 @@ public class ResumeServiceImpl implements ResumeService {
         for (Resume rs : resumes) {
             resumeDtos.add(
                     ResumeDto.builder()
-                            .applicantId(rs.getApplicantId())
+                            .applicantId(rs.getApplicant().getId())
                             .name(rs.getName())
-                            .categoryId(rs.getCategoryId())
+                            .categoryId(rs.getCategory().getId())
                             .salary(rs.getSalary())
                             .isActive(rs.getIsActive())
                             .createdTime(rs.getCreatedTime())
                             .updateTime(rs.getUpdateTime())
-                            .educationInfos(educationInfoService.getDtos(educationInfoDao.getEducationInfoByResumeId(rs.getId())))
-                            .workExperienceInfos(workExperienceInfoService.getDtos(workExperienceInfoDao.getWorkExperienceByResumeId(rs.getId())))
+                            .educationInfos(educationInfoService.getDtos(educationInfoRepository.educationInfoByResumeId(rs.getId())))
+                            .workExperienceInfos(workExperienceInfoService.getDtos(workExperienceInfoRepository.findByResumeId(rs.getId())))
                             .contactInfos(contactInfoService.getContactInfosByResumeId(rs.getId()))
                             .build()
             );
