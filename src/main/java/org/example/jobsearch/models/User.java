@@ -39,4 +39,7 @@ public class User {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "fromTo")
     private List<Message> messageListTo;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
+    private Role role;
 }
