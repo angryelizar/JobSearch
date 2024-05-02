@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -30,4 +31,7 @@ public class Resume {
     private LocalDateTime createdTime;
     @Column(name = "UPDATE_TIME")
     private LocalDateTime updateTime;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "resume")
+    private List<ContactInfo> contactInfos;
 }
