@@ -32,7 +32,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Slf4j
 public class VacancyServiceImpl implements VacancyService {
-    private final RespondedApplicantDao respondedApplicantDao;
     private final WorkExperienceInfoRepository workExperienceInfoRepository;
     private final UserService userService;
     private final ResumeService resumeService;
@@ -42,6 +41,7 @@ public class VacancyServiceImpl implements VacancyService {
     private final VacancyRepository vacancyRepository;
     private final ResumeRepository resumeRepository;
     private final EducationInfoRepository educationInfoRepository;
+    private final RespondedApplicantRepository respondedApplicantRepository;
 
     @Override
     public Integer getCount(){
@@ -160,10 +160,10 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public List<RespondedResumeDto> getRespondedResumesByVacancyId(Long id) {
-        List<RespondApplicant> respondedApplicants = new ArrayList<>(respondedApplicantDao.getRespondedApplicantsByVacancyId(id));
+        List<RespondApplicant> respondedApplicants = new ArrayList<>(respondedApplicantRepository.getRespondedApplicantsByVacancyId(id));
         List<RespondedResumeDto> respondedResumeDtos = new ArrayList<>();
         for (RespondApplicant respondedApplicant : respondedApplicants) {
-            Resume resume = resumeRepository.findById(respondedApplicant.getResumeId()).get();
+            Resume resume = respondedApplicant.getResume();
             User applicant = resume.getApplicant();
             respondedResumeDtos.add(
                     RespondedResumeDto.builder()
@@ -197,10 +197,13 @@ public class VacancyServiceImpl implements VacancyService {
         if (!vacancyRepository.existsById(respondedApplicantDto.getVacancyId())) {
             throw new VacancyException("Вакансии не существует!");
         }
-        if (respondedApplicantDao.isExists(respondedApplicantDto.getResumeId(), respondedApplicantDto.getVacancyId())) {
+        if (respondedApplicantRepository.isExists(respondedApplicantDto.getResumeId(), respondedApplicantDto.getVacancyId()) > 0) {
             throw new VacancyException("Соискатель уже откликался на эту вакансию!");
         }
-        respondedApplicantDao.respondToVacancy(respondedApplicantDto.getResumeId(), respondedApplicantDto.getVacancyId());
+        respondedApplicantRepository.save(RespondApplicant.builder()
+                        .resume(resumeRepository.findById(respondedApplicantDto.getResumeId()).get())
+                        .vacancy(vacancyRepository.findById(respondedApplicantDto.getVacancyId()).get())
+                .build());
     }
 
     @Override

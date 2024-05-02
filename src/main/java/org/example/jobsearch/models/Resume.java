@@ -40,4 +40,7 @@ public class Resume {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "resume")
     private List<WorkExperienceInfo> workExperienceInfos;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "resume")
+    private List<RespondApplicant> respondApplicants;
 }

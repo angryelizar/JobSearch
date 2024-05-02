@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.MessageDao;
-import org.example.jobsearch.dao.RespondedApplicantDao;
 import org.example.jobsearch.dto.ContactDto;
 import org.example.jobsearch.dto.MessageDto;
 import org.example.jobsearch.dto.SendMessageDto;
@@ -13,6 +12,7 @@ import org.example.jobsearch.exceptions.UserException;
 import org.example.jobsearch.models.Message;
 import org.example.jobsearch.models.RespondApplicant;
 import org.example.jobsearch.models.User;
+import org.example.jobsearch.repositories.RespondedApplicantRepository;
 import org.example.jobsearch.repositories.UserRepository;
 import org.example.jobsearch.repositories.VacancyRepository;
 import org.example.jobsearch.service.*;
@@ -29,34 +29,34 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
     private final UserService userService;
-    private final RespondedApplicantDao respondedApplicantDao;
     private final VacancyService vacancyService;
     private final ResumeService resumeService;
     private final MessageDao messageDao;
     private final UserRepository userRepository;
     private final VacancyRepository vacancyRepository;
+    private final RespondedApplicantRepository respondedApplicantRepository;
 
     @Override
     public List<ContactDto> messagesGet(Authentication auth) {
         List<ContactDto> result = new ArrayList<>();
         if (userService.isApplicant(auth.getName())) {
-            List<RespondApplicant> list = respondedApplicantDao.getByApplicantEmail(auth.getName());
+            List<RespondApplicant> list = respondedApplicantRepository.findAllByApplicantEmail(auth.getName());
             for (RespondApplicant cur : list) {
                 result.add(ContactDto.builder()
                         .respondedApplicantId(cur.getId())
-                        .vacancyName(vacancyService.getNameById(cur.getVacancyId()))
-                        .name(userRepository.findById(vacancyRepository.findById(cur.getVacancyId()).get().getAuthor().getId()).get().getName() + " " + userRepository.findById(vacancyRepository.findById(cur.getVacancyId()).get().getAuthor().getId()).get().getSurname())
+                        .vacancyName(cur.getVacancy().getName())
+                        .name(cur.getVacancy().getAuthor().getName() + " " + cur.getVacancy().getAuthor().getSurname())
                         .build());
             }
         } else {
-            List<RespondApplicant> list = respondedApplicantDao.getByEmployerEmail(auth.getName());
+            List<RespondApplicant> list = respondedApplicantRepository.getByEmployerEmail(auth.getName());
             for (RespondApplicant cur : list) {
-                Long authorId = resumeService.getAuthorByResumeId(cur.getResumeId()).getId();
+                Long authorId = cur.getResume().getApplicant().getId();
                 User user = userRepository.findById(authorId).get();
                 String name = user.getName() + " " + user.getSurname();
                 result.add(ContactDto.builder()
                         .respondedApplicantId(cur.getId())
-                        .vacancyName(vacancyService.getNameById(cur.getVacancyId()))
+                        .vacancyName(cur.getVacancy().getName())
                         .name(name)
                         .build());
             }
