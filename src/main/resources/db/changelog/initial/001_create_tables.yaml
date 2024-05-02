@@ -406,7 +406,7 @@ databaseChangeLog:
                     references: users(id)
               - column:
                   name: content
-                  type: text
+                  type: varchar(500)
                   constraints:
                     nullable: false
               - column:

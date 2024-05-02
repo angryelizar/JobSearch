@@ -3,6 +3,8 @@ package org.example.jobsearch.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -21,4 +23,7 @@ public class RespondApplicant {
     @JoinColumn(name = "vacancy_id")
     private Vacancy vacancy;
     private Boolean confirmation;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "respondedApplicants")
+    private List<Message> messageList;
 }

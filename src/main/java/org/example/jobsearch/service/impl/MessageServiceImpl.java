@@ -3,7 +3,6 @@ package org.example.jobsearch.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.example.jobsearch.dao.MessageDao;
 import org.example.jobsearch.dto.ContactDto;
 import org.example.jobsearch.dto.MessageDto;
 import org.example.jobsearch.dto.SendMessageDto;
@@ -12,9 +11,9 @@ import org.example.jobsearch.exceptions.UserException;
 import org.example.jobsearch.models.Message;
 import org.example.jobsearch.models.RespondApplicant;
 import org.example.jobsearch.models.User;
+import org.example.jobsearch.repositories.MessageRepository;
 import org.example.jobsearch.repositories.RespondedApplicantRepository;
 import org.example.jobsearch.repositories.UserRepository;
-import org.example.jobsearch.repositories.VacancyRepository;
 import org.example.jobsearch.service.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -29,12 +28,9 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
     private final UserService userService;
-    private final VacancyService vacancyService;
-    private final ResumeService resumeService;
-    private final MessageDao messageDao;
     private final UserRepository userRepository;
-    private final VacancyRepository vacancyRepository;
     private final RespondedApplicantRepository respondedApplicantRepository;
+    private final MessageRepository messageRepository;
 
     @Override
     public List<ContactDto> messagesGet(Authentication auth) {
@@ -66,11 +62,11 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public List<MessageDto> messageGetByRespondedApplicantId(Long id) {
-        List<Message> messageList = messageDao.messageGetByRespondedApplicantId(id);
+        List<Message> messageList = messageRepository.messageGetByRespondedApplicantId(id);
         List<MessageDto> result = new ArrayList<>();
         for (Message cur : messageList) {
             result.add(MessageDto.builder()
-                    .author(userRepository.findById(cur.getFromTo()).get().getName() + " " + userRepository.findById(cur.getFromTo()).get().getSurname())
+                    .author(cur.getFromTo().getName() + " " + cur.getFromTo().getSurname())
                     .dateTime(cur.getDateTime())
                     .content(cur.getContent())
                     .build());
@@ -90,11 +86,11 @@ public class MessageServiceImpl implements MessageService {
         }
         Message message = Message.builder()
                 .content(messageDto.getMessageText())
-                .fromTo(messageDto.getMessageAuthor())
-                .toFrom(messageDto.getMessageRecipient())
+                .fromTo(userRepository.findById(messageDto.getMessageAuthor()).get())
+                .toFrom(userRepository.findById(messageDto.getMessageRecipient()).get())
                 .dateTime(LocalDateTime.now())
-                .respondApplicantId(messageDto.getRespondApplicant())
+                .respondedApplicants(respondedApplicantRepository.findById(messageDto.getRespondApplicant()).get())
                 .build();
-        messageDao.create(message);
+        messageRepository.save(message);
     }
 }

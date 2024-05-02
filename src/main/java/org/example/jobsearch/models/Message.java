@@ -1,5 +1,6 @@
 package org.example.jobsearch.models;
 
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -9,11 +10,21 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "MESSAGES")
 public class Message {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long respondApplicantId;
-    private Long toFrom;
-    private Long fromTo;
+    @ManyToOne
+    @JoinColumn(name = "RESPONDED_APPLICANTS")
+    private RespondApplicant respondedApplicants;
+    @ManyToOne
+    @JoinColumn(name = "TO_FROM")
+    private User toFrom;
+    @ManyToOne
+    @JoinColumn(name = "FROM_TO")
+    private User fromTo;
     private String content;
     private LocalDateTime dateTime;
 }
