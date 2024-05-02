@@ -4,6 +4,9 @@ server:
     whitelabel:
       enabled: false
 spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
   datasource:
     url: jdbc:h2:./db/jobsearchdb;AUTO_SERVER=TRUE
     username: root

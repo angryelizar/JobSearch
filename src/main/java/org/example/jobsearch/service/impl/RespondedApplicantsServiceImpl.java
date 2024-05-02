@@ -5,7 +5,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.RespondedApplicantDao;
 import org.example.jobsearch.dao.ResumeDao;
-import org.example.jobsearch.dao.UserDao;
 import org.example.jobsearch.dao.VacancyDao;
 import org.example.jobsearch.dto.ResponseApplicantDto;
 import org.example.jobsearch.dto.ResponseEmployerDto;
@@ -16,6 +15,7 @@ import org.example.jobsearch.models.RespondApplicant;
 import org.example.jobsearch.models.Resume;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.models.Vacancy;
+import org.example.jobsearch.repositories.UserRepository;
 import org.example.jobsearch.service.RespondedApplicantsService;
 import org.example.jobsearch.service.ResumeService;
 import org.example.jobsearch.service.UserService;
@@ -37,7 +37,7 @@ public class RespondedApplicantsServiceImpl implements RespondedApplicantsServic
     private final VacancyService vacancyService;
     private final ResumeDao resumeDao;
     private final VacancyDao vacancyDao;
-    private final UserDao userDao;
+    private final UserRepository userRepository;
 
     @Override
     @SneakyThrows
@@ -95,8 +95,9 @@ public class RespondedApplicantsServiceImpl implements RespondedApplicantsServic
     @Override
     public String getEmployerNameById(Long id) {
         RespondApplicant rs = respondedApplicantDao.getById(id);
-        String result = userDao.getUserNameById(vacancyDao.getVacancyById(rs.getVacancyId()).get().getAuthorId()) + " " + userDao.getSurnameNameById(vacancyDao.getVacancyById(rs.getVacancyId()).get().getAuthorId());
-        return result;
+        Vacancy vacancy = vacancyDao.getVacancyById(rs.getVacancyId()).get();
+        User author = userRepository.findById(vacancy.getAuthorId()).get();
+        return author.getName() + " " + author.getSurname();
     }
 
     @Override
@@ -110,7 +111,9 @@ public class RespondedApplicantsServiceImpl implements RespondedApplicantsServic
     @Override
     public String getApplicantNameById(Long id) {
         RespondApplicant rs = respondedApplicantDao.getById(id);
-        return userDao.getUserNameById(resumeDao.getResumeById(rs.getResumeId()).get().getApplicantId()) + " " + userDao.getSurnameNameById(resumeDao.getResumeById(rs.getResumeId()).get().getApplicantId());
+        Resume resume = resumeDao.getResumeById(rs.getResumeId()).get();
+        User author = userRepository.findById(resume.getApplicantId()).get();
+        return author.getName() + " " + author.getSurname();
     }
 
     @Override

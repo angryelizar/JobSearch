@@ -3,13 +3,14 @@ package org.example.jobsearch.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.example.jobsearch.dao.UserDao;
 import org.example.jobsearch.dao.WorkExperienceInfoDao;
 import org.example.jobsearch.dto.PageWorkExperienceInfo;
 import org.example.jobsearch.dto.WorkExperienceInfoDto;
 import org.example.jobsearch.exceptions.ResumeException;
-import org.example.jobsearch.exceptions.VacancyException;
+import org.example.jobsearch.exceptions.UserNotFoundException;
+import org.example.jobsearch.models.User;
 import org.example.jobsearch.models.WorkExperienceInfo;
+import org.example.jobsearch.repositories.UserRepository;
 import org.example.jobsearch.service.WorkExperienceInfoService;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +21,12 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class WorkExperienceInfoServiceImpl implements WorkExperienceInfoService {
-    private final UserDao userDao;
     private final WorkExperienceInfoDao workExperienceInfoDao;
+    private final UserRepository userRepository;
 
+    @SneakyThrows
     public boolean isValid(List<WorkExperienceInfoDto> list, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Not found user with ID " + userId));
         try {
             for (WorkExperienceInfoDto curWeId : list) {
                 if (curWeId.getCompanyName().isEmpty() || curWeId.getCompanyName().isBlank()) {
@@ -35,7 +38,7 @@ public class WorkExperienceInfoServiceImpl implements WorkExperienceInfoService 
                 if (curWeId.getResponsibilities().isEmpty() || curWeId.getResponsibilities().isBlank()) {
                     throw new ResumeException("Поле с обязанностями не может быть пустым!");
                 }
-                Integer age = userDao.getUserAge(userId);
+                Integer age = user.getAge();
                 if (age != null) {
                     if (curWeId.getYears() > age) {
                         throw new ResumeException("Опыт работы не может быть больше возраста соискателя!");

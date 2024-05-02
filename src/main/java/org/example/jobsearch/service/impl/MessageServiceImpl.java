@@ -5,7 +5,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.MessageDao;
 import org.example.jobsearch.dao.RespondedApplicantDao;
-import org.example.jobsearch.dao.UserDao;
 import org.example.jobsearch.dao.VacancyDao;
 import org.example.jobsearch.dto.ContactDto;
 import org.example.jobsearch.dto.MessageDto;
@@ -15,6 +14,7 @@ import org.example.jobsearch.exceptions.UserException;
 import org.example.jobsearch.models.Message;
 import org.example.jobsearch.models.RespondApplicant;
 import org.example.jobsearch.models.User;
+import org.example.jobsearch.repositories.UserRepository;
 import org.example.jobsearch.service.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -31,10 +31,10 @@ public class MessageServiceImpl implements MessageService {
     private final UserService userService;
     private final RespondedApplicantDao respondedApplicantDao;
     private final VacancyService vacancyService;
-    private final UserDao userDao;
     private final VacancyDao vacancyDao;
     private final ResumeService resumeService;
     private final MessageDao messageDao;
+    private final UserRepository userRepository;
 
     @Override
     public List<ContactDto> messagesGet(Authentication auth) {
@@ -45,14 +45,15 @@ public class MessageServiceImpl implements MessageService {
                 result.add(ContactDto.builder()
                         .respondedApplicantId(cur.getId())
                         .vacancyName(vacancyService.getNameById(cur.getVacancyId()))
-                        .name(userDao.getUserNameById(vacancyDao.getVacancyById(cur.getVacancyId()).get().getAuthorId()))
+                        .name(userRepository.findById(vacancyDao.getVacancyById(cur.getVacancyId()).get().getAuthorId()).get().getName() + " " + userRepository.findById(vacancyDao.getVacancyById(cur.getVacancyId()).get().getAuthorId()).get().getSurname())
                         .build());
             }
         } else {
             List<RespondApplicant> list = respondedApplicantDao.getByEmployerEmail(auth.getName());
             for (RespondApplicant cur : list) {
                 Long authorId = resumeService.getAuthorByResumeId(cur.getResumeId()).getId();
-                String name = userDao.getUserNameById(authorId) + " " + userDao.getSurnameNameById(authorId);
+                User user = userRepository.findById(authorId).get();
+                String name = user.getName() + " " + user.getSurname();
                 result.add(ContactDto.builder()
                         .respondedApplicantId(cur.getId())
                         .vacancyName(vacancyService.getNameById(cur.getVacancyId()))
@@ -69,7 +70,7 @@ public class MessageServiceImpl implements MessageService {
         List<MessageDto> result = new ArrayList<>();
         for (Message cur : messageList) {
             result.add(MessageDto.builder()
-                    .author(userDao.getUserNameById(cur.getFromTo()))
+                    .author(userRepository.findById(cur.getFromTo()).get().getName() + " " + userRepository.findById(cur.getFromTo()).get().getSurname())
                     .dateTime(cur.getDateTime())
                     .content(cur.getContent())
                     .build());
@@ -80,7 +81,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     @SneakyThrows
     public void sendMessage(SendMessageDto messageDto, Authentication auth) {
-        User user = userDao.getUserByEmail(auth.getName()).get();
+        User user = userRepository.getUserByEmail(auth.getName()).get();
         if (!Objects.equals(user.getId(), messageDto.getMessageAuthor())){
             throw new UserException("Вы пытаетесь выдать себя за другого пользователя!");
         }

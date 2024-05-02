@@ -3,11 +3,12 @@ package org.example.jobsearch.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dao.EducationInfoDao;
-import org.example.jobsearch.dao.UserDao;
 import org.example.jobsearch.dto.EducationInfoDto;
 import org.example.jobsearch.dto.PageEducationInfoDto;
 import org.example.jobsearch.exceptions.ResumeException;
 import org.example.jobsearch.models.EducationInfo;
+import org.example.jobsearch.models.User;
+import org.example.jobsearch.repositories.UserRepository;
 import org.example.jobsearch.service.EducationInfoService;
 import org.example.jobsearch.util.DateUtil;
 import org.springframework.stereotype.Service;
@@ -21,8 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class EducationInfoServiceImpl implements EducationInfoService {
-    private final UserDao userDao;
     private final EducationInfoDao educationInfoDao;
+    private final UserRepository userRepository;
 
     public List<EducationInfoDto> getDtos(List<EducationInfo> list) {
         List<EducationInfoDto> result = new ArrayList<>();
@@ -41,7 +42,8 @@ public class EducationInfoServiceImpl implements EducationInfoService {
     @Override
     public boolean isValid(List<EducationInfoDto> educationInfos, Long applicantId) {
         try {
-            Integer age = userDao.getUserAge(applicantId);
+            User author = userRepository.findById(applicantId).get();
+            Integer age = author.getAge();
             for (int i = 0; i < educationInfos.size(); i++) {
                 EducationInfoDto dto = educationInfos.get(i);
                 if (dto.getProgram().isBlank() || dto.getProgram().isEmpty()) {

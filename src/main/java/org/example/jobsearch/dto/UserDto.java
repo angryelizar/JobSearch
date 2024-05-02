@@ -16,8 +16,7 @@ public class UserDto {
     @NotBlank
     private String name;
     private String surname;
-    @NotNull(message = "Необходимо указать возраст!")
-    private Byte age;
+    private Integer age;
     @NotBlank
     @Email
     private String email;

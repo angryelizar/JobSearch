@@ -3,9 +3,7 @@ package org.example.jobsearch.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.example.jobsearch.config.AppConfig;
 import org.example.jobsearch.dao.ResumeDao;
-import org.example.jobsearch.dao.UserDao;
 import org.example.jobsearch.dao.VacancyDao;
 import org.example.jobsearch.dto.ApplicantInfoDto;
 import org.example.jobsearch.dto.EmployerInfoDto;
@@ -14,6 +12,7 @@ import org.example.jobsearch.exceptions.*;
 import org.example.jobsearch.models.Resume;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.models.Vacancy;
+import org.example.jobsearch.repositories.UserRepository;
 import org.example.jobsearch.service.AuthorityService;
 import org.example.jobsearch.service.AvatarImageService;
 import org.example.jobsearch.service.UserService;
@@ -32,16 +31,16 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final UserDao userDao;
     private final VacancyDao vacancyDao;
     private final ResumeDao resumeDao;
     private final AuthorityService authorityService;
     private final AvatarImageService avatarImageService;
     private final PasswordEncoder encoder = new BCryptPasswordEncoder();
+    private final UserRepository userRepository;
 
     @Override
     public List<UserDto> getUsersByName(String name) throws UserNotFoundException {
-        List<User> users = userDao.getUsersByName(name);
+        List<User> users = userRepository.findByName(name);
         if (users == null || users.isEmpty()) {
             throw new UserNotFoundException("Пользователи с таким именем не найдены");
         }
@@ -56,7 +55,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getUsers() {
-        List<User> users = userDao.getUsers();
+        List<User> users = userRepository.findAll();
         List<UserDto> userDtos = new ArrayList<>();
         users.forEach(e -> userDtos.add(UserDto.builder()
                 .name(e.getName())
@@ -68,7 +67,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getApplicantsUsers() {
-        List<User> users = userDao.getApplicantsUsers();
+        List<User> users = userRepository.getApplicantsUsers();
         List<UserDto> userDtos = new ArrayList<>();
         users.forEach(e -> userDtos.add(UserDto.builder()
                 .name(e.getName())
@@ -80,7 +79,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getEmployersUsers() {
-        List<User> users = userDao.getEmployersUsers();
+        List<User> users = userRepository.getEmployersUsers();
         List<UserDto> userDtos = new ArrayList<>();
         users.forEach(e -> userDtos.add(UserDto.builder()
                 .id(e.getId())
@@ -93,7 +92,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserByPhone(String phone) throws UserNotFoundException {
-        User user = userDao.getUserByPhone(phone).orElseThrow(() -> new UserNotFoundException("С таким номером пользователей не найдено - " + phone));
+        User user = userRepository.getUserByPhoneNumber(phone).orElseThrow(() -> new UserNotFoundException("С таким номером пользователей не найдено - " + phone));
         return UserDto.builder()
                 .name(user.getName())
                 .surname(user.getSurname())
@@ -103,7 +102,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserByEmail(String email) throws UserNotFoundException {
-        User user = userDao.getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("С такой почтой пользователей не найдено - " + email));
+        User user = userRepository.getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("С такой почтой пользователей не найдено - " + email));
         return UserDto.builder()
                 .name(user.getName())
                 .surname(user.getSurname())
@@ -115,19 +114,19 @@ public class UserServiceImpl implements UserService {
     @Override
     @SneakyThrows
     public User getFullUserByEmail(String email) {
-        return userDao.getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("С такой почтой пользователей не найдено - " + email));
+        return userRepository.getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("С такой почтой пользователей не найдено - " + email));
     }
 
     @Override
     public String userIsExists(String email) {
-        boolean result = userDao.emailIsExists(email);
+        boolean result = userRepository.existsByEmail(email);
         return result ? "Пользователь существует" : "Пользователя нет в системе";
     }
 
     @Override
     @SneakyThrows
     public void createUser(UserDto userDto) {
-        if (userDao.emailIsExists(userDto.getEmail()) || userDao.phoneIsExists(userDto.getPhoneNumber())) {
+        if (userRepository.existsByEmail(userDto.getEmail()) || userRepository.existsByPhoneNumber(userDto.getPhoneNumber())) {
             throw new UserAlreadyRegisteredException("Пользователь уже зарегистрирован");
         }
         if (userDto.getAge() < 18) {
@@ -142,7 +141,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(encoder.encode(userDto.getPassword()));
         user.setAvatar(userDto.getAvatar());
         user.setAccountType(userDto.getAccountType());
-        Long userId = userDao.createUser(user);
+        Long userId = userRepository.save(user).getId();
         authorityService.add(userId, getAccountTypeIdByTypeString(user.getAccountType()));
     }
 
@@ -150,18 +149,19 @@ public class UserServiceImpl implements UserService {
     @SneakyThrows
     @Transactional
     public void update(UserDto userDto) {
-        var user = userDao.getUserByEmail(userDto.getEmail());
+        var user = userRepository.getUserByEmail(userDto.getEmail());
         if (user.isEmpty()) {
             log.error("Запрошен несуществующий пользователь с e-mail " + userDto.getEmail());
             throw new ServiceException("Такого пользователя нет!");
         }
-        Long userId = user.get().getId();
-        userDao.changeNameOfUser(userDto.getName(), userId);
-        userDao.changeSurnameOfUser(userDto.getSurname(), userId);
-        userDao.changeAgeOfUser(userDto.getAge(), userId);
-        userDao.changeEmailOfUser(userDto.getEmail(), userId);
-        userDao.changePasswordOfUser(encoder.encode(userDto.getPassword()), userId);
-        userDao.changePhoneOfUser(userDto.getPhoneNumber(), userId);
+        User updateUser = user.get();
+        updateUser.setName(userDto.getName());
+        updateUser.setSurname(userDto.getSurname());
+        updateUser.setAge(userDto.getAge());
+        updateUser.setEmail(userDto.getEmail());
+        updateUser.setPassword(encoder.encode(userDto.getPassword()));
+        updateUser.setPhoneNumber(userDto.getPhoneNumber());
+        userRepository.save(updateUser);
         MultipartFile file = userDto.getAvatarFile();
         if (file.isEmpty()) {
             throw new AvatarException("Нельзя отправлять пустой файл!");
@@ -178,7 +178,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @SneakyThrows
     public UserDto getUserById(Long id) {
-        Optional<User> maybeUser = userDao.getUserById(id);
+        Optional<User> maybeUser = userRepository.findById(id);
         if (maybeUser.isEmpty()) {
             log.error("Был запрошен несуществующий пользователь с ID " + id);
             throw new UserException("Такого пользователя нет!");
@@ -218,7 +218,7 @@ public class UserServiceImpl implements UserService {
             throw new VacancyException("Вакансии с ID " + id + " не существует!");
         }
         Vacancy vacancy = maybeVacancy.get();
-        Optional<User> maybeUser = userDao.getUserById(vacancy.getAuthorId());
+        Optional<User> maybeUser = userRepository.findById(vacancy.getAuthorId());
         if (maybeUser.isEmpty()) {
             throw new UserNotFoundException("Пользователя с ID " + maybeVacancy.get().getAuthorId() + " не существует!");
         }
@@ -240,7 +240,7 @@ public class UserServiceImpl implements UserService {
             throw new ResumeException("Резюме с ID " + id + "не существует");
         }
         Resume resume = maybeResume.get();
-        Optional<User> maybeUser = userDao.getUserById(resume.getApplicantId());
+        Optional<User> maybeUser = userRepository.findById(resume.getApplicantId());
         if (maybeUser.isEmpty()) {
             throw new UserNotFoundException("Юзера с ID " + id + " не существует!");
         }
