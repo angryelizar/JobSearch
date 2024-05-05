@@ -34,6 +34,7 @@ public class MainController {
         model.addAttribute("pageTitle", "Работодатели");
         model.addAttribute("employers", userService.getEmployersUsers(pageable));
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         model.addAttribute("url", "employers");
         return "main/employers";
     }
@@ -41,12 +42,14 @@ public class MainController {
     @GetMapping("/registration")
     public String registrationGet(Model model) {
         model.addAttribute("pageTitle", "Регистрация");
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         return "main/registration";
     }
 
     @GetMapping("/profile")
     public String profileGet(Model model, Authentication auth, Pageable pageable) throws UserNotFoundException {
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         model.addAttribute("pageTitle", "Профиль");
         model.addAttribute("data", profileService.profileGet(auth, pageable));
         model.addAttribute("url", "profile");
@@ -58,6 +61,7 @@ public class MainController {
 
     @GetMapping("/login-failed")
     public String loginFailedGet(Model model) {
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         model.addAttribute("pageTitle", "Вход не удался");
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         return "main/login-failed";
@@ -65,6 +69,7 @@ public class MainController {
 
     @GetMapping("messages")
     public String messagesGet(Model model, Authentication auth) {
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         model.addAttribute("pageTitle", "Сообщения");
         model.addAttribute("contacts", messageService.messagesGet(auth));
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
@@ -73,6 +78,7 @@ public class MainController {
 
     @GetMapping("/message/response/{id}")
     public String messageGet(@PathVariable Long id, Model model, Authentication auth) throws UserNotFoundException {
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         model.addAttribute("pageTitle", "Переписка");
         model.addAttribute("employerName", respondedApplicantsService.getEmployerNameById(id));
         model.addAttribute("employerCountOfVacancies", respondedApplicantsService.getCountOfVacancies(id));
@@ -94,6 +100,7 @@ public class MainController {
 
     @GetMapping("/applicant/{id}")
     public String applicantGet(@PathVariable Long id, Model model, Pageable pageable) {
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         model.addAttribute("applicant", userService.getUserById(id));
         model.addAttribute("applicantId", id);
         model.addAttribute("resumes", resumeService.getPageResumesByAuthorId(id, pageable));
@@ -105,6 +112,7 @@ public class MainController {
 
     @GetMapping("/employer/{id}")
     public String employerGet(@PathVariable Long id, Model model, Pageable pageable) {
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         model.addAttribute("employer", userService.getUserById(id));
         model.addAttribute("employerId", id);
         model.addAttribute("vacancies", vacancyService.getPageVacanciesByAuthorId(id, pageable));
@@ -116,6 +124,7 @@ public class MainController {
 
     @GetMapping("/applicant/responses")
     public String responseApplicantGet(Model model, Authentication authentication) {
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         model.addAttribute("pageTitle", "Отклики");
         model.addAttribute("responses", respondedApplicantsService.getApplicantResponsesByUser(authentication));
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
@@ -124,6 +133,7 @@ public class MainController {
 
     @GetMapping("/employer/responses")
     public String responseEmployerGet(Model model, Authentication authentication) {
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         model.addAttribute("pageTitle", "Отклики");
         model.addAttribute("responses", respondedApplicantsService.getEmployerResponsesByUser(authentication));
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
@@ -145,6 +155,7 @@ public class MainController {
     @GetMapping("/login")
     public String loginGet(Model model) {
         boolean isAuthenticated = authenticatedUserProvider.isAuthenticated();
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         if (!isAuthenticated) {
             model.addAttribute("pageTitle", "Вход в JobSearch");
             model.addAttribute("isAuthenticated", isAuthenticated);

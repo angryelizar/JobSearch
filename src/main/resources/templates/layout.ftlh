@@ -25,9 +25,13 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="/vacancies">Вакансии</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/resumes">Резюме</a>
-                    </li>
+                    <#if isEmployer??>
+                        <#if isEmployer == true>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/resumes">Резюме</a>
+                            </li>
+                        </#if>
+                    </#if>
                     <li class="nav-item">
                         <a class="nav-link" href="/employers">Работодатели</a>
                     </li>

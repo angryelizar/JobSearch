@@ -31,10 +31,10 @@ public class VacancyController {
     public String vacanciesGet(Model model, Pageable pageable) {
         model.addAttribute("pageTitle", "Вакансии");
         model.addAttribute("url", "vacancies");
-        model.addAttribute("size", vacancyService.getCount());
         model.addAttribute("page", vacancyService.getActivePageVacancies(pageable));
         model.addAttribute("categories", categoryService.getCategoriesList());
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         return "vacancy/vacancies";
     }
 
@@ -43,6 +43,7 @@ public class VacancyController {
         model.addAttribute("pageTitle", "Создать вакансию");
         model.addAttribute("categories", categoryService.getCategoriesList());
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         return "vacancy/add";
     }
 
@@ -54,6 +55,7 @@ public class VacancyController {
         model.addAttribute("employer", userService.getEmployerInfoByVacancyId(id));
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         model.addAttribute("userAuth", auth);
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         return "vacancy/vacancy";
     }
 
@@ -63,6 +65,7 @@ public class VacancyController {
         model.addAttribute("vacancy", vacancyService.vacancyEditGet(id, authentication));
         model.addAttribute("categories", categoryService.getCategoriesList());
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         return "vacancy/edit";
     }
 

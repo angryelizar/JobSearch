@@ -33,6 +33,7 @@ public class ResumeController {
         model.addAttribute("page", resumeService.getActivePageResumes(pageable));
         model.addAttribute(CATEGORIES, categoryService.getCategoriesList());
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         return "resume/resumes";
     }
 
@@ -41,6 +42,7 @@ public class ResumeController {
         model.addAttribute(PAGE_TITLE, "Создать резюме");
         model.addAttribute(CATEGORIES, categoryService.getCategoriesList());
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         return "resume/add";
     }
 
@@ -50,6 +52,7 @@ public class ResumeController {
         model.addAttribute("resume", resumeService.resumeEditGet(id, auth));
         model.addAttribute(CATEGORIES, categoryService.getCategoriesList());
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         return "resume/edit";
     }
 
@@ -63,6 +66,7 @@ public class ResumeController {
         model.addAttribute("applicant", userService.getApplicantInfoByResumeId(id));
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         model.addAttribute("isPermitted", resumeService.resumeShowPermitted(id, authenticatedUserProvider.getAuthenticatedUser()));
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         return "resume/resume";
     }
 
