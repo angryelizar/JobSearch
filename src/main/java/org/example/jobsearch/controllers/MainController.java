@@ -30,10 +30,11 @@ public class MainController {
     }
 
     @GetMapping("/employers")
-    public String employersGet(Model model) {
+    public String employersGet(Model model, Pageable pageable) {
         model.addAttribute("pageTitle", "Работодатели");
-        model.addAttribute("employers", userService.getEmployersUsers());
+        model.addAttribute("employers", userService.getEmployersUsers(pageable));
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("url", "employers");
         return "main/employers";
     }
 

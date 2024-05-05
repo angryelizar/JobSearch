@@ -1,7 +1,11 @@
 <#import "../layout.ftlh" as main>
+<#import "../pagination.ftlh" as pagination>
 <@main.layout>
     <#if employers?has_content>
-        <#list employers as employer>
+        <@pagination.pagination url employers></@pagination.pagination>
+    </#if>
+    <#if employers?has_content>
+        <#list employers.content as employer>
             <div class="card mt-3">
                 <div class="card-body">
                     <h5 class="card-title">${employer.name}</h5>

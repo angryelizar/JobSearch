@@ -7,6 +7,8 @@ import org.example.jobsearch.exceptions.UserAlreadyRegisteredException;
 import org.example.jobsearch.exceptions.UserHaveTooLowAgeException;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.models.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,7 @@ public interface UserService {
 
     List<UserDto> getApplicantsUsers();
 
+    Page<UserDto> getEmployersUsers(Pageable pageable);
     List<UserDto> getEmployersUsers();
 
     UserDto getUserByPhone(String phone) throws UserNotFoundException;
