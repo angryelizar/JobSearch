@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -13,6 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 public class ProfilePageDto {
     private UserDto user;
-    private List<ProfilePageResumeDto> resumes;
-    private List<ProfilePageVacancyDto> vacancies;
+    private Page<ProfilePageResumeDto> resumes;
+    private Page<ProfilePageVacancyDto> vacancies;
 }

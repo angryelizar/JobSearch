@@ -6,6 +6,7 @@ import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.service.*;
 import org.example.jobsearch.util.AuthenticatedUserProvider;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -44,9 +45,10 @@ public class MainController {
     }
 
     @GetMapping("/profile")
-    public String profileGet(Model model, Authentication auth) throws UserNotFoundException {
+    public String profileGet(Model model, Authentication auth, Pageable pageable) throws UserNotFoundException {
         model.addAttribute("pageTitle", "Профиль");
-        model.addAttribute("data", profileService.profileGet(auth));
+        model.addAttribute("data", profileService.profileGet(auth, pageable));
+        model.addAttribute("url", "profile");
         model.addAttribute("userId", userService.getFullUserByEmail(auth.getName()).getId());
         model.addAttribute("approvedNumber", respondedApplicantsService.getApprovedResponsesNumber(auth));
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());

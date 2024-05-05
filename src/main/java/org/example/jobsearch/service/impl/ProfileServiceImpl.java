@@ -13,6 +13,9 @@ import org.example.jobsearch.service.ResumeService;
 import org.example.jobsearch.service.UserService;
 import org.example.jobsearch.service.VacancyService;
 import org.example.jobsearch.util.DateUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -45,7 +48,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @SneakyThrows
-    public ProfilePageDto profileGet(Authentication authentication) {
+    public ProfilePageDto profileGet(Authentication authentication, Pageable pageable) {
         ProfilePageDto profilePageDTO = new ProfilePageDto();
         User user = userService.getFullUserByEmail(authentication.getName());
         profilePageDTO.setUser(
@@ -73,7 +76,7 @@ public class ProfileServiceImpl implements ProfileService {
                                 .build()
                 );
             }
-            profilePageDTO.setResumes(pageResumeDtos);
+            profilePageDTO.setResumes(toPageResume(pageResumeDtos, pageable));
         } else if (user.getAccountType().equalsIgnoreCase("Работодатель")) {
             List<Vacancy> vacancies = vacancyService.getVacanciesByEmployerId(user.getId());
             List<ProfilePageVacancyDto> pageVacancyDtos = new ArrayList<>();
@@ -87,10 +90,24 @@ public class ProfileServiceImpl implements ProfileService {
                                 .updateDate(DateUtil.getFormattedLocalDateTime(vacancy.getUpdateTime()))
                                 .build()
                 );
-                profilePageDTO.setVacancies(pageVacancyDtos);
             }
+            profilePageDTO.setVacancies(toPageVacancy(pageVacancyDtos, pageable));
         }
         return profilePageDTO;
+    }
+
+    private Page<ProfilePageVacancyDto> toPageVacancy(List<ProfilePageVacancyDto> vacancies, Pageable pageable) {
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = (int) ((pageable.getOffset() + pageable.getPageSize() > vacancies.size() ? vacancies.size() : pageable.getOffset() + pageable.getPageSize()));
+        List<ProfilePageVacancyDto> subList = vacancies.subList(startIndex, endIndex);
+        return new PageImpl<>(subList, pageable, vacancies.size());
+    }
+
+    private Page<ProfilePageResumeDto> toPageResume(List<ProfilePageResumeDto> resumes, Pageable pageable) {
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = (int) ((pageable.getOffset() + pageable.getPageSize() > resumes.size() ? resumes.size() : pageable.getOffset() + pageable.getPageSize()));
+        List<ProfilePageResumeDto> subList = resumes.subList(startIndex, endIndex);
+        return new PageImpl<>(subList, pageable, resumes.size());
     }
 
 

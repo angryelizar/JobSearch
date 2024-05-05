@@ -1,4 +1,5 @@
 <#import "../layout.ftlh" as main>
+<#import "../pagination.ftlh" as pagination>
 <@main.layout>
     <div class="p-2">
         <h1 class="text-center">Личный профиль</h1>
@@ -32,23 +33,32 @@
                            class="text-center btn position-relative d-block p-3 border border-2 rounded-4 text-decoration-none text-black"
                            style="height: 40%"><#if approvedNumber gt 0><span
                                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-    ${approvedNumber}
-    <span class="visually-hidden">Количество принятых откликов</span>
-  </span><#else></#if> Отклики</a>
+                                ${approvedNumber}
+                                <span class="visually-hidden">Количество принятых откликов</span>
+                                </span><#else></#if> Отклики</a>
                     <#else>
-                    <a href="/employer/responses"
-                       class="text-center d-block p-3 border border-2 rounded-4 text-decoration-none text-black"
-                       style="height: 40%">Отклики</a>
+                        <a href="/employer/responses"
+                           class="text-center d-block p-3 border border-2 rounded-4 text-decoration-none text-black"
+                           style="height: 40%">Отклики</a>
                     </#if>
                 </div>
             </div>
         </div>
         <div class="posts-block container-fluid">
             <h3 class="text-start mt-3"><#if data.user.accountType = "Соискатель">Резюме<#else>Вакансии</#if>:</h3>
+            <#if data.user.accountType = "Соискатель">
+                <#if data.resumes?has_content>
+                    <@pagination.pagination url data.resumes></@pagination.pagination>
+                </#if>
+            <#else>
+                <#if data.vacancies?has_content>
+                    <@pagination.pagination url data.vacancies></@pagination.pagination>
+                </#if>
+            </#if>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 mt-3 g-3">
                 <#if data.user.accountType = "Соискатель">
                     <#if data.resumes?has_content>
-                        <#list data.resumes as resume>
+                        <#list data.resumes.content as resume>
                             <div class="col">
                                 <div class="card" style="min-height: 255px;">
                                     <div class="card-body">
@@ -67,17 +77,18 @@
                                 </div>
                             </div>
                         </#list>
-                        <#else>
+                    <#else>
                         <p>Вы не создавали резюме - попробуйте, это не сложно!</p>
                     </#if>
                 <#else>
                     <#if data.vacancies?has_content>
-                        <#list data.vacancies as vacancy>
+                        <#list data.vacancies.content as vacancy>
                             <div class="col">
                                 <div class="card" style="min-height: 255px;">
                                     <div class="card-body">
                                         <h5 class="card-title"><a class="text-decoration-none"
-                                                                  href="vacancies/${vacancy.id}">${vacancy.name}</a></h5>
+                                                                  href="vacancies/${vacancy.id}">${vacancy.name}</a>
+                                        </h5>
                                         <h6 class="card-subtitle mb-2 text-body-secondary">Оклад: ${vacancy.salary}</h6>
                                         <p class="card-text">Обновлено: ${vacancy.updateDate}</p>
 
@@ -92,7 +103,7 @@
                                 </div>
                             </div>
                         </#list>
-                        <#else>
+                    <#else>
                         <p>Вы пока не создавали вакансии - может исправим это?</p>
                     </#if>
                 </#if>
