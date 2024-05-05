@@ -117,6 +117,12 @@ public class ResumeServiceImpl implements ResumeService {
         return toPage(resumes, PageRequest.of(page, 5));
     }
 
+    @Override
+    public Page<PageResumeDto> getActivePageResumes(Pageable pageable) {
+        List<PageResumeDto> resumes = getActivePageResumes();
+        return toPage(resumes, pageable);
+    }
+
     private Page<PageResumeDto> toPage(List<PageResumeDto> resumes, Pageable pageable) {
         if (pageable.getOffset() >= resumes.size()) {
             log.error("Я пока не понял как эту ситуацию обработать....");

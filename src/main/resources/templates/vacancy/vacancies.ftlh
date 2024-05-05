@@ -2,16 +2,16 @@
 <#import "../pagination.ftlh" as pagination>
 <@main.layout>
     <div class="row">
-        <@pagination.pagination></@pagination.pagination>
+        <@pagination.pagination url page></@pagination.pagination>
         <div class="col-12 col-md-10 d-flex flex-column gap-3">
-            <#if vacancies.content?has_content>
-                <#list vacancies.content as vacancy>
+            <#if page.content?has_content>
+                <#list page.content as vacancy>
                     <div class="card">
                         <div class="card-header">
                             ${vacancy.category}
                         </div>
                         <div class="card-body">
-                            <h5 class="card-title">${vacancy.name}</h5>
+                            <h5 class="card-title"><a class="text-decoration-none text-dark" href="vacancies/${vacancy.id}">${vacancy.name}</a></h5>
                             <h3 class="card-title">${vacancy.salary}</h3>
                             <p class="card-text">${vacancy.author}</p>
                             <p>${vacancy.updateTime}</p>
@@ -19,7 +19,7 @@
                         </div>
                     </div>
                 </#list>
-                <#else>
+            <#else>
                 <p class="text-center mt-5">На сайте пока нет активных вакансий</p>
             </#if>
         </div>
@@ -40,5 +40,5 @@
             </form>
         </div>
     </div>
-    <@pagination.pagination></@pagination.pagination>
+    <@pagination.pagination url page></@pagination.pagination>
 </@main.layout>

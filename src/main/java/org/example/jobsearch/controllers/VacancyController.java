@@ -10,6 +10,9 @@ import org.example.jobsearch.service.CategoryService;
 import org.example.jobsearch.service.UserService;
 import org.example.jobsearch.service.VacancyService;
 import org.example.jobsearch.util.AuthenticatedUserProvider;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,12 +28,11 @@ public class VacancyController {
     private final AuthenticatedUserProvider authenticatedUserProvider;
 
     @GetMapping()
-    public String vacanciesGet(Model model, @RequestParam(name = "page", defaultValue = "0") Integer page) {
+    public String vacanciesGet(Model model, Pageable pageable) {
         model.addAttribute("pageTitle", "Вакансии");
         model.addAttribute("url", "vacancies");
         model.addAttribute("size", vacancyService.getCount());
-        model.addAttribute("page", page);
-        model.addAttribute("vacancies", vacancyService.getActivePageVacancies(page));
+        model.addAttribute("page", vacancyService.getActivePageVacancies(pageable));
         model.addAttribute("categories", categoryService.getCategoriesList());
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         return "vacancy/vacancies";
@@ -89,13 +91,11 @@ public class VacancyController {
     }
 
     @PostMapping("/category")
-    public String getByCategory(@RequestParam Integer categoryId, Model model, @RequestParam(name = "page", defaultValue = "0") Integer page) {
+    public String getByCategory(@RequestParam Integer categoryId, Model model, Pageable pageable) {
         model.addAttribute("pageTitle", "Вакансии");
         model.addAttribute("url", "vacancies");
-        model.addAttribute("vacancies", vacancyService.getPageVacancyByCategoryId(Long.valueOf(categoryId), page));
+        model.addAttribute("page", vacancyService.getPageVacancyByCategoryId(Long.valueOf(categoryId), pageable));
         model.addAttribute("categories", categoryService.getCategoriesList());
-        model.addAttribute("size", vacancyService.getCount());
-        model.addAttribute("page", page);
         return "vacancy/vacancies";
     }
 }

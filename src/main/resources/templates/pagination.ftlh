@@ -1,7 +1,54 @@
-<#macro pagination>
-    <p class="mt-3 text-center">Всего записей ${size}, на странице отображается по 5 записей</p>
-    <ul class="mt-2 mb-3 pagination justify-content-center">
-        <li class="page-item"><a class="page-link" href="/${url}?page=${page - 1}">Назад</a></li>
-        <li class="page-item"><a class="page-link" href="/${url}?page=${page + 1}">Вперед</a></li>
+<#macro pagination url page>
+    <#if page.getTotalPages() gt 7>
+        <#assign
+        totalPages = page.getTotalPages()
+        pageNumber = page.getNumber() + 1
+        head = (pageNumber > 4)?then([1, -1], [1, 2, 3])
+        tail = (pageNumber < totalPages - 3)?then([-1, totalPages], [totalPages - 2, totalPages - 1, totalPages])
+        bodyBefore = (pageNumber > 4 && pageNumber < totalPages - 1)?then([pageNumber - 2, pageNumber - 1], [])
+        bodyAfter = (pageNumber > 2 && pageNumber < totalPages - 3)?then([pageNumber + 1, pageNumber + 2], [])
+        body = head + bodyBefore + (pageNumber > 3 && pageNumber < totalPages - 2)?then([pageNumber], []) + bodyAfter + tail
+        >
+    <#else>
+        <#assign body = 1..page.getTotalPages()>
+    </#if>
+    <div class="pagination-container d-flex justify-content-center flex-column align-items-center">
+    <ul class="pagination mt-2">
+        <li class="page-item disabled">
+            <a class="page-link">Страницы</a>
+        </li>
+        <#list body as p>
+            <#if (p - 1)  == page.getNumber()>
+                <li class="page-item active">
+                    <a href="#" class="page-link">${p}</a>
+                </li>
+                <#elseif p == -1>
+                    <li class="page-item disabled">
+                        <a href="#" class="page-link">...</a>
+                    </li>
+            <#else>
+                <li class="page-item">
+                    <a href="${url}?page=${p-1}&size=${page.getSize()}" class="page-link">${p}</a>
+                </li>
+            </#if>
+        </#list>
     </ul>
+
+    <ul class="pagination mt-2">
+        <li class="page-item disabled">
+            <a class="page-link">Элементов на странице</a>
+        </li>
+        <#list [5, 10, 25, 50] as c>
+            <#if c  == page.getSize()>
+                <li class="page-item active">
+                    <a href="#" class="page-link">${c}</a>
+                </li>
+            <#else>
+                <li class="page-item">
+                    <a href="${url}?page=${page.getNumber()}&size=${c}" class="page-link">${c}</a>
+                </li>
+            </#if>
+        </#list>
+    </ul>
+    </div>
 </#macro>

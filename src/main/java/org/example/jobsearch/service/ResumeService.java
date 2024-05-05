@@ -6,6 +6,7 @@ import org.example.jobsearch.exceptions.ResumeNotFoundException;
 import org.example.jobsearch.models.Resume;
 import org.example.jobsearch.models.User;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,8 @@ public interface ResumeService {
     List<PageResumeDto> getActivePageResumes();
 
     Page<PageResumeDto> getActivePageResumes(Integer page);
+
+    Page<PageResumeDto> getActivePageResumes(Pageable pageable);
 
     List<ProfileAndResumesDto> getResumesByApplicantName(String user) throws ResumeNotFoundException;
 

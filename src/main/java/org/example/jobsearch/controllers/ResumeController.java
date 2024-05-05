@@ -6,6 +6,7 @@ import org.example.jobsearch.dto.CreatePageResumeDto;
 import org.example.jobsearch.dto.UpdatePageResumeDto;
 import org.example.jobsearch.service.*;
 import org.example.jobsearch.util.AuthenticatedUserProvider;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,14 +27,11 @@ public class ResumeController {
     private final AuthenticatedUserProvider authenticatedUserProvider;
 
     @GetMapping()
-    public String resumesGet(Model model, @RequestParam(name = "page", defaultValue = "0") Integer page) {
+    public String resumesGet(Model model, Pageable pageable) {
         model.addAttribute(PAGE_TITLE, "Резюме");
-        model.addAttribute("size", resumeService.getCount());
-        model.addAttribute("page", page);
         model.addAttribute("url", "resumes");
-        model.addAttribute("resumes", resumeService.getActivePageResumes(page));
+        model.addAttribute("page", resumeService.getActivePageResumes(pageable));
         model.addAttribute(CATEGORIES, categoryService.getCategoriesList());
-        System.out.println(authenticatedUserProvider.isAuthenticated());
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         return "resume/resumes";
     }

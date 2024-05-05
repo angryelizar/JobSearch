@@ -263,12 +263,13 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public Page<PageVacancyDto> getActivePageVacancies(Integer pageNumber) {
-        List<PageVacancyDto> vacancies = getActivePageVacancies();
-        if (pageNumber < 0){
-            pageNumber = 0;
+    public Page<PageVacancyDto> getActivePageVacancies(Pageable pageable) {
+        List<Vacancy> vacancies = vacancyRepository.searchVacanciesByIsActiveEquals(true);
+        List<PageVacancyDto> pageVacancyDtos = new ArrayList<>();
+        for (Vacancy vacancy : vacancies) {
+            pageVacancyDtos.add(getPageVacancyById(vacancy.getId()));
         }
-        return toPage(vacancies, PageRequest.of(pageNumber, 5));
+        return toPage(pageVacancyDtos, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
     }
 
     private Page<PageVacancyDto> toPage(List<PageVacancyDto> vacancies, Pageable pageable) {
@@ -290,6 +291,7 @@ public class VacancyServiceImpl implements VacancyService {
             User author = vacancy.getAuthor();
             return PageVacancyDto
                     .builder()
+                    .id(vacancy.getId())
                     .name(vacancy.getName())
                     .description(vacancy.getDescription())
                     .author(author.getName() + " " + author.getSurname())
@@ -401,17 +403,13 @@ public class VacancyServiceImpl implements VacancyService {
                         .build());
             }
         }
-
         return resultVacancies;
     }
 
     @Override
-    public Page<PageVacancyDto> getPageVacancyByCategoryId(Long categoryId, int page) {
+    public Page<PageVacancyDto> getPageVacancyByCategoryId(Long categoryId, Pageable pageable) {
         List<PageVacancyDto> result = getPageVacancyByCategoryId(categoryId);
-        if (page < 0){
-            page = 0;
-        }
-        return toPage(result, PageRequest.of(page, 5));
+        return toPage(result, pageable);
     }
 
     @Override
