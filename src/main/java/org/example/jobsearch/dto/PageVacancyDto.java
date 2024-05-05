@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -19,4 +21,6 @@ public class PageVacancyDto {
     private Integer expFrom;
     private Integer expTo;
     private String updateTime;
+    private Integer countOfResponses;
+    private LocalDateTime createdTime;
 }

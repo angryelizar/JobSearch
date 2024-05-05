@@ -1,7 +1,6 @@
 package org.example.jobsearch.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.example.jobsearch.dto.CreatePageVacancyDto;
 import org.example.jobsearch.dto.UpdatePageVacancyDto;
@@ -11,8 +10,6 @@ import org.example.jobsearch.service.UserService;
 import org.example.jobsearch.service.VacancyService;
 import org.example.jobsearch.util.AuthenticatedUserProvider;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -93,12 +90,14 @@ public class VacancyController {
         return String.format("redirect:/vacancies/%d", id);
     }
 
-    @PostMapping("/category")
-    public String getByCategory(@RequestParam Integer categoryId, Model model, Pageable pageable) {
-        model.addAttribute("pageTitle", "Вакансии");
-        model.addAttribute("url", "vacancies");
-        model.addAttribute("page", vacancyService.getPageVacancyByCategoryId(Long.valueOf(categoryId), pageable));
+    @PostMapping("/filter")
+    public String getByFilter(@RequestParam(defaultValue = "0") Integer categoryId, @RequestParam(defaultValue = "createdDate") String criterion, @RequestParam(defaultValue = "increase") String order, Model model, Pageable pageable) {
+        model.addAttribute("pageTitle", "Вакансии по фильтру");
+        model.addAttribute("url", "/vacancies/filter/");
+        model.addAttribute("page", vacancyService.getPageVacancyByFilter(categoryId, criterion, order, pageable));
         model.addAttribute("categories", categoryService.getCategoriesList());
-        return "vacancy/vacancies";
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
+        return "vacancy/filtered";
     }
 }

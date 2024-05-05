@@ -1,6 +1,7 @@
 package org.example.jobsearch.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.jobsearch.dto.PageVacancyDto;
 import org.example.jobsearch.dto.ProfilePageResumeDto;
 import org.example.jobsearch.dto.ProfilePageVacancyDto;
 import org.example.jobsearch.dto.UserDto;
@@ -45,5 +46,16 @@ public class ToPageUtil {
         int endIndex = (int) ((pageable.getOffset() + pageable.getPageSize() > employers.size() ? employers.size() : pageable.getOffset() + pageable.getPageSize()));
         List<UserDto> subList = employers.subList(startIndex, endIndex);
         return new PageImpl<>(subList, pageable, employers.size());
+    }
+
+    public static Page<PageVacancyDto> toPageVacancyDto(List<PageVacancyDto> vacancyDtos, Pageable pageable) {
+        if (pageable.getOffset() >= vacancyDtos.size()){
+            log.error("Я пока не понял как эту ситуацию обработать....");
+            return Page.empty();
+        }
+        int startIndex = (int) pageable.getOffset();
+        int endIndex = (int) ((pageable.getOffset() + pageable.getPageSize() > vacancyDtos.size() ? vacancyDtos.size() : pageable.getOffset() + pageable.getPageSize()));
+        List<PageVacancyDto> subList = vacancyDtos.subList(startIndex, endIndex);
+        return new PageImpl<>(subList, pageable, vacancyDtos.size());
     }
 }

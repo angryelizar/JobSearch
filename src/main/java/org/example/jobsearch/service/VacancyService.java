@@ -67,4 +67,6 @@ public interface VacancyService {
     List<AjaxResumeDto> getResumesForVacancy(ResumesForVacancyDto resumesForVacancyDto);
 
     Page<ProfilePageVacancyDto> getPageVacanciesByAuthorId(Long id, Pageable pageable);
+
+    Object getPageVacancyByFilter(Integer categoryId, String criterion, String order, Pageable pageable);
 }

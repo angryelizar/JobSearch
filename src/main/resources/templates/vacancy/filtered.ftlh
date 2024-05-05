@@ -25,7 +25,7 @@
             </#if>
         </div>
         <div class="col-12 col-md-2">
-            <form action="/vacancies/filter" method="post">
+            <form action="/vacancies/filter" method="POST">
                 <h6>Показать вакансии по категории:</h6>
                 <div class="mb-3">
                     <label for="categoryId" class="form-label">Категория</label>

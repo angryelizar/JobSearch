@@ -19,12 +19,6 @@ public class GlobalExceptionHandler {
     private final ErrorService errorService;
     private final AuthenticatedUserProvider authenticatedUserProvider;
 
-    @ExceptionHandler(UserAlreadyRegisteredException.class)
-    @ResponseBody
-    public ResponseEntity<ErrorResponseBody> userAlreadyRegistered(UserAlreadyRegisteredException exception) {
-        return new ResponseEntity<>(errorService.makeResponse(exception), HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(UserException.class)
     @ResponseBody
     public ResponseEntity<ErrorResponseBody> userAlreadyRegistered(UserException exception) {
@@ -62,6 +56,7 @@ public class GlobalExceptionHandler {
         model.addAttribute("redirectLink", "/messages");
         model.addAttribute("redirectLinkTitle", "Сообщения");
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         return "error/error";
     }
 
@@ -72,6 +67,7 @@ public class GlobalExceptionHandler {
         model.addAttribute("redirectLink", "/profile");
         model.addAttribute("redirectLinkTitle", "Профиль");
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         return "error/error";
     }
 
@@ -82,6 +78,18 @@ public class GlobalExceptionHandler {
         model.addAttribute("redirectLink", "/profile");
         model.addAttribute("redirectLinkTitle", "Профиль");
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
+        return "error/error";
+    }
+
+    @ExceptionHandler(UserAlreadyRegisteredException.class)
+    public String userAlreadyRegistered(UserAlreadyRegisteredException exception, Model model) {
+        model.addAttribute("pageTitle", "Ошибка");
+        model.addAttribute("exceptionText", exception.getMessage());
+        model.addAttribute("redirectLink", "/registration");
+        model.addAttribute("redirectLinkTitle", "Регистрация");
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         return "error/error";
     }
 

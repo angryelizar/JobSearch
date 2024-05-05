@@ -22,10 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -451,6 +448,29 @@ public class VacancyServiceImpl implements VacancyService {
         return ToPageUtil.toPageVacancy(result, pageable);
     }
 
+    @Override
+    @SneakyThrows
+    public Page<PageVacancyDto> getPageVacancyByFilter(Integer categoryId, String criterion, String order, Pageable pageable) {
+        List<Vacancy> vacancies = new ArrayList<>();
+        if (categoryId == 0){
+            vacancies.addAll(vacancyRepository.searchVacanciesByIsActiveEquals(true));
+        } else {
+            vacancies.addAll(vacancyRepository.getVacanciesByCategoryId(Long.valueOf(categoryId)));
+        }
+        vacancies.size();
+        List<PageVacancyDto> resultVacancies = new ArrayList<>();
+        resultVacancies.addAll(getPageVacancyDtos(vacancies));
+        if (criterion.equalsIgnoreCase("createdDate")){
+            resultVacancies.sort(Comparator.comparing(PageVacancyDto::getCreatedTime));
+        } else if (criterion.equalsIgnoreCase("responseCount")){
+            resultVacancies.sort(Comparator.comparing(PageVacancyDto::getCountOfResponses));
+        }
+        if (order.equalsIgnoreCase("decrease")){
+            Collections.reverse(resultVacancies);
+        }
+        return ToPageUtil.toPageVacancyDto(resultVacancies, pageable);
+    }
+
     private Long getVacancyCategoryByVacancyId(Long vacancyId) {
         return vacancyRepository.findById(vacancyId).get().getCategory().getId();
     }
@@ -483,5 +503,25 @@ public class VacancyServiceImpl implements VacancyService {
                 .createdTime(vacancy.getCreatedTime())
                 .updateTime(vacancy.getUpdateTime())
                 .build();
+    }
+
+    private List<PageVacancyDto> getPageVacancyDtos(List<Vacancy> vacancies) {
+        List<PageVacancyDto> result = new ArrayList<>();
+        for (Vacancy cur : vacancies) {
+            result.add(
+                    PageVacancyDto.builder()
+                            .id(cur.getId())
+                            .name(cur.getName())
+                            .description(cur.getDescription())
+                            .author(cur.getAuthor().getName())
+                            .category(cur.getCategory().getName())
+                            .salary(cur.getSalary())
+                            .updateTime(DateUtil.getFormattedLocalDateTime(cur.getUpdateTime()))
+                            .createdTime(cur.getCreatedTime())
+                            .countOfResponses(respondedApplicantRepository.countRespondApplicantByVacancyId(cur.getId()))
+                            .build()
+            );
+        }
+        return result;
     }
 }

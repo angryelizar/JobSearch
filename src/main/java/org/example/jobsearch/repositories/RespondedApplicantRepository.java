@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface RespondedApplicantRepository extends JpaRepository<RespondApplicant, Long> {
+    Integer countRespondApplicantByVacancyId(Long vacancyId);
+
     @Query(value = """
             select * from RESPONDED_APPLICANTS ra
                             WHERE ra.RESUME_ID in (
