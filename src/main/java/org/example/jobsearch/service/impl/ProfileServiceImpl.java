@@ -13,6 +13,7 @@ import org.example.jobsearch.service.ResumeService;
 import org.example.jobsearch.service.UserService;
 import org.example.jobsearch.service.VacancyService;
 import org.example.jobsearch.util.DateUtil;
+import org.example.jobsearch.util.ToPageUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -76,7 +77,7 @@ public class ProfileServiceImpl implements ProfileService {
                                 .build()
                 );
             }
-            profilePageDTO.setResumes(toPageResume(pageResumeDtos, pageable));
+            profilePageDTO.setResumes(ToPageUtil.toPageResume(pageResumeDtos, pageable));
         } else if (user.getAccountType().equalsIgnoreCase("Работодатель")) {
             List<Vacancy> vacancies = vacancyService.getVacanciesByEmployerId(user.getId());
             List<ProfilePageVacancyDto> pageVacancyDtos = new ArrayList<>();
@@ -91,24 +92,8 @@ public class ProfileServiceImpl implements ProfileService {
                                 .build()
                 );
             }
-            profilePageDTO.setVacancies(toPageVacancy(pageVacancyDtos, pageable));
+            profilePageDTO.setVacancies(ToPageUtil.toPageVacancy(pageVacancyDtos, pageable));
         }
         return profilePageDTO;
     }
-
-    private Page<ProfilePageVacancyDto> toPageVacancy(List<ProfilePageVacancyDto> vacancies, Pageable pageable) {
-        int startIndex = (int) pageable.getOffset();
-        int endIndex = (int) ((pageable.getOffset() + pageable.getPageSize() > vacancies.size() ? vacancies.size() : pageable.getOffset() + pageable.getPageSize()));
-        List<ProfilePageVacancyDto> subList = vacancies.subList(startIndex, endIndex);
-        return new PageImpl<>(subList, pageable, vacancies.size());
-    }
-
-    private Page<ProfilePageResumeDto> toPageResume(List<ProfilePageResumeDto> resumes, Pageable pageable) {
-        int startIndex = (int) pageable.getOffset();
-        int endIndex = (int) ((pageable.getOffset() + pageable.getPageSize() > resumes.size() ? resumes.size() : pageable.getOffset() + pageable.getPageSize()));
-        List<ProfilePageResumeDto> subList = resumes.subList(startIndex, endIndex);
-        return new PageImpl<>(subList, pageable, resumes.size());
-    }
-
-
 }

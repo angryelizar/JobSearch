@@ -13,6 +13,7 @@ import org.example.jobsearch.service.ResumeService;
 import org.example.jobsearch.service.UserService;
 import org.example.jobsearch.service.VacancyService;
 import org.example.jobsearch.util.DateUtil;
+import org.example.jobsearch.util.ToPageUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -436,7 +437,7 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public List<ProfilePageVacancyDto> getPageVacanciesByAuthorId(Long id) {
+    public Page<ProfilePageVacancyDto> getPageVacanciesByAuthorId(Long id, Pageable pageable) {
         List<Vacancy> vacancyList = vacancyRepository.getVacanciesByAuthorId(id);
         List<ProfilePageVacancyDto> result = new ArrayList<>();
         for (Vacancy cur : vacancyList) {
@@ -447,7 +448,7 @@ public class VacancyServiceImpl implements VacancyService {
                     .updateDate(DateUtil.getFormattedLocalDateTime(cur.getUpdateTime()))
                     .build());
         }
-        return result;
+        return ToPageUtil.toPageVacancy(result, pageable);
     }
 
     private Long getVacancyCategoryByVacancyId(Long vacancyId) {

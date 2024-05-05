@@ -92,22 +92,24 @@ public class MainController {
     }
 
     @GetMapping("/applicant/{id}")
-    public String applicantGet(@PathVariable Long id, Model model) {
+    public String applicantGet(@PathVariable Long id, Model model, Pageable pageable) {
         model.addAttribute("applicant", userService.getUserById(id));
         model.addAttribute("applicantId", id);
-        model.addAttribute("resumes", resumeService.getPageResumesByAuthorId(id));
+        model.addAttribute("resumes", resumeService.getPageResumesByAuthorId(id, pageable));
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         model.addAttribute("pageTitle", "Профиль соискателя");
+        model.addAttribute("url", "/applicant/" + id);
         return "main/applicant";
     }
 
     @GetMapping("/employer/{id}")
-    public String employerGet(@PathVariable Long id, Model model) {
+    public String employerGet(@PathVariable Long id, Model model, Pageable pageable) {
         model.addAttribute("employer", userService.getUserById(id));
         model.addAttribute("employerId", id);
-        model.addAttribute("vacancies", vacancyService.getPageVacanciesByAuthorId(id));
+        model.addAttribute("vacancies", vacancyService.getPageVacanciesByAuthorId(id, pageable));
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         model.addAttribute("pageTitle", "Профиль работодателя");
+        model.addAttribute("url", "/employer/" + id);
         return "main/employer";
     }
 

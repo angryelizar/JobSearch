@@ -63,7 +63,7 @@ public interface ResumeService {
 
     User getAuthorByResumeId(Long id);
 
-    List<ProfilePageResumeDto> getPageResumesByAuthorId(Long id);
+    Page<ProfilePageResumeDto> getPageResumesByAuthorId(Long id, Pageable pageable);
 
     Long getResumeCategoryByResumeId(Long resumeId);
 
