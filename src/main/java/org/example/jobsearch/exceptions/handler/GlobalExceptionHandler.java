@@ -25,12 +25,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorService.makeResponse(exception), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(UserHaveTooLowAgeException.class)
-    @ResponseBody
-    public ResponseEntity<ErrorResponseBody> userHaveTooLowAge(UserHaveTooLowAgeException exception) {
-        return new ResponseEntity<>(errorService.makeResponse(exception), HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(ResumeException.class)
     @ResponseBody
     public ResponseEntity<ErrorResponseBody> resumeException(ResumeException exception) {
@@ -84,6 +78,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserAlreadyRegisteredException.class)
     public String userAlreadyRegistered(UserAlreadyRegisteredException exception, Model model) {
+        model.addAttribute("pageTitle", "Ошибка");
+        model.addAttribute("exceptionText", exception.getMessage());
+        model.addAttribute("redirectLink", "/registration");
+        model.addAttribute("redirectLinkTitle", "Регистрация");
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
+        return "error/error";
+    }
+
+    @ExceptionHandler(UserHaveTooLowAgeException.class)
+    public String userHaveTooLowAge(UserHaveTooLowAgeException exception, Model model) {
         model.addAttribute("pageTitle", "Ошибка");
         model.addAttribute("exceptionText", exception.getMessage());
         model.addAttribute("redirectLink", "/registration");

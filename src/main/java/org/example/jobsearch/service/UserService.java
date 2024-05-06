@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public interface UserService {
@@ -45,4 +46,6 @@ public interface UserService {
     EmployerInfoDto getEmployerInfoByVacancyId(Long id);
 
     ApplicantInfoDto getApplicantInfoByResumeId(Long id);
+
+    Map<String, String> getAccountTypes();
 }

@@ -25,7 +25,7 @@ public class VacancyController {
     private final AuthenticatedUserProvider authenticatedUserProvider;
 
     @GetMapping()
-    public String vacanciesGet(Model model, Pageable pageable) {
+    public String vacanciesGet(Model model, Pageable pageable, @RequestParam(defaultValue = "0", name = "categoryId") Integer categoryId) {
         model.addAttribute("pageTitle", "Вакансии");
         model.addAttribute("url", "vacancies");
         model.addAttribute("page", vacancyService.getActivePageVacancies(pageable));
@@ -78,6 +78,20 @@ public class VacancyController {
         return "redirect:/profile";
     }
 
+    @GetMapping("filter")
+    public String filterGet(@RequestParam(defaultValue = "0") Integer categoryId, @RequestParam(defaultValue = "createdDate") String criterion, @RequestParam(defaultValue = "increase") String order, Model model, Pageable pageable) {
+        model.addAttribute("pageTitle", "Вакансии по фильтру");
+        model.addAttribute("url", "/vacancies/filter/");
+        model.addAttribute("page", vacancyService.getPageVacancyByFilter(categoryId, criterion, order, pageable));
+        model.addAttribute("categories", categoryService.getCategoriesList());
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("criterion", criterion);
+        model.addAttribute("order", order);
+        return "vacancy/filtered";
+    }
+
     @PostMapping("/add")
     public String addPost(CreatePageVacancyDto vacancyPageDto, HttpServletRequest request, Authentication auth) {
         Long id = vacancyService.addVacancyFromForm(vacancyPageDto, request, auth);
@@ -91,13 +105,10 @@ public class VacancyController {
     }
 
     @PostMapping("/filter")
-    public String getByFilter(@RequestParam(defaultValue = "0") Integer categoryId, @RequestParam(defaultValue = "createdDate") String criterion, @RequestParam(defaultValue = "increase") String order, Model model, Pageable pageable) {
-        model.addAttribute("pageTitle", "Вакансии по фильтру");
-        model.addAttribute("url", "/vacancies/filter/");
-        model.addAttribute("page", vacancyService.getPageVacancyByFilter(categoryId, criterion, order, pageable));
-        model.addAttribute("categories", categoryService.getCategoriesList());
-        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
-        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
-        return "vacancy/filtered";
+    public String filterPost(@RequestParam(defaultValue = "0") Integer categoryId, @RequestParam(defaultValue = "createdDate") String criterion, @RequestParam(defaultValue = "increase") String order, Model model) {
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("criterion", criterion);
+        model.addAttribute("order", order);
+        return String.format("redirect:/vacancies/filter?categoryId=%s&criterion=%s&order=%s", categoryId, criterion,order);
     }
 }

@@ -26,9 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -255,6 +253,14 @@ public class UserServiceImpl implements UserService {
                 .avatar(user.getAvatar())
                 .activeResumes(count)
                 .build();
+    }
+
+    @Override
+    public Map<String, String> getAccountTypes() {
+        Map<String, String> accountTypes = new HashMap<>();
+        accountTypes.put("Работодатель", "Работодатель");
+        accountTypes.put("Соискатель", "Соискатель");
+        return accountTypes;
     }
 
     private List<UserDto> makeUserDtoList(List<User> userList) {

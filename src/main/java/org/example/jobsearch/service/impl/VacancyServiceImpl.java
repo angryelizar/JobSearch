@@ -448,6 +448,8 @@ public class VacancyServiceImpl implements VacancyService {
         return ToPageUtil.toPageVacancy(result, pageable);
     }
 
+
+
     @Override
     @SneakyThrows
     public Page<PageVacancyDto> getPageVacancyByFilter(Integer categoryId, String criterion, String order, Pageable pageable) {

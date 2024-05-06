@@ -13,17 +13,17 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 public class UserDto {
     private Long id;
-    @NotBlank
+    @NotBlank(message = "Имя (название компании) не может быть пустым!")
     private String name;
     private String surname;
+    @Min(value = 18, message = "Вам должно быть как минимум 18 лет для регистрации!")
     private Integer age;
-    @NotBlank
-    @Email
+    @NotBlank(message = "Почта не может быть пустой!")
+    @Email(message = "Здесь нужно вводить только почту!")
     private String email;
     @Size(min = 4, max = 24, message = "Длина пароля должна быть больше или равно 4 и не больше 24")
     @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).+$", message = "Пароль должен содержать как минимум одну большую букву и цифру")
     private String password;
-    @Size(min = 13, max = 13, message = "Введите номер в формате +996XXXXXXXXX")
     @Pattern(regexp = "\\+996\\d{9}", message = "Введите номер в формате +996XXXXXXXXX")
     private String phoneNumber;
     private String avatar;

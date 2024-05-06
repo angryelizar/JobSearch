@@ -1,21 +1,29 @@
 package org.example.jobsearch.controllers;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.jobsearch.dto.SendMessageDto;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.UserNotFoundException;
 import org.example.jobsearch.service.*;
 import org.example.jobsearch.util.AuthenticatedUserProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/")
 public class MainController {
+    private static final Logger log = LoggerFactory.getLogger(MainController.class);
     private final UserService userService;
     private final ProfileService profileService;
     private final RespondedApplicantsService respondedApplicantsService;
@@ -41,6 +49,8 @@ public class MainController {
 
     @GetMapping("/registration")
     public String registrationGet(Model model) {
+        model.addAttribute("accountTypes", userService.getAccountTypes());
+        model.addAttribute("userDto", new UserDto());
         model.addAttribute("pageTitle", "Регистрация");
         model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
@@ -172,9 +182,18 @@ public class MainController {
         return "redirect:/profile";
     }
 
+
     @PostMapping("/registration")
-    public String registrationPost(UserDto userDto) {
-        userService.createUser(userDto);
-        return "redirect:/";
+    public String registrationPost(@Valid UserDto userDto, BindingResult bindingResult, Model model) {
+        if (!bindingResult.hasErrors()) {
+            userService.createUser(userDto);
+            return "redirect:/login";
+        }
+        model.addAttribute("pageTitle", "Регистрация");
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("userDto", userDto);
+        model.addAttribute("accountTypes", userService.getAccountTypes());
+        return "main/registration";
     }
 }

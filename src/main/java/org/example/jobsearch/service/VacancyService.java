@@ -68,5 +68,5 @@ public interface VacancyService {
 
     Page<ProfilePageVacancyDto> getPageVacanciesByAuthorId(Long id, Pageable pageable);
 
-    Object getPageVacancyByFilter(Integer categoryId, String criterion, String order, Pageable pageable);
+    Page<PageVacancyDto> getPageVacancyByFilter(Integer categoryId, String criterion, String order, Pageable pageable);
 }
