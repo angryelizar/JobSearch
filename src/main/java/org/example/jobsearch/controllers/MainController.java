@@ -66,6 +66,7 @@ public class MainController {
         model.addAttribute("userId", userService.getFullUserByEmail(auth.getName()).getId());
         model.addAttribute("approvedNumber", respondedApplicantsService.getApprovedResponsesNumber(auth));
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         return "main/profile";
     }
 

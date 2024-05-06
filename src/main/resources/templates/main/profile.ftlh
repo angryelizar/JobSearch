@@ -9,7 +9,7 @@
                     <img src="/api/users/${userId}/avatar" alt="Аватарка профиля" class="rounded-4 img-fluid">
                 </div>
                 <div class="col-xxl-6 col-xl-4 col-lg-5 col-md-11">
-                    <h4 class="d-block">${data.user.name} ${data.user.surname}</h4>
+                    <h4 class="d-block">${data.user.name} <#if data.user.surname??>${data.user.surname}</#if></h4>
                     <p class="d-block">Возраст: ${data.user.age}</p>
                     <button type="button" class="p-2 btn btn-secondary d-block" data-bs-toggle="modal"
                             data-bs-target="#exampleModal">
@@ -131,12 +131,14 @@
                                        aria-describedby="nameHelp" value="${data.user.name}"
                                        required>
                             </div>
-                            <div class="mb-3">
-                                <label for="surname" class="form-label">Ваша фамилия</label>
-                                <input type="text" class="form-control" id="surname" name="surname"
-                                       aria-describedby="surnameHelp" value="${data.user.surname}"
-                                       <#if data.user.accountType="Соискатель">required<#else></#if>>
-                            </div>
+                            <#if isEmployer = true>
+                                <#else>
+                                    <div class="mb-3">
+                                        <label for="surname" class="form-label">Ваша фамилия</label>
+                                        <input type="text" class="form-control" id="surname" name="surname"
+                                               aria-describedby="surnameHelp" required>
+                                    </div>
+                            </#if>
                             <div class="mb-3">
                                 <label for="age" class="form-label">Ваш возраст</label>
                                 <input type="number" class="form-control" id="age" name="age" aria-describedby="ageHelp"

@@ -292,7 +292,7 @@ public class VacancyServiceImpl implements VacancyService {
                     .id(vacancy.getId())
                     .name(vacancy.getName())
                     .description(vacancy.getDescription())
-                    .author(author.getName() + " " + author.getSurname())
+                    .author(author.getName())
                     .category(vacancy.getCategory().getName())
                     .salary(vacancy.getSalary())
                     .expFrom(vacancy.getExpFrom())

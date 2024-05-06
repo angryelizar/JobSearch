@@ -8,17 +8,13 @@
                 <label for="accountType" class="form-label">Кто вы?</label>
                 <@spring.formSingleSelect 'userDto.accountType' accountTypes 'name="accountType" id="accountType" class="form-control"'></@spring.formSingleSelect>
                 <@spring.showErrors "<br>" 'text-danger'/>
-<#--                <select name="accountType" id="accountType" class="form-control" required>-->
-<#--                    <option value="Работодатель">Работодатель</option>-->
-<#--                    <option value="Соискатель">Соискатель</option>-->
-<#--                </select>-->
             </div>
-            <div class="mb-3">
-                <label for="name" class="form-label">Ваше имя</label>
+            <div class="mb-3" id="name-input">
+                <label for="name" class="form-label" id="name-label">Ваше имя</label>
                 <@spring.formInput "userDto.name" 'placeholder="Ваше имя" class="form-control" id="name" name= "name"'></@spring.formInput>
                 <@spring.showErrors "<br>" 'text-danger'/>
             </div>
-            <div class="mb-3">
+            <div class="mb-3" id="surname-input">
                 <label for="surname" class="form-label">Ваша фамилия</label>
                 <@spring.formInput "userDto.surname" 'placeholder="Ваша фамилия" class="form-control" id="surname" name= "surname"'></@spring.formInput>
                 <@spring.showErrors "<br>" 'text-danger'/>
@@ -46,4 +42,5 @@
             <button type="submit" class="btn btn-secondary">Зарегистрироваться</button>
         </form>
     </div>
+    <script src="../scripts/registration.js">
 </@main.layout>
