@@ -9,6 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
 @RequiredArgsConstructor
 public class AuthenticatedUserProvider {
@@ -29,5 +31,13 @@ public class AuthenticatedUserProvider {
     public boolean isAuthenticated() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return !(authentication instanceof AnonymousAuthenticationToken);
+    }
+
+    public boolean isEmployer(){
+        if (!isAuthenticated()) {
+            return false;
+        }
+        User user = getAuthenticatedUser();
+        return Objects.equals(user.getAccountType(), "Работодатель");
     }
 }

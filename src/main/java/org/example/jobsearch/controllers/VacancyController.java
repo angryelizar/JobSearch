@@ -1,7 +1,6 @@
 package org.example.jobsearch.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import org.example.jobsearch.dto.CreatePageVacancyDto;
 import org.example.jobsearch.dto.UpdatePageVacancyDto;
@@ -10,6 +9,7 @@ import org.example.jobsearch.service.CategoryService;
 import org.example.jobsearch.service.UserService;
 import org.example.jobsearch.service.VacancyService;
 import org.example.jobsearch.util.AuthenticatedUserProvider;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,15 +25,22 @@ public class VacancyController {
     private final AuthenticatedUserProvider authenticatedUserProvider;
 
     @GetMapping()
-    public String vacanciesGet(Model model, @RequestParam(name = "page", defaultValue = "0") Integer page) {
+    public String vacanciesGet(Model model, Pageable pageable, @RequestParam(defaultValue = "0", name = "categoryId") Integer categoryId) {
         model.addAttribute("pageTitle", "Вакансии");
         model.addAttribute("url", "vacancies");
-        model.addAttribute("size", vacancyService.getCount());
-        model.addAttribute("page", page);
-        model.addAttribute("vacancies", vacancyService.getActivePageVacancies(page));
+        model.addAttribute("page", vacancyService.getActivePageVacancies(pageable));
         model.addAttribute("categories", categoryService.getCategoriesList());
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         return "vacancy/vacancies";
+    }
+
+    @GetMapping("/search")
+    public String searchGet(Model model) {
+        model.addAttribute("pageTitle", "Поиск вакансий");
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
+        return "vacancy/search";
     }
 
     @GetMapping("/add")
@@ -41,6 +48,7 @@ public class VacancyController {
         model.addAttribute("pageTitle", "Создать вакансию");
         model.addAttribute("categories", categoryService.getCategoriesList());
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         return "vacancy/add";
     }
 
@@ -52,6 +60,7 @@ public class VacancyController {
         model.addAttribute("employer", userService.getEmployerInfoByVacancyId(id));
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
         model.addAttribute("userAuth", auth);
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         return "vacancy/vacancy";
     }
 
@@ -61,6 +70,7 @@ public class VacancyController {
         model.addAttribute("vacancy", vacancyService.vacancyEditGet(id, authentication));
         model.addAttribute("categories", categoryService.getCategoriesList());
         model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
         return "vacancy/edit";
     }
 
@@ -76,6 +86,20 @@ public class VacancyController {
         return "redirect:/profile";
     }
 
+    @GetMapping("filter")
+    public String filterGet(@RequestParam(defaultValue = "0") Integer categoryId, @RequestParam(defaultValue = "createdDate") String criterion, @RequestParam(defaultValue = "increase") String order, Model model, Pageable pageable) {
+        model.addAttribute("pageTitle", "Вакансии по фильтру");
+        model.addAttribute("url", "/vacancies/filter/");
+        model.addAttribute("page", vacancyService.getPageVacancyByFilter(categoryId, criterion, order, pageable));
+        model.addAttribute("categories", categoryService.getCategoriesList());
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("criterion", criterion);
+        model.addAttribute("order", order);
+        return "vacancy/filtered";
+    }
+
     @PostMapping("/add")
     public String addPost(CreatePageVacancyDto vacancyPageDto, HttpServletRequest request, Authentication auth) {
         Long id = vacancyService.addVacancyFromForm(vacancyPageDto, request, auth);
@@ -88,14 +112,11 @@ public class VacancyController {
         return String.format("redirect:/vacancies/%d", id);
     }
 
-    @PostMapping("/category")
-    public String getByCategory(@RequestParam Integer categoryId, Model model, @RequestParam(name = "page", defaultValue = "0") Integer page) {
-        model.addAttribute("pageTitle", "Вакансии");
-        model.addAttribute("url", "vacancies");
-        model.addAttribute("vacancies", vacancyService.getPageVacancyByCategoryId(Long.valueOf(categoryId), page));
-        model.addAttribute("categories", categoryService.getCategoriesList());
-        model.addAttribute("size", vacancyService.getCount());
-        model.addAttribute("page", page);
-        return "vacancy/vacancies";
+    @PostMapping("/filter")
+    public String filterPost(@RequestParam(defaultValue = "0") Integer categoryId, @RequestParam(defaultValue = "createdDate") String criterion, @RequestParam(defaultValue = "increase") String order, Model model) {
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("criterion", criterion);
+        model.addAttribute("order", order);
+        return String.format("redirect:/vacancies/filter?categoryId=%s&criterion=%s&order=%s", categoryId, criterion, order);
     }
 }

@@ -16,6 +16,9 @@ import org.example.jobsearch.repositories.VacancyRepository;
 import org.example.jobsearch.service.AuthorityService;
 import org.example.jobsearch.service.AvatarImageService;
 import org.example.jobsearch.service.UserService;
+import org.example.jobsearch.util.ToPageUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,9 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -78,16 +79,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Page<UserDto> getEmployersUsers(Pageable pageable) {
+        return ToPageUtil.toPageEmployers(makeUserDtoList(userRepository.getEmployersUsers()), pageable);
+    }
+
+    @Override
     public List<UserDto> getEmployersUsers() {
         List<User> users = userRepository.getEmployersUsers();
-        List<UserDto> userDtos = new ArrayList<>();
-        users.forEach(e -> userDtos.add(UserDto.builder()
-                .id(e.getId())
-                .name(e.getName())
-                .surname(e.getSurname())
-                .accountType(e.getAccountType())
-                .build()));
-        return userDtos;
+        return makeUserDtoList(users);
     }
 
     @Override
@@ -254,5 +253,24 @@ public class UserServiceImpl implements UserService {
                 .avatar(user.getAvatar())
                 .activeResumes(count)
                 .build();
+    }
+
+    @Override
+    public Map<String, String> getAccountTypes() {
+        Map<String, String> accountTypes = new HashMap<>();
+        accountTypes.put("Работодатель", "Работодатель");
+        accountTypes.put("Соискатель", "Соискатель");
+        return accountTypes;
+    }
+
+    private List<UserDto> makeUserDtoList(List<User> userList) {
+        List<UserDto> userDtos = new ArrayList<>();
+        userList.forEach(e -> userDtos.add(UserDto.builder()
+                .id(e.getId())
+                .name(e.getName())
+                .surname(e.getSurname())
+                .accountType(e.getAccountType())
+                .build()));
+        return userDtos;
     }
 }

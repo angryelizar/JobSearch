@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class VacancyDto {
+    private Long id;
     @NotBlank(message = "Название вакансии не может быть пустым")
     @Size(min = 20, max = 100, message = "Размер названия вакансии - от 20 до 100 символов")
     private String name;

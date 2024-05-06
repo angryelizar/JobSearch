@@ -2,10 +2,10 @@
 <#import "../pagination.ftlh" as pagination>
 <@main.layout>
     <div class="row">
-        <@pagination.pagination></@pagination.pagination>
+        <@pagination.pagination url page></@pagination.pagination>
         <div class="col-12 col-md-10 d-flex flex-column gap-3">
-            <#if resumes.content?has_content>
-                <#list resumes.content as resume>
+            <#if page.content?has_content>
+                <#list page.content as resume>
                     <div class="card">
                         <div class="card-header">
                             ${resume.category}
@@ -40,5 +40,5 @@
             </form>
         </div>
     </div>
-    <@pagination.pagination></@pagination.pagination>
+    <@pagination.pagination url page></@pagination.pagination>
 </@main.layout>

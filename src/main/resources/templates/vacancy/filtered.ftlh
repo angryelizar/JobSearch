@@ -1,8 +1,8 @@
 <#import "../layout.ftlh" as main>
-<#import "../pagination.ftlh" as pagination>
+<#import "../pagination_for_filter.ftlh" as pagination>
 <@main.layout>
     <div class="row">
-        <@pagination.pagination url page></@pagination.pagination>
+        <@pagination.pagination url categoryId criterion order page></@pagination.pagination>
         <div class="col-12 col-md-10 d-flex flex-column gap-3">
             <#if page.content?has_content>
                 <#list page.content as vacancy>
@@ -25,7 +25,7 @@
             </#if>
         </div>
         <div class="col-12 col-md-2">
-            <form action="/vacancies/filter" method="post">
+            <form action="/vacancies/filter" method="POST">
                 <h6>Показать вакансии по категории:</h6>
                 <div class="mb-3">
                     <label for="categoryId" class="form-label">Категория</label>
@@ -55,5 +55,5 @@
             </form>
         </div>
     </div>
-    <@pagination.pagination url page></@pagination.pagination>
+    <@pagination.pagination url categoryId criterion order page></@pagination.pagination>
 </@main.layout>

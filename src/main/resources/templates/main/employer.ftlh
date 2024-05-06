@@ -1,4 +1,5 @@
 <#import "../layout.ftlh" as main>
+<#import "../pagination.ftlh" as pagination>
 <@main.layout>
     <div class="p-2">
         <h1 class="text-center">Профиль работодателя</h1>
@@ -15,8 +16,11 @@
         <div class="posts-block container-fluid">
             <h3 class="text-start mt-3">Резюме</h3>
             <#if vacancies?has_content>
+                <@pagination.pagination url vacancies></@pagination.pagination>
+            </#if>
+            <#if vacancies?has_content>
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 mt-3 g-3">
-                    <#list vacancies as vacancy>
+                    <#list vacancies.content as vacancy>
                         <div class="col">
                             <div class="card" style="min-height: 255px;">
                                 <div class="card-body">

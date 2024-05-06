@@ -1,6 +1,7 @@
 package org.example.jobsearch.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.models.Role;
 import org.example.jobsearch.repositories.AuthorityRepository;
 import org.example.jobsearch.repositories.RoleRepository;
@@ -10,17 +11,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthorityServiceImpl implements AuthorityService {
     private final AuthorityRepository authorityRepository;
     private final RoleRepository roleRepository;
-    private final UserRepository userRepository;
 
     @Override
     public void add(Long userId, Long authorityId) {
-        roleRepository.save(Role.builder()
-                .user(userRepository.findById(userId).get())
-                .authority(authorityRepository.findById(authorityId).get())
-                .build());
+        roleRepository.setNewRole(userId, authorityId);
     }
 
     @Override

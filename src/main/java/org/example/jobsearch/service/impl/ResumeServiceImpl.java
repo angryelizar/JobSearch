@@ -18,6 +18,7 @@ import org.example.jobsearch.service.EducationInfoService;
 import org.example.jobsearch.service.ResumeService;
 import org.example.jobsearch.service.WorkExperienceInfoService;
 import org.example.jobsearch.util.DateUtil;
+import org.example.jobsearch.util.ToPageUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -115,6 +116,12 @@ public class ResumeServiceImpl implements ResumeService {
             page = 0;
         }
         return toPage(resumes, PageRequest.of(page, 5));
+    }
+
+    @Override
+    public Page<PageResumeDto> getActivePageResumes(Pageable pageable) {
+        List<PageResumeDto> resumes = getActivePageResumes();
+        return toPage(resumes, pageable);
     }
 
     private Page<PageResumeDto> toPage(List<PageResumeDto> resumes, Pageable pageable) {
@@ -483,7 +490,7 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public List<ProfilePageResumeDto> getPageResumesByAuthorId(Long id) {
+    public Page<ProfilePageResumeDto> getPageResumesByAuthorId(Long id, Pageable pageable) {
         List<Resume> resumes = getFullResumesByUserId(id);
         List<ProfilePageResumeDto> pageResumeDtos = new ArrayList<>();
         resumes.sort(Comparator.comparing(Resume::getUpdateTime).reversed());
@@ -497,7 +504,7 @@ public class ResumeServiceImpl implements ResumeService {
                             .build()
             );
         }
-        return pageResumeDtos;
+        return ToPageUtil.toPageResume(pageResumeDtos, pageable);
     }
 
     @Override

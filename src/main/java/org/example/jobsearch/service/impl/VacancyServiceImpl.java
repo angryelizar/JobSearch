@@ -13,19 +13,16 @@ import org.example.jobsearch.service.ResumeService;
 import org.example.jobsearch.service.UserService;
 import org.example.jobsearch.service.VacancyService;
 import org.example.jobsearch.util.DateUtil;
+import org.example.jobsearch.util.ToPageUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +40,7 @@ public class VacancyServiceImpl implements VacancyService {
     private final RespondedApplicantRepository respondedApplicantRepository;
 
     @Override
-    public Integer getCount(){
+    public Integer getCount() {
         return vacancyRepository.findAll().size();
     }
 
@@ -145,12 +142,12 @@ public class VacancyServiceImpl implements VacancyService {
     @Override
     @SneakyThrows
     public void deleteVacancyById(Long id, Authentication authentication) {
-        if (!vacancyRepository.existsById(id)){
+        if (!vacancyRepository.existsById(id)) {
             log.error("Вакансии с ID " + id + " не существует");
             throw new VacancyException("Такой вакансии нет");
         }
         Vacancy vacancy = vacancyRepository.findById(id).get();
-        if (!Objects.equals(vacancy.getAuthor().getId(), userRepository.getUserByEmail(authentication.getName()).get().getId())){
+        if (!Objects.equals(vacancy.getAuthor().getId(), userRepository.getUserByEmail(authentication.getName()).get().getId())) {
             log.error("Была попытка удалить чужую вакансию");
             throw new VacancyException("Это не ваша вакансия!");
         }
@@ -184,6 +181,7 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public List<VacancyDto> getVacanciesByQuery(String query) {
+        query = "%" + query + "%";
         return getVacancyDtos(vacancyRepository.getVacanciesByQuery(query));
     }
 
@@ -200,8 +198,8 @@ public class VacancyServiceImpl implements VacancyService {
             throw new VacancyException("Соискатель уже откликался на эту вакансию!");
         }
         respondedApplicantRepository.save(RespondApplicant.builder()
-                        .resume(resumeRepository.findById(respondedApplicantDto.getResumeId()).get())
-                        .vacancy(vacancyRepository.findById(respondedApplicantDto.getVacancyId()).get())
+                .resume(resumeRepository.findById(respondedApplicantDto.getResumeId()).get())
+                .vacancy(vacancyRepository.findById(respondedApplicantDto.getVacancyId()).get())
                 .build());
     }
 
@@ -263,16 +261,18 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public Page<PageVacancyDto> getActivePageVacancies(Integer pageNumber) {
-        List<PageVacancyDto> vacancies = getActivePageVacancies();
-        if (pageNumber < 0){
-            pageNumber = 0;
+    public Page<PageVacancyDto> getActivePageVacancies(Pageable pageable) {
+        List<Vacancy> vacancies = vacancyRepository.searchVacanciesByIsActiveEquals(true);
+        vacancies.sort(Comparator.comparing(Vacancy::getUpdateTime).reversed());
+        List<PageVacancyDto> pageVacancyDtos = new ArrayList<>();
+        for (Vacancy vacancy : vacancies) {
+            pageVacancyDtos.add(getPageVacancyById(vacancy.getId()));
         }
-        return toPage(vacancies, PageRequest.of(pageNumber, 5));
+        return toPage(pageVacancyDtos, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
     }
 
     private Page<PageVacancyDto> toPage(List<PageVacancyDto> vacancies, Pageable pageable) {
-        if (pageable.getOffset() >= vacancies.size()){
+        if (pageable.getOffset() >= vacancies.size()) {
             log.error("Я пока не понял как эту ситуацию обработать....");
             return Page.empty();
         }
@@ -290,9 +290,10 @@ public class VacancyServiceImpl implements VacancyService {
             User author = vacancy.getAuthor();
             return PageVacancyDto
                     .builder()
+                    .id(vacancy.getId())
                     .name(vacancy.getName())
                     .description(vacancy.getDescription())
-                    .author(author.getName() + " " + author.getSurname())
+                    .author(author.getName())
                     .category(vacancy.getCategory().getName())
                     .salary(vacancy.getSalary())
                     .expFrom(vacancy.getExpFrom())
@@ -328,12 +329,12 @@ public class VacancyServiceImpl implements VacancyService {
     @Override
     @SneakyThrows
     public PageVacancyDto vacancyEditGet(Long id, Authentication authentication) {
-        if (!vacancyRepository.existsById(id)){
+        if (!vacancyRepository.existsById(id)) {
             log.error("Вакансии с ID " + id + " не существует");
             throw new VacancyException("Такой вакансии нет");
         }
         Vacancy vacancy = vacancyRepository.findById(id).get();
-        if (!Objects.equals(vacancy.getAuthor().getId(), userRepository.getUserByEmail(authentication.getName()).get().getId())){
+        if (!Objects.equals(vacancy.getAuthor().getId(), userRepository.getUserByEmail(authentication.getName()).get().getId())) {
             log.error("Была попытка отредактировать чужую вакансию");
             throw new VacancyException("Это не ваша вакансия!");
         }
@@ -352,12 +353,12 @@ public class VacancyServiceImpl implements VacancyService {
     @SneakyThrows
     public Long editVacancyFromForm(UpdatePageVacancyDto vacancyDto, HttpServletRequest request, Authentication auth) {
         Long id = vacancyDto.getId();
-        if (!vacancyRepository.existsById(id)){
+        if (!vacancyRepository.existsById(id)) {
             log.error("Вакансии с ID " + id + " не существует");
             throw new VacancyException("Такой вакансии нет");
         }
         Vacancy vacancy = vacancyRepository.findById(id).get();
-        if (!Objects.equals(vacancy.getAuthor().getId(), userRepository.getUserByEmail(auth.getName()).get().getId())){
+        if (!Objects.equals(vacancy.getAuthor().getId(), userRepository.getUserByEmail(auth.getName()).get().getId())) {
             log.error("Была попытка отредактировать чужую вакансию");
             throw new VacancyException("Это не ваша вакансия!");
         }
@@ -382,7 +383,7 @@ public class VacancyServiceImpl implements VacancyService {
     @Override
     @SneakyThrows
     public List<PageVacancyDto> getPageVacancyByCategoryId(Long categoryId) {
-        if (Boolean.FALSE.equals(categoryRepository.existsById(categoryId))){
+        if (Boolean.FALSE.equals(categoryRepository.existsById(categoryId))) {
             throw new VacancyException("Такой категории нет!");
         }
         List<Vacancy> vacancies = vacancyRepository.searchVacanciesByIsActiveEquals(true);
@@ -401,17 +402,13 @@ public class VacancyServiceImpl implements VacancyService {
                         .build());
             }
         }
-
         return resultVacancies;
     }
 
     @Override
-    public Page<PageVacancyDto> getPageVacancyByCategoryId(Long categoryId, int page) {
+    public Page<PageVacancyDto> getPageVacancyByCategoryId(Long categoryId, Pageable pageable) {
         List<PageVacancyDto> result = getPageVacancyByCategoryId(categoryId);
-        if (page < 0){
-            page = 0;
-        }
-        return toPage(result, PageRequest.of(page, 5));
+        return toPage(result, pageable);
     }
 
     @Override
@@ -438,7 +435,7 @@ public class VacancyServiceImpl implements VacancyService {
     }
 
     @Override
-    public List<ProfilePageVacancyDto> getPageVacanciesByAuthorId(Long id) {
+    public Page<ProfilePageVacancyDto> getPageVacanciesByAuthorId(Long id, Pageable pageable) {
         List<Vacancy> vacancyList = vacancyRepository.getVacanciesByAuthorId(id);
         List<ProfilePageVacancyDto> result = new ArrayList<>();
         for (Vacancy cur : vacancyList) {
@@ -449,7 +446,31 @@ public class VacancyServiceImpl implements VacancyService {
                     .updateDate(DateUtil.getFormattedLocalDateTime(cur.getUpdateTime()))
                     .build());
         }
-        return result;
+        return ToPageUtil.toPageVacancy(result, pageable);
+    }
+
+
+    @Override
+    @SneakyThrows
+    public Page<PageVacancyDto> getPageVacancyByFilter(Integer categoryId, String criterion, String order, Pageable pageable) {
+        List<Vacancy> vacancies = new ArrayList<>();
+        if (categoryId == 0) {
+            vacancies.addAll(vacancyRepository.searchVacanciesByIsActiveEquals(true));
+        } else {
+            vacancies.addAll(vacancyRepository.getVacanciesByCategoryId(Long.valueOf(categoryId)));
+        }
+        vacancies.size();
+        List<PageVacancyDto> resultVacancies = new ArrayList<>();
+        resultVacancies.addAll(getPageVacancyDtos(vacancies));
+        if (criterion.equalsIgnoreCase("createdDate")) {
+            resultVacancies.sort(Comparator.comparing(PageVacancyDto::getCreatedTime));
+        } else if (criterion.equalsIgnoreCase("responseCount")) {
+            resultVacancies.sort(Comparator.comparing(PageVacancyDto::getCountOfResponses));
+        }
+        if (order.equalsIgnoreCase("decrease")) {
+            Collections.reverse(resultVacancies);
+        }
+        return ToPageUtil.toPageVacancyDto(resultVacancies, pageable);
     }
 
     private Long getVacancyCategoryByVacancyId(Long vacancyId) {
@@ -459,6 +480,7 @@ public class VacancyServiceImpl implements VacancyService {
     private List<VacancyDto> getVacancyDtos(List<Vacancy> vacancies) {
         List<VacancyDto> vacancyDtos = new ArrayList<>();
         vacancies.forEach(e -> vacancyDtos.add(VacancyDto.builder()
+                .id(e.getId())
                 .name(e.getName())
                 .description(e.getDescription())
                 .categoryId(e.getId())
@@ -484,5 +506,25 @@ public class VacancyServiceImpl implements VacancyService {
                 .createdTime(vacancy.getCreatedTime())
                 .updateTime(vacancy.getUpdateTime())
                 .build();
+    }
+
+    private List<PageVacancyDto> getPageVacancyDtos(List<Vacancy> vacancies) {
+        List<PageVacancyDto> result = new ArrayList<>();
+        for (Vacancy cur : vacancies) {
+            result.add(
+                    PageVacancyDto.builder()
+                            .id(cur.getId())
+                            .name(cur.getName())
+                            .description(cur.getDescription())
+                            .author(cur.getAuthor().getName())
+                            .category(cur.getCategory().getName())
+                            .salary(cur.getSalary())
+                            .updateTime(DateUtil.getFormattedLocalDateTime(cur.getUpdateTime()))
+                            .createdTime(cur.getCreatedTime())
+                            .countOfResponses(respondedApplicantRepository.countRespondApplicantByVacancyId(cur.getId()))
+                            .build()
+            );
+        }
+        return result;
     }
 }

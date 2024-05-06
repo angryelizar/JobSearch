@@ -1,4 +1,4 @@
-<#macro pagination url page>
+<#macro pagination url categoryId criterion order page>
     <#if page.getTotalPages() gt 7>
         <#assign
         totalPages = page.getTotalPages()
@@ -28,7 +28,7 @@
                     </li>
             <#else>
                 <li class="page-item">
-                    <a href="${url}?page=${p-1}&size=${page.getSize()}" class="page-link">${p}</a>
+                    <a href="?categoryId=${categoryId}&criterion=${criterion}&order=${order}&page=${p-1}&size=${page.getSize()}" class="page-link">${p}</a>
                 </li>
             </#if>
         </#list>
@@ -45,7 +45,7 @@
                 </li>
             <#else>
                 <li class="page-item">
-                    <a href="${url}?page=${page.getNumber()}&size=${c}" class="page-link">${c}</a>
+                    <a href="?categoryId=${categoryId}&criterion=${criterion}&order=${order}&page=${page.getNumber()}&size=${c}" class="page-link">${c}</a>
                 </li>
             </#if>
         </#list>
