@@ -37,6 +37,9 @@
                     </li>
                 </ul>
                 <div class="text-secondary-emphasis d-flex justify-content-center align-items-center" style="gap: 10px">
+                    <div class="nav-item">
+                        <a class="fs-2 nav-link active" aria-current="page" href="/vacancies/search"><i class="bi bi-search"></i></a>
+                    </div>
                     <#if isAuthenticated??>
                         <#if isAuthenticated == true>
                             <div class="nav-item"><a class="fs-2 nav-link" href="/profile"><i

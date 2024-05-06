@@ -35,6 +35,14 @@ public class VacancyController {
         return "vacancy/vacancies";
     }
 
+    @GetMapping("/search")
+    public String searchGet(Model model) {
+        model.addAttribute("pageTitle", "Поиск вакансий");
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
+        return "vacancy/search";
+    }
+
     @GetMapping("/add")
     public String addGet(Model model) {
         model.addAttribute("pageTitle", "Создать вакансию");
@@ -109,6 +117,6 @@ public class VacancyController {
         model.addAttribute("categoryId", categoryId);
         model.addAttribute("criterion", criterion);
         model.addAttribute("order", order);
-        return String.format("redirect:/vacancies/filter?categoryId=%s&criterion=%s&order=%s", categoryId, criterion,order);
+        return String.format("redirect:/vacancies/filter?categoryId=%s&criterion=%s&order=%s", categoryId, criterion, order);
     }
 }
