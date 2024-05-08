@@ -1,4 +1,5 @@
 <#import "../layout.ftlh" as main>
+<#import "../csrf_template.ftlh" as csrf>
 <@main.layout>
     <h1>Создание резюме</h1>
     <div class="row">
@@ -118,6 +119,7 @@
                     <input type="checkbox" class="form-check-input" id="isActive" name="isActive">
                     <label class="form-check-label" for="isActive">Активно</label>
                 </div>
+                <@csrf.csrf></@csrf.csrf>
                 <button type="submit" class="btn btn-secondary">Отправить</button>
             </form>
         </div>

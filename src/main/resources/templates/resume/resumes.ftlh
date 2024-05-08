@@ -1,5 +1,6 @@
 <#import "../layout.ftlh" as main>
 <#import "../pagination.ftlh" as pagination>
+<#import "../csrf_template.ftlh" as csrf>
 <@main.layout>
     <div class="row">
         <@pagination.pagination url page></@pagination.pagination>
@@ -36,6 +37,7 @@
                         </#if>
                     </select>
                 </div>
+                <@csrf.csrf></@csrf.csrf>
                 <button type="submit" class="btn btn-secondary">Отправить</button>
             </form>
         </div>
