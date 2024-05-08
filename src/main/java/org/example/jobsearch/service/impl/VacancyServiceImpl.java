@@ -91,7 +91,7 @@ public class VacancyServiceImpl implements VacancyService {
                 .expFrom(vacancyDto.getExpFrom())
                 .expTo(vacancyDto.getExpTo())
                 .isActive(vacancyDto.getIsActive())
-                .author(userRepository.getUserByEmail(auth.getName()).get())
+                .author(userRepository.getByEmail(auth.getName()).get())
                 .createdTime(LocalDateTime.now())
                 .updateTime(LocalDateTime.now())
                 .build();
@@ -147,7 +147,7 @@ public class VacancyServiceImpl implements VacancyService {
             throw new VacancyException("Такой вакансии нет");
         }
         Vacancy vacancy = vacancyRepository.findById(id).get();
-        if (!Objects.equals(vacancy.getAuthor().getId(), userRepository.getUserByEmail(authentication.getName()).get().getId())) {
+        if (!Objects.equals(vacancy.getAuthor().getId(), userRepository.getByEmail(authentication.getName()).get().getId())) {
             log.error("Была попытка удалить чужую вакансию");
             throw new VacancyException("Это не ваша вакансия!");
         }
@@ -310,7 +310,7 @@ public class VacancyServiceImpl implements VacancyService {
     public Long addVacancyFromForm(CreatePageVacancyDto vacancyPageDto, HttpServletRequest request, Authentication auth) {
         String isActive = request.getParameter("isActive");
         vacancyPageDto.setIsActive("on".equals(isActive));
-        User author = userRepository.getUserByEmail(auth.getName()).get();
+        User author = userRepository.getByEmail(auth.getName()).get();
 
         return vacancyRepository.save(Vacancy.builder()
                 .name(vacancyPageDto.getName())
@@ -334,7 +334,7 @@ public class VacancyServiceImpl implements VacancyService {
             throw new VacancyException("Такой вакансии нет");
         }
         Vacancy vacancy = vacancyRepository.findById(id).get();
-        if (!Objects.equals(vacancy.getAuthor().getId(), userRepository.getUserByEmail(authentication.getName()).get().getId())) {
+        if (!Objects.equals(vacancy.getAuthor().getId(), userRepository.getByEmail(authentication.getName()).get().getId())) {
             log.error("Была попытка отредактировать чужую вакансию");
             throw new VacancyException("Это не ваша вакансия!");
         }
@@ -358,7 +358,7 @@ public class VacancyServiceImpl implements VacancyService {
             throw new VacancyException("Такой вакансии нет");
         }
         Vacancy vacancy = vacancyRepository.findById(id).get();
-        if (!Objects.equals(vacancy.getAuthor().getId(), userRepository.getUserByEmail(auth.getName()).get().getId())) {
+        if (!Objects.equals(vacancy.getAuthor().getId(), userRepository.getByEmail(auth.getName()).get().getId())) {
             log.error("Была попытка отредактировать чужую вакансию");
             throw new VacancyException("Это не ваша вакансия!");
         }

@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserByEmail(String email) throws UserNotFoundException {
-        User user = userRepository.getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("С такой почтой пользователей не найдено - " + email));
+        User user = userRepository.getByEmail(email).orElseThrow(() -> new UserNotFoundException("С такой почтой пользователей не найдено - " + email));
         return UserDto.builder()
                 .name(user.getName())
                 .surname(user.getSurname())
@@ -113,7 +113,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @SneakyThrows
     public User getFullUserByEmail(String email) {
-        return userRepository.getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("С такой почтой пользователей не найдено - " + email));
+        return userRepository.getByEmail(email).orElseThrow(() -> new UserNotFoundException("С такой почтой пользователей не найдено - " + email));
     }
 
     @Override
@@ -141,15 +141,15 @@ public class UserServiceImpl implements UserService {
         user.setAvatar("default_avatar.jpeg");
         user.setAccountType(userDto.getAccountType());
         user.setEnabled(true);
+        user.setAuthority(authorityService.getAccountAuthorityByTypeString(user.getAccountType()));
         Long userId = userRepository.save(user).getId();
-        authorityService.add(userId, getAccountTypeIdByTypeString(user.getAccountType()));
     }
 
     @Override
     @SneakyThrows
     @Transactional
     public void update(UserDto userDto) {
-        var user = userRepository.getUserByEmail(userDto.getEmail());
+        var user = userRepository.getByEmail(userDto.getEmail());
         if (user.isEmpty()) {
             log.error("Запрошен несуществующий пользователь с e-mail " + userDto.getEmail());
             throw new ServiceException("Такого пользователя нет!");
@@ -189,10 +189,6 @@ public class UserServiceImpl implements UserService {
                 .surname(user.getSurname())
                 .age(user.getAge())
                 .build();
-    }
-
-    public Long getAccountTypeIdByTypeString(String type) {
-        return authorityService.getAccountAuthorityByTypeString(type);
     }
 
     @Override

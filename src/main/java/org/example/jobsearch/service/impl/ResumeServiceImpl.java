@@ -167,7 +167,7 @@ public class ResumeServiceImpl implements ResumeService {
         if (resumeDto.getSalary() <= 0) {
             throw new ResumeException("Зарплата не может быть меньше или равна нулю");
         }
-        User applicant = userRepository.getUserByEmail(authentication.getName()).get();
+        User applicant = userRepository.getByEmail(authentication.getName()).get();
         Long resumeId = resumeRepository.save(Resume.builder()
                 .applicant(applicant)
                 .name(resumeDto.getName())
@@ -262,7 +262,7 @@ public class ResumeServiceImpl implements ResumeService {
             throw new ResumeException("Такой вакансии нет! ID " + id);
         }
         Resume resume = resumeRepository.findById(id).get();
-        if (!Objects.equals(resume.getApplicant().getId(), userRepository.getUserByEmail(auth.getName()).get().getId())) {
+        if (!Objects.equals(resume.getApplicant().getId(), userRepository.getByEmail(auth.getName()).get().getId())) {
             log.info("Была попытка удалить чужую вакансию с ID " + id);
             throw new ResumeException("Это не ваше резюме - вы не можете его удалить!");
         }
@@ -306,7 +306,7 @@ public class ResumeServiceImpl implements ResumeService {
         String isActive = request.getParameter("isActive");
         pageResumeDto.setIsActive("on".equals(isActive));
         Resume resume = Resume.builder()
-                .applicant(userRepository.getUserByEmail(auth.getName()).get())
+                .applicant(userRepository.getByEmail(auth.getName()).get())
                 .name(pageResumeDto.getName())
                 .category(categoryRepository.findById(pageResumeDto.getCategoryId()).get())
                 .salary(pageResumeDto.getSalary())
@@ -436,7 +436,7 @@ public class ResumeServiceImpl implements ResumeService {
             throw new ResumeException("Резюме с " + id + " не существует!");
         }
         Resume resume = resumeRepository.findById(id).get();
-        if (!Objects.equals(resume.getApplicant().getId(), userRepository.getUserByEmail(auth.getName()).get().getId())) {
+        if (!Objects.equals(resume.getApplicant().getId(), userRepository.getByEmail(auth.getName()).get().getId())) {
             log.info("Была попытка отредактировать чужое резюме");
             throw new ResumeException("Нельзя отредактировать чужое резюме");
         }
@@ -456,7 +456,7 @@ public class ResumeServiceImpl implements ResumeService {
             throw new ResumeException("Резюме с ID " + id + " не существует!");
         }
         Resume resume = resumeRepository.findById(id).get();
-        if (!Objects.equals(resume.getApplicant().getId(), userRepository.getUserByEmail(auth.getName()).get().getId())) {
+        if (!Objects.equals(resume.getApplicant().getId(), userRepository.getByEmail(auth.getName()).get().getId())) {
             log.info("Была попытка отредактировать чужое резюме");
             throw new ResumeException("Нельзя отредактировать чужое резюме!");
         }

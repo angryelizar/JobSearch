@@ -3,6 +3,7 @@ package org.example.jobsearch.models;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -30,6 +31,9 @@ public class User implements UserDetails {
     @Column(name = "ACCOUNT_TYPE")
     private String accountType;
     private boolean enabled;
+    @ManyToOne
+    @JoinColumn(name = "AUTHORITY_ID")
+    private Authority authority;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "author")
     private List<Vacancy> vacancies;
@@ -43,31 +47,28 @@ public class User implements UserDetails {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "fromTo")
     private List<Message> messageListTo;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
-    private Role role;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(new SimpleGrantedAuthority(authority.getAuthority()));
     }
 
     @Override
     public String getUsername() {
-        return "";
+        return email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 }

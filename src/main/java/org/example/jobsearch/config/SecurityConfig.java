@@ -25,23 +25,6 @@ public class SecurityConfig {
     public static final String APPLICANT = "APPLICANT";
     public static final String ADMIN = "ADMIN";
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        String authoritiesQuery = """
-                select u.EMAIL, a.AUTHORITY from ROLES ua, AUTHORITIES a, USERS u
-                where ua.AUTHORITY_ID = a.id
-                and ua.USER_ID = u.ID and u.EMAIL = ?
-                """;
-        String userQuery = """
-                select EMAIL, PASSWORD, ENABLED from USERS
-                WHERE email = ?;
-                """;
-        auth.jdbcAuthentication()
-                .dataSource(dataSource)
-                .usersByUsernameQuery(userQuery)
-                .authoritiesByUsernameQuery(authoritiesQuery);
-    }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
