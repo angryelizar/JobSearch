@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 31-add-not-null-to-authorities-id-users-table
+      author: angryelizar
+      changes:
+        - addNotNullConstraint:
+            tableName: users
+            columnName: authority_id
+            defaultNullValue: 1

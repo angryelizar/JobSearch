@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 28-delete-roles-foreign-keys
+      author: angryelizar
+      changes:
+        - dropAllForeignKeyConstraints:
+            baseTableName: roles
+  - changeSet:
+      id: 29-delete-roles-table
+      author: angryelizar
+      changes:
+        - dropTable:
+            tableName: roles
