@@ -38,6 +38,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final VacancyRepository vacancyRepository;
     private final ResumeRepository resumeRepository;
+    private static final String APPLICANT = "Соискатель";
 
     @Override
     public List<UserDto> getUsersByName(String name) throws UserNotFoundException {
@@ -101,7 +102,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserByEmail(String email) throws UserNotFoundException {
-        User user = userRepository.getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("С такой почтой пользователей не найдено - " + email));
+        User user = userRepository.getByEmail(email).orElseThrow(() -> new UserNotFoundException("С такой почтой пользователей не найдено - " + email));
         return UserDto.builder()
                 .name(user.getName())
                 .surname(user.getSurname())
@@ -113,7 +114,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @SneakyThrows
     public User getFullUserByEmail(String email) {
-        return userRepository.getUserByEmail(email).orElseThrow(() -> new UserNotFoundException("С такой почтой пользователей не найдено - " + email));
+        return userRepository.getByEmail(email).orElseThrow(() -> new UserNotFoundException("С такой почтой пользователей не найдено - " + email));
     }
 
     @Override
@@ -141,15 +142,15 @@ public class UserServiceImpl implements UserService {
         user.setAvatar("default_avatar.jpeg");
         user.setAccountType(userDto.getAccountType());
         user.setEnabled(true);
-        Long userId = userRepository.save(user).getId();
-        authorityService.add(userId, getAccountTypeIdByTypeString(user.getAccountType()));
+        user.setAuthority(authorityService.getAccountAuthorityByTypeString(user.getAccountType()));
+        userRepository.save(user);
     }
 
     @Override
     @SneakyThrows
     @Transactional
     public void update(UserDto userDto) {
-        var user = userRepository.getUserByEmail(userDto.getEmail());
+        var user = userRepository.getByEmail(userDto.getEmail());
         if (user.isEmpty()) {
             log.error("Запрошен несуществующий пользователь с e-mail " + userDto.getEmail());
             throw new ServiceException("Такого пользователя нет!");
@@ -191,14 +192,10 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    public Long getAccountTypeIdByTypeString(String type) {
-        return authorityService.getAccountAuthorityByTypeString(type);
-    }
-
     @Override
     public boolean isApplicant(String email) {
         User user = getFullUserByEmail(email);
-        return user != null && user.getAccountType().equals("Соискатель");
+        return user != null && user.getAccountType().equals(APPLICANT);
     }
 
     @Override
@@ -259,7 +256,7 @@ public class UserServiceImpl implements UserService {
     public Map<String, String> getAccountTypes() {
         Map<String, String> accountTypes = new HashMap<>();
         accountTypes.put("Работодатель", "Работодатель");
-        accountTypes.put("Соискатель", "Соискатель");
+        accountTypes.put(APPLICANT, APPLICANT);
         return accountTypes;
     }
 

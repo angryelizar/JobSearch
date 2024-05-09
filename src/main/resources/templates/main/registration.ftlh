@@ -1,5 +1,6 @@
 <#import "../layout.ftlh" as main>
 <#import "/spring.ftl" as spring>
+<#import "../csrf_template.ftlh" as csrf>
 <@main.layout>
     <div class="p-5">
         <h1 class="text-center">Регистрация</h1>
@@ -39,6 +40,7 @@
                 <@spring.formInput "userDto.phoneNumber" 'class="form-control" id="phoneNumber"'></@spring.formInput>
                 <@spring.showErrors "<br>" 'text-danger'/>
             </div>
+            <@csrf.csrf></@csrf.csrf>
             <button type="submit" class="btn btn-secondary">Зарегистрироваться</button>
         </form>
     </div>

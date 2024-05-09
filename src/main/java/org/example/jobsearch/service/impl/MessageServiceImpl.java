@@ -77,7 +77,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     @SneakyThrows
     public void sendMessage(SendMessageDto messageDto, Authentication auth) {
-        User user = userRepository.getUserByEmail(auth.getName()).get();
+        User user = userRepository.getByEmail(auth.getName()).get();
         if (!Objects.equals(user.getId(), messageDto.getMessageAuthor())){
             throw new UserException("Вы пытаетесь выдать себя за другого пользователя!");
         }

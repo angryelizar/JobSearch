@@ -1,5 +1,6 @@
 <#import "../layout.ftlh" as main>
 <#import "../pagination.ftlh" as pagination>
+<#import "../csrf_template.ftlh" as csrf>
 <@main.layout>
     <div class="p-2">
         <h1 class="text-center">Личный профиль</h1>
@@ -159,6 +160,7 @@
                                        value="${data.user.phoneNumber}" required>
                             </div>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                            <@csrf.csrf></@csrf.csrf>
                             <button type="submit" class="btn btn-success">Обновить профиль</button>
                         </form>
                     </div>

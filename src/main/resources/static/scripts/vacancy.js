@@ -1,12 +1,14 @@
 let modalBody = document.querySelector(".modal-body");
 let responseButton = document.getElementById('responseButton');
+let csrfHeader = document.getElementById('csrf-header').getAttribute('content');
+let csrfToken = document.getElementById('csrf-token').getAttribute('content');
 responseButton.addEventListener('click', onLoad);
 
 function onSendResponse(select, vacancy_id) {
     let selectedItem = select.value;
     const data = {
         resumeId: selectedItem,
-        vacancyId: vacancy_id
+        vacancyId: vacancy_id,
     };
     const options = {
         method: 'POST',
@@ -16,6 +18,7 @@ function onSendResponse(select, vacancy_id) {
         body: JSON.stringify(data)
     };
     console.log(data);
+    options.headers[csrfHeader] = csrfToken;
     fetch('/api/vacancies/responded-applicant', options)
         .then(response => response.json())
         .then(data => {
@@ -45,14 +48,14 @@ function printDataOnModal(data) {
     }
     let vacancy_id = parseInt(document.location.pathname.split("/").pop());
     let button = document.getElementById('respondButton');
-    button.addEventListener("click", function() {
+    button.addEventListener("click", function () {
         onSendResponse(formSelect, vacancy_id);
     });
 }
 
 function onGetData(data) {
     let objectSize = Object.keys(data).length;
-    if (objectSize > 0){
+    if (objectSize > 0) {
         console.log("Мы получили " + objectSize + " резюме");
         printDataOnModal(data);
     } else {
@@ -73,11 +76,12 @@ function onLoad() {
     const options = {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify(data)
     };
-
+    console.log(options);
+    options.headers[csrfHeader] = csrfToken;
     fetch('/api/vacancies/resume', options)
         .then(response => response.json())
         .then(data => {

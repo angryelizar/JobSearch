@@ -1,4 +1,5 @@
 <#import "../layout.ftlh" as main>
+<#import "../csrf_template.ftlh" as csrf>
 <@main.layout>
     <section class="py-3 py-md-5">
         <div class="container">
@@ -35,6 +36,7 @@
                                             <a href="#" class="link-primary text-decoration-none">Забыли пароль?</a>
                                         </div>
                                     </div>
+                                    <@csrf.csrf></@csrf.csrf>
                                     <div class="col-12">
                                         <div class="d-grid my-3">
                                             <button class="btn btn-dark btn-lg" type="submit">Войти</button>

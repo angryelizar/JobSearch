@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: add_authority_column_to_user
+      author: angryelizar
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: authority_id
+                  type: long
+                  constraints:
+                    foreignKeyName: fk_authority_id_users
+                    references: authorities(id)
+                    nullable: true

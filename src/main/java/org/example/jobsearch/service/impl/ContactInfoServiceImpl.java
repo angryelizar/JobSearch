@@ -12,12 +12,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ContactInfoServiceImpl implements ContactInfoService {
     private final ContactInfoRepository contactInfoRepository;
     private final ContactTypeRepository contactTypeRepository;
     private final ResumeRepository resumeRepository;
+
     @Override
     public List<ContactInfoDto> getContactInfosByResumeId(Long id) {
         List<ContactInfoDto> contactInfoDtos = new ArrayList<>();
@@ -32,11 +34,11 @@ public class ContactInfoServiceImpl implements ContactInfoService {
         return contactInfoDtos;
     }
 
-    public void addContactInfo(ContactInfoDto contactInfoDto, Long resumeId){
+    public void addContactInfo(ContactInfoDto contactInfoDto, Long resumeId) {
         contactInfoRepository.save(ContactInfo.builder()
-                        .resume(resumeRepository.findById(resumeId).get())
-                        .content(contactInfoDto.getContent())
-                        .contactType(contactTypeRepository.findById(contactInfoDto.getTypeId()).get())
+                .resume(resumeRepository.findById(resumeId).get())
+                .content(contactInfoDto.getContent())
+                .contactType(contactTypeRepository.findById(contactInfoDto.getTypeId()).get())
                 .build());
     }
 

@@ -1,9 +1,13 @@
+<#import "csrf_template.ftlh" as csrf>
 <#macro layout>
     <!doctype html>
     <html lang="ru">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-header" content="${_csrf.headerName}" id="csrf-header">
+        <meta name="csrf-parameter" content="${_csrf.parameterName}" id="csrf-parameter">
+        <meta name="csrf-token" content="${_csrf.token}" id="csrf-token">
         <title><#if pageTitle??>${pageTitle}<#else>Что-то пошло не так</#if></title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -38,7 +42,8 @@
                 </ul>
                 <div class="text-secondary-emphasis d-flex justify-content-center align-items-center" style="gap: 10px">
                     <div class="nav-item">
-                        <a class="fs-2 nav-link active" aria-current="page" href="/vacancies/search"><i class="bi bi-search"></i></a>
+                        <a class="fs-2 nav-link active" aria-current="page" href="/vacancies/search"><i
+                                    class="bi bi-search"></i></a>
                     </div>
                     <#if isAuthenticated??>
                         <#if isAuthenticated == true>
@@ -46,8 +51,13 @@
                                             class="bi bi-person-circle"></i></a></div>
                             <div class="nav-item"><a class="fs-2 nav-link" href="/messages"><i
                                             class="bi bi-envelope-open"></i></a></div>
-                            <div class="nav-item"><a class="fs-2 nav-link" href="/logout"><i
-                                            class="bi bi-box-arrow-left"></i></a></div>
+                            <#if _csrf??>
+                                <form action="/logout" method="post">
+                                    <@csrf.csrf></@csrf.csrf>
+                                    <div class="nav-item"><button type="submit" class="fs-2 nav-link"><i
+                                                    class="bi bi-box-arrow-left"></i></button></div>
+                                </form>
+                            </#if>
                         <#else>
                             <div class="nav-item"><a class="nav-link" href="/login">Войти</a></div>
                             <div class="nav-item"><a class="nav-link" href="/registration">Регистрация</a></div>

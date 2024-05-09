@@ -2,12 +2,10 @@ package org.example.jobsearch.controllers.api;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dto.ProfileAndResumesDto;
 import org.example.jobsearch.dto.ResumeDto;
 import org.example.jobsearch.dto.UpdateResumeDto;
-import org.example.jobsearch.exceptions.ResumeException;
 import org.example.jobsearch.exceptions.ResumeNotFoundException;
 import org.example.jobsearch.service.ResumeService;
 import org.springframework.http.HttpStatus;
@@ -31,7 +29,7 @@ public class ResumeController {
     }
 
     @PostMapping("/{id}")
-    public HttpStatus editResume(@PathVariable Long id, @RequestBody @Valid UpdateResumeDto updateResumeDto) throws ResumeException {
+    public HttpStatus editResume(@PathVariable Long id, @RequestBody @Valid UpdateResumeDto updateResumeDto) {
         resumeService.editResume(id, updateResumeDto);
         return HttpStatus.ACCEPTED;
     }

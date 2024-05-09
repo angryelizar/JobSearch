@@ -21,7 +21,7 @@ public class AvatarImageServiceImpl implements AvatarImageService {
     private final FileUtil fileUtil;
 
     public void upload(Authentication auth, AvatarImageDto avatarImageDto) {
-        User user = userRepository.getUserByEmail(auth.getName()).get();
+        User user = userRepository.getByEmail(auth.getName()).get();
         String fileName = fileUtil.saveUploadedFile(avatarImageDto.getFile(), "images");
         userRepository.setAvatar(user.getId(), fileName);
     }

@@ -3,6 +3,8 @@ package org.example.jobsearch.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -16,6 +18,6 @@ public class Authority {
     private Long id;
     private String authority;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "authority")
-    private Role role;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "authority")
+    private List<User> users;
 }
