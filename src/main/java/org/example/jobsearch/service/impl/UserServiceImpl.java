@@ -38,6 +38,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final VacancyRepository vacancyRepository;
     private final ResumeRepository resumeRepository;
+    private static final String APPLICANT = "Соискатель";
 
     @Override
     public List<UserDto> getUsersByName(String name) throws UserNotFoundException {
@@ -142,7 +143,7 @@ public class UserServiceImpl implements UserService {
         user.setAccountType(userDto.getAccountType());
         user.setEnabled(true);
         user.setAuthority(authorityService.getAccountAuthorityByTypeString(user.getAccountType()));
-        Long userId = userRepository.save(user).getId();
+        userRepository.save(user);
     }
 
     @Override
@@ -194,7 +195,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isApplicant(String email) {
         User user = getFullUserByEmail(email);
-        return user != null && user.getAccountType().equals("Соискатель");
+        return user != null && user.getAccountType().equals(APPLICANT);
     }
 
     @Override
@@ -255,7 +256,7 @@ public class UserServiceImpl implements UserService {
     public Map<String, String> getAccountTypes() {
         Map<String, String> accountTypes = new HashMap<>();
         accountTypes.put("Работодатель", "Работодатель");
-        accountTypes.put("Соискатель", "Соискатель");
+        accountTypes.put(APPLICANT, APPLICANT);
         return accountTypes;
     }
 

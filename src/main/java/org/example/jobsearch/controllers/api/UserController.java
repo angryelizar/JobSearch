@@ -40,7 +40,6 @@ public class UserController {
     }
 
 
-
     @GetMapping("/name/{name}")
     public ResponseEntity<?> getUserByName(@PathVariable String name) {
         try {
@@ -78,8 +77,8 @@ public class UserController {
 
     @PostMapping()
     public HttpStatus createUser(@RequestBody @Valid UserDto userDto) {
-            userService.createUser(userDto);
-            return HttpStatus.CREATED;
+        userService.createUser(userDto);
+        return HttpStatus.CREATED;
     }
 
 

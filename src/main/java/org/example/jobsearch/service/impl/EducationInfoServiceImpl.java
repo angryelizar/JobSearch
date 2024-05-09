@@ -95,23 +95,23 @@ public class EducationInfoServiceImpl implements EducationInfoService {
         String degree = curDto.getDegree();
         LocalDate startDate = curDto.getStartDate();
         LocalDate endDate = curDto.getEndDate();
-        if (institution == null || institution.isEmpty() || institution.isBlank() || institution.length() > 100){
+        if (institution == null || institution.isEmpty() || institution.isBlank() || institution.length() > 100) {
             log.error("Невалидное название учебного заведения");
             return false;
         }
-        if (program == null || program.isBlank() || program.isEmpty() || program.length() > 100){
+        if (program == null || program.isBlank() || program.isEmpty() || program.length() > 100) {
             log.error("Невалидное название специализации");
             return false;
         }
-        if (degree == null || degree.isBlank() || degree.isEmpty() || degree.length() > 100){
+        if (degree == null || degree.isBlank() || degree.isEmpty() || degree.length() > 100) {
             log.error("Невалидный уровень образования");
             return false;
         }
-        if (startDate == null || startDate.isAfter(endDate)){
+        if (startDate == null || startDate.isAfter(endDate)) {
             log.error("Невалидная дата начала обучения");
             return false;
         }
-        if (endDate == null || endDate.isBefore(startDate)){
+        if (endDate == null || endDate.isBefore(startDate)) {
             log.error("Невалидная дата конца обучения");
             return false;
         }

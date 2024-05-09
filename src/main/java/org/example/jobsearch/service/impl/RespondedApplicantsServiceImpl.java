@@ -16,9 +16,7 @@ import org.example.jobsearch.repositories.RespondedApplicantRepository;
 import org.example.jobsearch.repositories.ResumeRepository;
 import org.example.jobsearch.repositories.VacancyRepository;
 import org.example.jobsearch.service.RespondedApplicantsService;
-import org.example.jobsearch.service.ResumeService;
 import org.example.jobsearch.service.UserService;
-import org.example.jobsearch.service.VacancyService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -31,8 +29,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class RespondedApplicantsServiceImpl implements RespondedApplicantsService {
     private final UserService userService;
-    private final ResumeService resumeService;
-    private final VacancyService vacancyService;
     private final VacancyRepository vacancyRepository;
     private final ResumeRepository resumeRepository;
     private final RespondedApplicantRepository respondedApplicantRepository;

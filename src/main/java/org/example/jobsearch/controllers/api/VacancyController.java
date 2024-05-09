@@ -49,7 +49,7 @@ public class VacancyController {
     }
 
     @PostMapping("/resume")
-    public ResponseEntity<?> getResumesForVacancy(@RequestBody ResumesForVacancyDto resumesForVacancyDto){
+    public ResponseEntity<?> getResumesForVacancy(@RequestBody ResumesForVacancyDto resumesForVacancyDto) {
         return ResponseEntity.ok(vacancyService.getResumesForVacancy(resumesForVacancyDto));
     }
 

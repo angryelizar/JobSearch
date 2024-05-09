@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/resumes")
 public class ResumeController {
-    private static final String PAGE_TITLE = "pageTitle";
-    private static final String CATEGORIES = "categories";
     private final ResumeService resumeService;
     private final WorkExperienceInfoService workExperienceInfoService;
     private final EducationInfoService educationInfoService;
@@ -25,15 +23,21 @@ public class ResumeController {
     private final CategoryService categoryService;
     private final UserService userService;
     private final AuthenticatedUserProvider authenticatedUserProvider;
+    private static final String AUTHENTICATED = "isAuthenticated";
+    private static final String IS_EMPLOYER = "isEmployer";
+    private static final String PAGE_TITLE = "pageTitle";
+    private static final String CATEGORIES = "categories";
+    private static final String REDIRECT_TO_PROFILE = "redirect:/profile";
+    private static final String RESUME = "Резюме";
 
     @GetMapping()
     public String resumesGet(Model model, Pageable pageable) {
-        model.addAttribute(PAGE_TITLE, "Резюме");
+        model.addAttribute(PAGE_TITLE, RESUME);
         model.addAttribute("url", "resumes");
         model.addAttribute("page", resumeService.getActivePageResumes(pageable));
         model.addAttribute(CATEGORIES, categoryService.getCategoriesList());
-        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
-        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
+        model.addAttribute(AUTHENTICATED, authenticatedUserProvider.isAuthenticated());
+        model.addAttribute(IS_EMPLOYER, authenticatedUserProvider.isEmployer());
         return "resume/resumes";
     }
 
@@ -41,8 +45,8 @@ public class ResumeController {
     public String addGet(Model model) {
         model.addAttribute(PAGE_TITLE, "Создать резюме");
         model.addAttribute(CATEGORIES, categoryService.getCategoriesList());
-        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
-        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
+        model.addAttribute(AUTHENTICATED, authenticatedUserProvider.isAuthenticated());
+        model.addAttribute(IS_EMPLOYER, authenticatedUserProvider.isEmployer());
         return "resume/add";
     }
 
@@ -51,35 +55,35 @@ public class ResumeController {
         model.addAttribute(PAGE_TITLE, "Отредактировать резюме");
         model.addAttribute("resume", resumeService.resumeEditGet(id, auth));
         model.addAttribute(CATEGORIES, categoryService.getCategoriesList());
-        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
-        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
+        model.addAttribute(AUTHENTICATED, authenticatedUserProvider.isAuthenticated());
+        model.addAttribute(IS_EMPLOYER, authenticatedUserProvider.isEmployer());
         return "resume/edit";
     }
 
     @GetMapping("/{id}")
     public String resumeGet(@PathVariable Long id, Model model) {
-        model.addAttribute(PAGE_TITLE, "Резюме");
+        model.addAttribute(PAGE_TITLE, RESUME);
         model.addAttribute("resume", resumeService.getPageResumeById(id));
         model.addAttribute("workExperience", workExperienceInfoService.getPageWorkExperienceByResumeId(id));
         model.addAttribute("educationInfo", educationInfoService.getPageEducationInfoByResumeId(id));
         model.addAttribute("contactInfo", contactInfoService.getPageContactInfoByResumeId(id));
         model.addAttribute("applicant", userService.getApplicantInfoByResumeId(id));
-        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute(AUTHENTICATED, authenticatedUserProvider.isAuthenticated());
         model.addAttribute("isPermitted", resumeService.resumeShowPermitted(id, authenticatedUserProvider.getAuthenticatedUser()));
-        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
+        model.addAttribute(IS_EMPLOYER, authenticatedUserProvider.isEmployer());
         return "resume/resume";
     }
 
     @GetMapping("/update")
     public String updateGet(@RequestParam Long id) {
         resumeService.update(id);
-        return "redirect:/profile";
+        return REDIRECT_TO_PROFILE;
     }
 
     @GetMapping("/delete")
     public String delete(@RequestParam Long id, Authentication auth) {
         resumeService.deleteResumeById(id, auth);
-        return "redirect:/profile";
+        return REDIRECT_TO_PROFILE;
     }
 
     @PostMapping("/add")
@@ -93,7 +97,7 @@ public class ResumeController {
                           @RequestParam(name = "email") String email
     ) {
         resumeService.addResumeFromForm(pageResumeDto, request, auth, telegram, whatsapp, telephone, linkedin, email);
-        return "redirect:/profile";
+        return REDIRECT_TO_PROFILE;
     }
 
     @PostMapping("/edit")
@@ -104,7 +108,7 @@ public class ResumeController {
 
     @PostMapping("/category")
     public String getByCategory(@RequestParam Integer categoryId, Model model, @RequestParam(name = "page", defaultValue = "0") Integer page) {
-        model.addAttribute(PAGE_TITLE, "Резюме");
+        model.addAttribute(PAGE_TITLE, RESUME);
         model.addAttribute("size", resumeService.getCount());
         model.addAttribute("page", resumeService.getPageResumeByCategoryId(Long.valueOf(categoryId), page));
         model.addAttribute("url", "resumes");

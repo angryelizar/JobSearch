@@ -39,10 +39,9 @@ public class WorkExperienceInfoServiceImpl implements WorkExperienceInfoService 
                     throw new ResumeException("Поле с обязанностями не может быть пустым!");
                 }
                 Integer age = user.getAge();
-                if (age != null) {
-                    if (curWeId.getYears() > age) {
+                if (age != null && (curWeId.getYears() > age)) {
                         throw new ResumeException("Опыт работы не может быть больше возраста соискателя!");
-                    }
+
                 }
             }
         } catch (ResumeException e) {
@@ -93,7 +92,7 @@ public class WorkExperienceInfoServiceImpl implements WorkExperienceInfoService 
             log.error("Невалидный возраст");
             return false;
         }
-        if (companyName == null ||companyName.isBlank() || companyName.isEmpty() || companyName.length() >= 100) {
+        if (companyName == null || companyName.isBlank() || companyName.isEmpty() || companyName.length() >= 100) {
             log.error("Невалидное название компании");
             return false;
         }
