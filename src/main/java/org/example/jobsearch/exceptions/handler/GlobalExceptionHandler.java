@@ -20,9 +20,14 @@ public class GlobalExceptionHandler {
     private final AuthenticatedUserProvider authenticatedUserProvider;
 
     @ExceptionHandler(UserException.class)
-    @ResponseBody
-    public ResponseEntity<ErrorResponseBody> userAlreadyRegistered(UserException exception) {
-        return new ResponseEntity<>(errorService.makeResponse(exception), HttpStatus.BAD_REQUEST);
+    public String userAlreadyRegistered(UserException exception, Model model) {
+        model.addAttribute("pageTitle", "Ошибка");
+        model.addAttribute("exceptionText", exception.getMessage());
+        model.addAttribute("redirectLink", "/");
+        model.addAttribute("redirectLinkTitle", "Главная");
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
+        return "error/error";
     }
 
     @ExceptionHandler(ResumeException.class)

@@ -16,7 +16,6 @@ function onChange() {
     let nameLabel = document.getElementById('name-label');
     let nameBlock = document.getElementById('name-input');
     if (selectInput.value === (EMPLOYER_VALUE)){
-        surnameBlock.value = '';
         deleteSurname(surnameBlock, nameLabel)
     } else if (!surnameBlock && selectInput.value === APPLICANT_VALUE){
         addSurname(nameBlock, nameLabel)
@@ -34,6 +33,8 @@ function addSurname(nameBlock, nameLabel){
     nameBlock.after(element);
     nameLabel.innerText = 'Ваше имя'
     document.getElementById('name').placeholder = 'Ваше имя'
+    document.getElementById('surname').value = ''
+    console.log('done')
 }
 
 function deleteSurname(surnameBlock, nameLabel){

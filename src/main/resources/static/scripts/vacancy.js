@@ -2,6 +2,7 @@ let modalBody = document.querySelector(".modal-body");
 let responseButton = document.getElementById('responseButton');
 let csrfHeader = document.getElementById('csrf-header').getAttribute('content');
 let csrfToken = document.getElementById('csrf-token').getAttribute('content');
+let closeButton = document.getElementById('close-modal-button');
 responseButton.addEventListener('click', onLoad);
 
 function onSendResponse(select, vacancy_id) {
@@ -35,6 +36,7 @@ function onSendResponse(select, vacancy_id) {
 function printDataOnModal(data) {
     let header = document.createElement('h6');
     header.innerText = "Выберите резюме для отклика:";
+    header.id = 'options-header'
     modalBody.append(header);
     let objectSize = Object.keys(data).length;
     let formSelect = document.createElement('select');
@@ -50,6 +52,10 @@ function printDataOnModal(data) {
     let button = document.getElementById('respondButton');
     button.addEventListener("click", function () {
         onSendResponse(formSelect, vacancy_id);
+    });
+    closeButton.addEventListener('click', function () {
+        header.remove()
+        formSelect.remove()
     });
 }
 
