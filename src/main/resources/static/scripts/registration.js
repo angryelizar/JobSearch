@@ -33,6 +33,8 @@ function addSurname(nameBlock, nameLabel){
     nameBlock.after(element);
     nameLabel.innerText = 'Ваше имя'
     document.getElementById('name').placeholder = 'Ваше имя'
+    document.getElementById('surname').value = ''
+    console.log('done')
 }
 
 function deleteSurname(surnameBlock, nameLabel){
