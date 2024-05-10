@@ -16,6 +16,7 @@ function onChange() {
     let nameLabel = document.getElementById('name-label');
     let nameBlock = document.getElementById('name-input');
     if (selectInput.value === (EMPLOYER_VALUE)){
+        surnameBlock.value = '';
         deleteSurname(surnameBlock, nameLabel)
     } else if (!surnameBlock && selectInput.value === APPLICANT_VALUE){
         addSurname(nameBlock, nameLabel)

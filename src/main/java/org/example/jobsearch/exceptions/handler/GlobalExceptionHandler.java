@@ -26,15 +26,25 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ResumeException.class)
-    @ResponseBody
-    public ResponseEntity<ErrorResponseBody> resumeException(ResumeException exception) {
-        return new ResponseEntity<>(errorService.makeResponse(exception), HttpStatus.BAD_REQUEST);
+    public String resumeException(ResumeException exception, Model model) {
+        model.addAttribute("pageTitle", "Ошибка");
+        model.addAttribute("exceptionText", exception.getMessage());
+        model.addAttribute("redirectLink", "/");
+        model.addAttribute("redirectLinkTitle", "Главная");
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
+        return "error/error";
     }
 
     @ExceptionHandler(VacancyException.class)
-    @ResponseBody
-    public ResponseEntity<ErrorResponseBody> vacancyException(VacancyException exception) {
-        return new ResponseEntity<>(errorService.makeResponse(exception), HttpStatus.BAD_REQUEST);
+    public String vacancyException(VacancyException exception, Model model) {
+        model.addAttribute("pageTitle", "Ошибка");
+        model.addAttribute("exceptionText", exception.getMessage());
+        model.addAttribute("redirectLink", "/");
+        model.addAttribute("redirectLinkTitle", "Главная");
+        model.addAttribute("isAuthenticated", authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isEmployer", authenticatedUserProvider.isEmployer());
+        return "error/error";
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
