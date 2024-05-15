@@ -1,5 +1,6 @@
 package org.example.jobsearch.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.example.jobsearch.dto.ApplicantInfoDto;
 import org.example.jobsearch.dto.EmployerInfoDto;
 import org.example.jobsearch.dto.UserDto;
@@ -48,4 +49,6 @@ public interface UserService {
     ApplicantInfoDto getApplicantInfoByResumeId(Long id);
 
     Map<String, String> getAccountTypes();
+
+    void makeResetPasswordLink(HttpServletRequest request);
 }

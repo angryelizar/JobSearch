@@ -1,5 +1,6 @@
 package org.example.jobsearch.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -272,7 +273,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @SneakyThrows
-    private void updateResetPassword(String token, String email){
+    private void updateResetPassword(String token, String email) {
         User user = userRepository.getByEmail(email).orElseThrow(() -> new ServiceException("Пользователь не найден!"));
         user.setResetPasswordToken(token);
         userRepository.saveAndFlush(user);
@@ -288,5 +289,12 @@ public class UserServiceImpl implements UserService {
         user.setPassword(encodedPassword);
         user.setResetPasswordToken(null);
         userRepository.saveAndFlush(user);
+    }
+
+    @Override
+    public void makeResetPasswordLink(HttpServletRequest request) {
+        String email = request.getParameter("email");
+        String token = UUID.randomUUID().toString();
+        updateResetPassword(token, email);
     }
 }

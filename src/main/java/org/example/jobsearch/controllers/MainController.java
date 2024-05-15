@@ -1,5 +1,6 @@
 package org.example.jobsearch.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.jobsearch.dto.SendMessageDto;
@@ -52,6 +53,20 @@ public class MainController {
         model.addAttribute(IS_EMPLOYER, authenticatedUserProvider.isEmployer());
         model.addAttribute(AUTHENTICATED, authenticatedUserProvider.isAuthenticated());
         return "main/registration";
+    }
+
+    @GetMapping("/forgot_password")
+    public String forgotPasswordGet(Model model) {
+        model.addAttribute(PAGE_TITLE, "Восстановление пароля");
+        model.addAttribute(AUTHENTICATED, authenticatedUserProvider.isAuthenticated());
+        return "main/forgot_password";
+    }
+
+    @PostMapping("forgot_password")
+    public String processForgotPassword(HttpServletRequest request, Model model) {
+        userService.makeResetPasswordLink(request);
+        model.addAttribute("message", "Мы отправили ссылку для сброса пароля на вашу электронную почту.");
+        return "main/forgot_password";
     }
 
     @GetMapping("/profile")
