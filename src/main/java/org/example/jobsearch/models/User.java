@@ -34,6 +34,7 @@ public class User implements UserDetails {
     @ManyToOne
     @JoinColumn(name = "AUTHORITY_ID")
     private Authority authority;
+    private String resetPasswordToken;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "author")
     private List<Vacancy> vacancies;
