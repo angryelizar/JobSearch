@@ -1,5 +1,6 @@
 package org.example.jobsearch.controllers;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -10,10 +11,13 @@ import org.example.jobsearch.service.*;
 import org.example.jobsearch.util.AuthenticatedUserProvider;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.UnsupportedEncodingException;
 
 @Controller
 @RequiredArgsConstructor
@@ -59,13 +63,6 @@ public class MainController {
     public String forgotPasswordGet(Model model) {
         model.addAttribute(PAGE_TITLE, "Восстановление пароля");
         model.addAttribute(AUTHENTICATED, authenticatedUserProvider.isAuthenticated());
-        return "main/forgot_password";
-    }
-
-    @PostMapping("forgot_password")
-    public String processForgotPassword(HttpServletRequest request, Model model) {
-        userService.makeResetPasswordLink(request);
-        model.addAttribute("message", "Мы отправили ссылку для сброса пароля на вашу электронную почту.");
         return "main/forgot_password";
     }
 
@@ -208,5 +205,16 @@ public class MainController {
         model.addAttribute("userDto", userDto);
         model.addAttribute("accountTypes", userService.getAccountTypes());
         return "main/registration";
+    }
+
+    @PostMapping("forgot_password")
+    public String processForgotPassword(HttpServletRequest request, Model model) {
+        try {
+            userService.makeResetPasswordLink(request);
+            model.addAttribute("message", "Мы отправили ссылку для сброса пароля на вашу электронную почту.");
+        } catch (UsernameNotFoundException | UnsupportedEncodingException | MessagingException e) {
+            model.addAttribute("error", e.getMessage());
+        }
+        return "main/forgot_password";
     }
 }

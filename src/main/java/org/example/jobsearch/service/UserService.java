@@ -1,5 +1,6 @@
 package org.example.jobsearch.service;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.example.jobsearch.dto.ApplicantInfoDto;
 import org.example.jobsearch.dto.EmployerInfoDto;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -50,5 +52,5 @@ public interface UserService {
 
     Map<String, String> getAccountTypes();
 
-    void makeResetPasswordLink(HttpServletRequest request);
+    void makeResetPasswordLink(HttpServletRequest request) throws MessagingException, UnsupportedEncodingException;
 }

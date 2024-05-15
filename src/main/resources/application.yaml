@@ -23,7 +23,7 @@ spring:
       max-request-size: 10MB
   mail:
     host: smtp.yandex.ru
-    username: conovalov.elizar
+    username: conovalov.elizar@yandex.ru
     password: obmimyygyoqxtifs
     port: 587
     properties:

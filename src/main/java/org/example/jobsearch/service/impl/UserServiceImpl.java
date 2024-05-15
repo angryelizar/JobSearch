@@ -1,5 +1,6 @@
 package org.example.jobsearch.service.impl;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -16,8 +17,10 @@ import org.example.jobsearch.repositories.UserRepository;
 import org.example.jobsearch.repositories.VacancyRepository;
 import org.example.jobsearch.service.AuthorityService;
 import org.example.jobsearch.service.AvatarImageService;
+import org.example.jobsearch.service.EmailService;
 import org.example.jobsearch.service.UserService;
 import org.example.jobsearch.util.ToPageUtil;
+import org.example.jobsearch.util.URLUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -27,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 @Slf4j
@@ -40,6 +44,7 @@ public class UserServiceImpl implements UserService {
     private final VacancyRepository vacancyRepository;
     private final ResumeRepository resumeRepository;
     private static final String APPLICANT = "Соискатель";
+    private final EmailService emailService;
 
     @Override
     public List<UserDto> getUsersByName(String name) throws UserNotFoundException {
@@ -292,9 +297,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void makeResetPasswordLink(HttpServletRequest request) {
+    public void makeResetPasswordLink(HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
         String email = request.getParameter("email");
         String token = UUID.randomUUID().toString();
         updateResetPassword(token, email);
+        String resetPasswordLink = URLUtil.getSiteURL(request) + "/resetPassword?token=" + token;
+        emailService.sendEmail(email, resetPasswordLink, userRepository.getByEmail(email).get().getName());
     }
 }
