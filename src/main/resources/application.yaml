@@ -21,6 +21,17 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+  mail:
+    host: smtp.yandex.ru
+    username: conovalov.elizar
+    password: obmimyygyoqxtifs
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 logging:
   file:
     name: logs/spring.log
