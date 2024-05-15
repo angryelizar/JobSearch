@@ -270,4 +270,23 @@ public class UserServiceImpl implements UserService {
                 .build()));
         return userDtos;
     }
+
+    @SneakyThrows
+    private void updateResetPassword(String token, String email){
+        User user = userRepository.getByEmail(email).orElseThrow(() -> new ServiceException("Пользователь не найден!"));
+        user.setResetPasswordToken(token);
+        userRepository.saveAndFlush(user);
+    }
+
+    @SneakyThrows
+    public User getByResetPasswordToken(String token) {
+        return userRepository.getByResetPasswordToken(token).orElseThrow(() -> new ServiceException("Пользователь не найден!"));
+    }
+
+    public void updatePassword(User user, String password) {
+        String encodedPassword = encoder.encode(password);
+        user.setPassword(encodedPassword);
+        user.setResetPasswordToken(null);
+        userRepository.saveAndFlush(user);
+    }
 }
