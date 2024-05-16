@@ -38,7 +38,7 @@ public interface UserService {
 
     String userIsExists(String email);
 
-    void createUser(UserDto userDto);
+    void createUser(UserDto userDto, HttpServletRequest request);
 
     void update(UserDto userDto);
 

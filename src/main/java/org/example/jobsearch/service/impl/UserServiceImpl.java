@@ -131,7 +131,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @SneakyThrows
-    public void createUser(UserDto userDto) {
+    public void createUser(UserDto userDto, HttpServletRequest request) {
         if (userRepository.existsByEmail(userDto.getEmail()) || userRepository.existsByPhoneNumber(userDto.getPhoneNumber())) {
             throw new UserAlreadyRegisteredException("Пользователь уже зарегистрирован");
         }
@@ -150,6 +150,7 @@ public class UserServiceImpl implements UserService {
         user.setEnabled(true);
         user.setAuthority(authorityService.getAccountAuthorityByTypeString(user.getAccountType()));
         userRepository.save(user);
+        request.login(userDto.getEmail(), userDto.getPassword());
     }
 
     @Override

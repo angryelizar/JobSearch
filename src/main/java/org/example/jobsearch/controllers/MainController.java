@@ -206,10 +206,10 @@ public class MainController {
 
 
     @PostMapping("/registration")
-    public String registrationPost(@Valid UserDto userDto, BindingResult bindingResult, Model model) {
+    public String registrationPost(@Valid UserDto userDto, BindingResult bindingResult, Model model, HttpServletRequest request) {
         if (!bindingResult.hasErrors()) {
-            userService.createUser(userDto);
-            return "redirect:/login";
+            userService.createUser(userDto, request);
+            return "redirect:/profile";
         }
         model.addAttribute(PAGE_TITLE, "Регистрация");
         model.addAttribute(IS_EMPLOYER, authenticatedUserProvider.isEmployer());
