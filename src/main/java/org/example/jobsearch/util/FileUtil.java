@@ -29,10 +29,8 @@ public class FileUtil {
     public String saveUploadedFile(MultipartFile file, String subDir) {
         String uuidFile = UUID.randomUUID().toString();
         String resultFileName = uuidFile + "_" + file.getOriginalFilename();
-
         Path pathDir = Paths.get(UPLOAD_DIR + subDir);
         Files.createDirectories(pathDir);
-
         Path filePath = Paths.get(pathDir + "/" + resultFileName);
         if (!Files.exists(filePath)) {
             Files.createFile(filePath);

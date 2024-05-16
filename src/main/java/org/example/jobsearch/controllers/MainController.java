@@ -1,18 +1,24 @@
 package org.example.jobsearch.controllers;
 
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.jobsearch.dto.SendMessageDto;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.UserNotFoundException;
+import org.example.jobsearch.models.User;
 import org.example.jobsearch.service.*;
 import org.example.jobsearch.util.AuthenticatedUserProvider;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.UnsupportedEncodingException;
 
 @Controller
 @RequiredArgsConstructor
@@ -52,6 +58,24 @@ public class MainController {
         model.addAttribute(IS_EMPLOYER, authenticatedUserProvider.isEmployer());
         model.addAttribute(AUTHENTICATED, authenticatedUserProvider.isAuthenticated());
         return "main/registration";
+    }
+
+    @GetMapping("/forgot_password")
+    public String forgotPasswordGet(Model model) {
+        model.addAttribute(PAGE_TITLE, "Восстановление пароля");
+        model.addAttribute(AUTHENTICATED, authenticatedUserProvider.isAuthenticated());
+        return "main/forgot_password";
+    }
+
+    @GetMapping("/reset_password")
+    public String showResetPasswordForm(@RequestParam String token, Model model) {
+        try {
+            userService.getByResetPasswordToken(token);
+            model.addAttribute("token", token);
+        } catch (UsernameNotFoundException ex) {
+            model.addAttribute("error", "Неверный токен");
+        }
+        return "main/reset_password";
     }
 
     @GetMapping("/profile")
@@ -182,10 +206,10 @@ public class MainController {
 
 
     @PostMapping("/registration")
-    public String registrationPost(@Valid UserDto userDto, BindingResult bindingResult, Model model) {
+    public String registrationPost(@Valid UserDto userDto, BindingResult bindingResult, Model model, HttpServletRequest request) {
         if (!bindingResult.hasErrors()) {
-            userService.createUser(userDto);
-            return "redirect:/login";
+            userService.createUser(userDto, request);
+            return "redirect:/profile";
         }
         model.addAttribute(PAGE_TITLE, "Регистрация");
         model.addAttribute(IS_EMPLOYER, authenticatedUserProvider.isEmployer());
@@ -193,5 +217,32 @@ public class MainController {
         model.addAttribute("userDto", userDto);
         model.addAttribute("accountTypes", userService.getAccountTypes());
         return "main/registration";
+    }
+
+    @PostMapping("forgot_password")
+    public String processForgotPassword(HttpServletRequest request, Model model) {
+        try {
+            userService.makeResetPasswordLink(request);
+            model.addAttribute("message", "Мы отправили ссылку для сброса пароля на вашу электронную почту.");
+        } catch (UsernameNotFoundException | UnsupportedEncodingException | MessagingException e) {
+            model.addAttribute("error", e.getMessage());
+        }
+        return "main/forgot_password";
+    }
+
+    @PostMapping("reset_password")
+    public String processResetPassword(HttpServletRequest request, Model model) {
+        String token = request.getParameter("token");
+        String password = request.getParameter("password");
+        try {
+            User user = userService.getByResetPasswordToken(token);
+            userService.updatePassword(user, password);
+            model.addAttribute("message", "Вы успешно изменили ваш пароль.");
+        } catch (UsernameNotFoundException ex) {
+            model.addAttribute("message", "Неверный токен");
+        } catch (IllegalArgumentException e){
+            model.addAttribute("message", e.getMessage());
+        }
+        return "main/reset_password_message";
     }
 }

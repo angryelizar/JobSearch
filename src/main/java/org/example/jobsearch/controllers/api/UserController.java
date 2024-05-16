@@ -1,5 +1,6 @@
 package org.example.jobsearch.controllers.api;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,8 +77,8 @@ public class UserController {
     }
 
     @PostMapping()
-    public HttpStatus createUser(@RequestBody @Valid UserDto userDto) {
-        userService.createUser(userDto);
+    public HttpStatus createUser(@RequestBody @Valid UserDto userDto, HttpServletRequest request) {
+        userService.createUser(userDto, request);
         return HttpStatus.CREATED;
     }
 

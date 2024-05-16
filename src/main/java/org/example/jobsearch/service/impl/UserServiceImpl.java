@@ -1,5 +1,7 @@
 package org.example.jobsearch.service.impl;
 
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +17,10 @@ import org.example.jobsearch.repositories.UserRepository;
 import org.example.jobsearch.repositories.VacancyRepository;
 import org.example.jobsearch.service.AuthorityService;
 import org.example.jobsearch.service.AvatarImageService;
+import org.example.jobsearch.service.EmailService;
 import org.example.jobsearch.service.UserService;
 import org.example.jobsearch.util.ToPageUtil;
+import org.example.jobsearch.util.URLUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -26,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 @Slf4j
@@ -39,6 +44,7 @@ public class UserServiceImpl implements UserService {
     private final VacancyRepository vacancyRepository;
     private final ResumeRepository resumeRepository;
     private static final String APPLICANT = "Соискатель";
+    private final EmailService emailService;
 
     @Override
     public List<UserDto> getUsersByName(String name) throws UserNotFoundException {
@@ -125,7 +131,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @SneakyThrows
-    public void createUser(UserDto userDto) {
+    public void createUser(UserDto userDto, HttpServletRequest request) {
         if (userRepository.existsByEmail(userDto.getEmail()) || userRepository.existsByPhoneNumber(userDto.getPhoneNumber())) {
             throw new UserAlreadyRegisteredException("Пользователь уже зарегистрирован");
         }
@@ -144,6 +150,7 @@ public class UserServiceImpl implements UserService {
         user.setEnabled(true);
         user.setAuthority(authorityService.getAccountAuthorityByTypeString(user.getAccountType()));
         userRepository.save(user);
+        request.login(userDto.getEmail(), userDto.getPassword());
     }
 
     @Override
@@ -269,5 +276,44 @@ public class UserServiceImpl implements UserService {
                 .accountType(e.getAccountType())
                 .build()));
         return userDtos;
+    }
+
+    @SneakyThrows
+    private void updateResetPassword(String token, String email) {
+        User user = userRepository.getByEmail(email).orElseThrow(() -> new ServiceException("Пользователь не найден!"));
+        user.setResetPasswordToken(token);
+        userRepository.saveAndFlush(user);
+    }
+
+    @Override
+    @SneakyThrows
+    public User getByResetPasswordToken(String token) {
+        return userRepository.getUserByResetPasswordToken(token).orElseThrow(() -> new ServiceException("Пользователь не найден!"));
+    }
+
+    @Override
+    public void updatePassword(User user, String password) {
+        if (password.isEmpty() || password.isBlank()){
+            throw new IllegalArgumentException("Пароль не может быть пустым!");
+        }
+        if (password.length() < 4 || password.length() > 24){
+            throw new IllegalArgumentException("Длина пароля должна быть больше или равно 4 и не больше 24!");
+        }
+        if (!password.matches("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).+$")){
+            throw new IllegalArgumentException("Пароль должен содержать как минимум одну большую букву и цифру");
+        }
+        String encodedPassword = encoder.encode(password);
+        user.setPassword(encodedPassword);
+        user.setResetPasswordToken(null);
+        userRepository.saveAndFlush(user);
+    }
+
+    @Override
+    public void makeResetPasswordLink(HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
+        String email = request.getParameter("email");
+        String token = UUID.randomUUID().toString();
+        updateResetPassword(token, email);
+        String resetPasswordLink = URLUtil.getSiteURL(request) + "/reset_password?token=" + token;
+        emailService.sendEmail(email, resetPasswordLink, userRepository.getByEmail(email).get().getName());
     }
 }

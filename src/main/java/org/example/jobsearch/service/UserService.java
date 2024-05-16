@@ -1,5 +1,8 @@
 package org.example.jobsearch.service;
 
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.SneakyThrows;
 import org.example.jobsearch.dto.ApplicantInfoDto;
 import org.example.jobsearch.dto.EmployerInfoDto;
 import org.example.jobsearch.dto.UserDto;
@@ -12,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +38,7 @@ public interface UserService {
 
     String userIsExists(String email);
 
-    void createUser(UserDto userDto);
+    void createUser(UserDto userDto, HttpServletRequest request);
 
     void update(UserDto userDto);
 
@@ -48,4 +52,11 @@ public interface UserService {
     ApplicantInfoDto getApplicantInfoByResumeId(Long id);
 
     Map<String, String> getAccountTypes();
+
+    @SneakyThrows
+    User getByResetPasswordToken(String token);
+
+    void updatePassword(User user, String password);
+
+    void makeResetPasswordLink(HttpServletRequest request) throws MessagingException, UnsupportedEncodingException;
 }

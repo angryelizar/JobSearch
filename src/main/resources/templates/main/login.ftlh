@@ -33,7 +33,7 @@
                                                     Не выходить из системы
                                                 </label>
                                             </div>
-                                            <a href="#" class="link-primary text-decoration-none">Забыли пароль?</a>
+                                            <a href="/forgot_password" class="link-primary text-decoration-none">Забыли пароль?</a>
                                         </div>
                                     </div>
                                     <@csrf.csrf></@csrf.csrf>
