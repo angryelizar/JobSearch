@@ -28,4 +28,6 @@ public interface RespondedApplicantsService {
     Integer getCountOfResumes(Long id);
 
     Long getRecipientId(Long respondedApplicantId, Long authorId);
+
+    List<ResponseEmployerDto> getEmployerResponsesByVacancyId(Authentication authentication, Long vacancyId);
 }

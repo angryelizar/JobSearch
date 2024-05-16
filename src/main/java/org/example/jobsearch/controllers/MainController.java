@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.jobsearch.dto.SendMessageDto;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.UserNotFoundException;
+import org.example.jobsearch.exceptions.VacancyNotFoundException;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.service.*;
 import org.example.jobsearch.util.AuthenticatedUserProvider;
@@ -169,6 +170,17 @@ public class MainController {
         model.addAttribute(PAGE_TITLE, "Отклики");
         model.addAttribute("responses", respondedApplicantsService.getEmployerResponsesByUser(authentication));
         model.addAttribute(AUTHENTICATED, authenticatedUserProvider.isAuthenticated());
+        return "main/employer_responses";
+    }
+
+    @GetMapping("/employer/responses/{vacancyId}")
+    public String responseByVacancyGet(Model model, Authentication authentication, @PathVariable Long vacancyId) throws VacancyNotFoundException {
+        model.addAttribute(IS_EMPLOYER, authenticatedUserProvider.isEmployer());
+        model.addAttribute(PAGE_TITLE, "Отклики");
+        model.addAttribute("responses", respondedApplicantsService.getEmployerResponsesByVacancyId(authentication, vacancyId));
+        model.addAttribute(AUTHENTICATED, authenticatedUserProvider.isAuthenticated());
+        model.addAttribute("isByVacancy", true);
+        model.addAttribute("vacancy", vacancyService.getVacancyById(vacancyId));
         return "main/employer_responses";
     }
 

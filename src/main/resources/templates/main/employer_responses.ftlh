@@ -1,5 +1,10 @@
 <#import "../layout.ftlh" as main>
 <@main.layout>
+    <#if isByVacancy??>
+        <#if isByVacancy == true>
+            <h1><a href="/vacancies/${vacancy.id}" class="text-decoration-none text-dark">${vacancy.name}</a></h1>
+        </#if>
+    <#else>
         <h1>Отклики на ваши вакансии</h1>
     </#if>
     <#if responses?has_content>
@@ -39,6 +44,6 @@
             </tbody>
         </table>
     <#else>
-        <p class="text-center mt-5">На ваши вакансии пока никто не откликался :(</p>
+        <p class="text-center mt-5">Здесь пока ничего нет :(</p>
     </#if>
 </@main.layout>

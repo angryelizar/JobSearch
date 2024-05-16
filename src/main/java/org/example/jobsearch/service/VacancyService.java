@@ -69,4 +69,6 @@ public interface VacancyService {
     Page<ProfilePageVacancyDto> getPageVacanciesByAuthorId(Long id, Pageable pageable);
 
     Page<PageVacancyDto> getPageVacancyByFilter(Integer categoryId, String criterion, String order, Pageable pageable);
+
+    Boolean isAuthor(Long id, Authentication auth);
 }

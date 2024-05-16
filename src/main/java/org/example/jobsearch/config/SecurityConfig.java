@@ -57,7 +57,7 @@ public class SecurityConfig {
                         .requestMatchers("/vacancies/add").hasAuthority(EMPLOYER)
                         .requestMatchers("/vacancies/edit").hasAuthority(EMPLOYER)
                         .requestMatchers("/vacancies/delete").hasAuthority(EMPLOYER)
-                        .requestMatchers("/employer/responses").hasAuthority(EMPLOYER)
+                        .requestMatchers("/employer/responses/**").hasAuthority(EMPLOYER)
 
                         .requestMatchers(HttpMethod.GET, "api/vacancies/inactive").hasAnyAuthority(ADMIN, EMPLOYER)
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()

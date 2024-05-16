@@ -130,6 +130,22 @@ public class RespondedApplicantsServiceImpl implements RespondedApplicantsServic
         }
     }
 
+    @Override
+    @SneakyThrows
+    public List<ResponseEmployerDto> getEmployerResponsesByVacancyId(Authentication authentication, Long vacancyId) {
+        if (!vacancyRepository.existsById(vacancyId)){
+            log.error("Попытка запросить отклики на вакансию которой не существует, ID : {}", vacancyId);
+            throw new VacancyException("Вакансии с данным ID (" + vacancyId + ") не существует");
+        }
+        User user = (User) authentication.getPrincipal();
+        if (!Objects.equals(vacancyRepository.findById(vacancyId).get().getAuthor().getId(), user.getId())){
+            log.error("Попытка запросить отклики на вакансию не являясь автором вакансии, ID вакансии: {}, ID хакера {}", vacancyId, user.getId());
+            throw new VacancyException("Вы не являетесь автором вакансии и не можете просмотреть отклики на эту вакансию");
+        }
+        List<RespondApplicant> list = respondedApplicantRepository.getRespondedApplicantsByVacancyId(vacancyId);
+        return getEmployerResponseDtos(list);
+    }
+
     private List<ResponseEmployerDto> getEmployerResponseDtos(List<RespondApplicant> list) {
         List<ResponseEmployerDto> employerDtoList = new ArrayList<>();
         for (RespondApplicant cur : list) {

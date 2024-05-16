@@ -475,6 +475,11 @@ public class VacancyServiceImpl implements VacancyService {
         return ToPageUtil.toPageVacancyDto(resultVacancies, pageable);
     }
 
+    @Override
+    public Boolean isAuthor(Long id, Authentication auth) {
+        return vacancyRepository.findById(id).get().getAuthor().getEmail().equals(auth.getName());
+    }
+
     private Long getVacancyCategoryByVacancyId(Long vacancyId) {
         return vacancyRepository.findById(vacancyId).get().getCategory().getId();
     }
@@ -498,6 +503,7 @@ public class VacancyServiceImpl implements VacancyService {
 
     private VacancyDto getVacancyDto(Vacancy vacancy) {
         return VacancyDto.builder()
+                .id(vacancy.getId())
                 .name(vacancy.getName())
                 .description(vacancy.getDescription())
                 .categoryId(vacancy.getCategory().getId())
