@@ -2,6 +2,7 @@ package org.example.jobsearch.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.SneakyThrows;
 import org.example.jobsearch.dto.ApplicantInfoDto;
 import org.example.jobsearch.dto.EmployerInfoDto;
 import org.example.jobsearch.dto.UserDto;
@@ -51,6 +52,11 @@ public interface UserService {
     ApplicantInfoDto getApplicantInfoByResumeId(Long id);
 
     Map<String, String> getAccountTypes();
+
+    @SneakyThrows
+    User getByResetPasswordToken(String token);
+
+    void updatePassword(User user, String password);
 
     void makeResetPasswordLink(HttpServletRequest request) throws MessagingException, UnsupportedEncodingException;
 }

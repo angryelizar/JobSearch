@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.jobsearch.dto.SendMessageDto;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.UserNotFoundException;
+import org.example.jobsearch.models.User;
 import org.example.jobsearch.service.*;
 import org.example.jobsearch.util.AuthenticatedUserProvider;
 import org.springframework.data.domain.Pageable;
@@ -64,6 +65,17 @@ public class MainController {
         model.addAttribute(PAGE_TITLE, "Восстановление пароля");
         model.addAttribute(AUTHENTICATED, authenticatedUserProvider.isAuthenticated());
         return "main/forgot_password";
+    }
+
+    @GetMapping("/reset_password")
+    public String showResetPasswordForm(@RequestParam String token, Model model) {
+        try {
+            userService.getByResetPasswordToken(token);
+            model.addAttribute("token", token);
+        } catch (UsernameNotFoundException ex) {
+            model.addAttribute("error", "Неверный токен");
+        }
+        return "main/reset_password";
     }
 
     @GetMapping("/profile")
@@ -216,5 +228,20 @@ public class MainController {
             model.addAttribute("error", e.getMessage());
         }
         return "main/forgot_password";
+    }
+
+    @PostMapping("reset_password")
+    public String processResetPassword(HttpServletRequest request, Model model) {
+        String token = request.getParameter("token");
+        var a = request.getParameterMap();
+        String password = request.getParameter("password");
+        try {
+            User user = userService.getByResetPasswordToken(token);
+            userService.updatePassword(user, password);
+            model.addAttribute("message", "Вы успешно изменили ваш пароль.");
+        } catch (UsernameNotFoundException ex) {
+            model.addAttribute("message", "Неверный токен");
+        }
+        return "main/reset_password_message";
     }
 }

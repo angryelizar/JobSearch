@@ -284,11 +284,13 @@ public class UserServiceImpl implements UserService {
         userRepository.saveAndFlush(user);
     }
 
+    @Override
     @SneakyThrows
     public User getByResetPasswordToken(String token) {
-        return userRepository.getByResetPasswordToken(token).orElseThrow(() -> new ServiceException("Пользователь не найден!"));
+        return userRepository.getUserByResetPasswordToken(token).orElseThrow(() -> new ServiceException("Пользователь не найден!"));
     }
 
+    @Override
     public void updatePassword(User user, String password) {
         String encodedPassword = encoder.encode(password);
         user.setPassword(encodedPassword);
@@ -301,7 +303,7 @@ public class UserServiceImpl implements UserService {
         String email = request.getParameter("email");
         String token = UUID.randomUUID().toString();
         updateResetPassword(token, email);
-        String resetPasswordLink = URLUtil.getSiteURL(request) + "/resetPassword?token=" + token;
+        String resetPasswordLink = URLUtil.getSiteURL(request) + "/reset_password?token=" + token;
         emailService.sendEmail(email, resetPasswordLink, userRepository.getByEmail(email).get().getName());
     }
 }

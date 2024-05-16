@@ -27,7 +27,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Boolean existsByEmail(String email);
 
     Optional<User> getByEmail(String email);
-    Optional<User> getByResetPasswordToken(String resetPasswordToken);
+    @Query("select u from User u where u.resetPasswordToken = ?1")
+    Optional<User> getUserByResetPasswordToken(String resetPasswordToken);
 
     @Query(value = "select * from USERS where ACCOUNT_TYPE = 'Соискатель'", nativeQuery = true)
     List<User> getApplicantsUsers();
