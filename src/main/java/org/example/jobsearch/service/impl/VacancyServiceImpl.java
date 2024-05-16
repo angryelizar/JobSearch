@@ -468,6 +468,8 @@ public class VacancyServiceImpl implements VacancyService {
             resultVacancies.sort(Comparator.comparing(PageVacancyDto::getCreatedTime));
         } else if (criterion.equalsIgnoreCase("responseCount")) {
             resultVacancies.sort(Comparator.comparing(PageVacancyDto::getCountOfResponses));
+        } else if (criterion.equalsIgnoreCase("salary")) {
+            resultVacancies.sort(Comparator.comparing(PageVacancyDto::getSalary));
         }
         if (order.equalsIgnoreCase("decrease")) {
             Collections.reverse(resultVacancies);
