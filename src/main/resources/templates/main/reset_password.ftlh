@@ -16,7 +16,7 @@
                     <input type="password" name="password" class="form-control"
                            placeholder="Введите новый пароль" required autofocus/>
                     <p class="text-center">
-                        <button type="submit" class="btn btn-primary mt-3">Изменить пароль</button>
+                        <button type="submit" class="btn btn-dark btn-lg mt-3">Изменить пароль</button>
                     </p>
                 </form>
             </div>

@@ -292,6 +292,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updatePassword(User user, String password) {
+        if (password.isEmpty() || password.isBlank()){
+            throw new IllegalArgumentException("Пароль не может быть пустым!");
+        }
+        if (password.length() < 4 || password.length() > 24){
+            throw new IllegalArgumentException("Длина пароля должна быть больше или равно 4 и не больше 24!");
+        }
+        if (!password.matches("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).+$")){
+            throw new IllegalArgumentException("Пароль должен содержать как минимум одну большую букву и цифру");
+        }
         String encodedPassword = encoder.encode(password);
         user.setPassword(encodedPassword);
         user.setResetPasswordToken(null);

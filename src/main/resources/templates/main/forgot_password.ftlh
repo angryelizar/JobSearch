@@ -22,10 +22,10 @@
                                                 <h2 class="h4 text-center">Восстановление пароля</h2>
                                                 <h3 class="fs-6 fw-normal text-secondary text-center m-0">Укажите адрес электронной почты, связанный с вашей учетной записью, чтобы восстановить пароль.</h3>
                                                 <#if error??>
-                                                    <b class="d-block text-warning fs-6 fw-normal text-secondary text-center m-0">${error}</b>
+                                                    <b class="d-block text-danger fs-6 fw-normal text-secondary text-center m-0">${error}</b>
                                                 </#if>
                                                 <#if message??>
-                                                    <b class="d-block text-warning fs-6 fw-normal text-secondary text-center m-0">${message}</b>
+                                                    <b class="d-block text-danger fs-6 fw-normal text-secondary text-center m-0">${message}</b>
                                                 </#if>
                                             </div>
                                         </div>

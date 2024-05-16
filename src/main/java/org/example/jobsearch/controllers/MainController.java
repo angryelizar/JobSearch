@@ -233,7 +233,6 @@ public class MainController {
     @PostMapping("reset_password")
     public String processResetPassword(HttpServletRequest request, Model model) {
         String token = request.getParameter("token");
-        var a = request.getParameterMap();
         String password = request.getParameter("password");
         try {
             User user = userService.getByResetPasswordToken(token);
@@ -241,6 +240,8 @@ public class MainController {
             model.addAttribute("message", "Вы успешно изменили ваш пароль.");
         } catch (UsernameNotFoundException ex) {
             model.addAttribute("message", "Неверный токен");
+        } catch (IllegalArgumentException e){
+            model.addAttribute("message", e.getMessage());
         }
         return "main/reset_password_message";
     }
