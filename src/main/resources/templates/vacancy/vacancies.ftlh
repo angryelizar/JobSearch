@@ -45,6 +45,7 @@
                     <select id="criterion" class="form-select" name="criterion">
                         <option value="createdDate">Дата публикации</option>
                         <option value="responseCount">Количество откликов</option>
+                        <option value="salary">Зарплата</option>
                     </select>
                     <label for="order" class="form-label">Порядок</label>
                     <select id="order" class="form-select" name="order">

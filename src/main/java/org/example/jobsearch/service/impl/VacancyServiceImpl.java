@@ -468,11 +468,18 @@ public class VacancyServiceImpl implements VacancyService {
             resultVacancies.sort(Comparator.comparing(PageVacancyDto::getCreatedTime));
         } else if (criterion.equalsIgnoreCase("responseCount")) {
             resultVacancies.sort(Comparator.comparing(PageVacancyDto::getCountOfResponses));
+        } else if (criterion.equalsIgnoreCase("salary")) {
+            resultVacancies.sort(Comparator.comparing(PageVacancyDto::getSalary));
         }
         if (order.equalsIgnoreCase("decrease")) {
             Collections.reverse(resultVacancies);
         }
         return ToPageUtil.toPageVacancyDto(resultVacancies, pageable);
+    }
+
+    @Override
+    public Boolean isAuthor(Long id, Authentication auth) {
+        return vacancyRepository.findById(id).get().getAuthor().getEmail().equals(auth.getName());
     }
 
     private Long getVacancyCategoryByVacancyId(Long vacancyId) {
@@ -498,6 +505,7 @@ public class VacancyServiceImpl implements VacancyService {
 
     private VacancyDto getVacancyDto(Vacancy vacancy) {
         return VacancyDto.builder()
+                .id(vacancy.getId())
                 .name(vacancy.getName())
                 .description(vacancy.getDescription())
                 .categoryId(vacancy.getCategory().getId())

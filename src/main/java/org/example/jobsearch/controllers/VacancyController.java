@@ -65,6 +65,7 @@ public class VacancyController {
         model.addAttribute(AUTHENTICATED, authenticatedUserProvider.isAuthenticated());
         model.addAttribute("userAuth", auth);
         model.addAttribute(IS_EMPLOYER, authenticatedUserProvider.isEmployer());
+        model.addAttribute("isAuthor", vacancyService.isAuthor(id, auth));
         return "vacancy/vacancy";
     }
 
