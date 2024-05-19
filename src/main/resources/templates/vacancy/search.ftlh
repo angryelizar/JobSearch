@@ -2,7 +2,7 @@
 <@main.layout>
     <h3 class="text-center mt-3">Поиск вакансий на JobSearch</h3>
     <div class="input-group input-group-lg mt-3">
-        <input placeholder="Введите свой запрос здесь...."  id="search-block" type="text" class="form-control" aria-label="Поиск"
+        <input placeholder="Введите свой запрос здесь..."  id="search-block" type="text" class="form-control" aria-label="Поиск"
                aria-describedby="inputGroup-sizing-lg">
     </div>
     <div class="row mt-3">

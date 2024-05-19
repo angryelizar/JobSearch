@@ -33,9 +33,9 @@
                     <div><h4 class="p-1">${employer.name}</h4></div>
                 </div>
                 <#if employer.activeVacancies gt 0>
-                    <span class="d-block">У ${employer.name} сейчас открыто ${employer.activeVacancies} вакансий</span>
+                    <span class="d-block">Открыто ${employer.activeVacancies} вакансий</span>
                 <#else>
-                    <span class="d-block">У ${employer.name} сейчас нет открытых вакансий</span>
+                    <span class="d-block">Нет открытых вакансий</span>
                 </#if>
                 <a href="/employer/${employer.id}" class="text-decoration-none text-center">Узнать больше
                     про ${employer.name}</a>

@@ -86,7 +86,6 @@ function onLoad() {
         },
         body: JSON.stringify(data)
     };
-    console.log(options);
     options.headers[csrfHeader] = csrfToken;
     fetch('/api/vacancies/resume', options)
         .then(response => response.json())
