@@ -1,3 +1,4 @@
+<#import '/spring.ftl' as spring>
 <#macro pagination url categoryId criterion order page>
     <#if page.getTotalPages() gt 7>
         <#assign
@@ -15,7 +16,7 @@
     <div class="pagination-container d-flex justify-content-center flex-column align-items-center">
     <ul class="pagination mt-2">
         <li class="page-item disabled">
-            <a class="page-link">Страницы</a>
+            <a class="page-link"><@spring.message 'pagination.pages'/></a>
         </li>
         <#list body as p>
             <#if (p - 1)  == page.getNumber()>
@@ -36,7 +37,7 @@
 
     <ul class="pagination mt-2">
         <li class="page-item disabled">
-            <a class="page-link">Элементов на странице</a>
+            <a class="page-link"><@spring.message 'pagination.elements'/></a>
         </li>
         <#list [5, 10, 25, 50] as c>
             <#if c  == page.getSize()>
