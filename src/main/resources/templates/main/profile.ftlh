@@ -7,7 +7,7 @@
         <div class="profile-block mt-2">
             <div class="row d-flex align-items-center">
                 <div class="col-xxl-2 col-xl-2 col-lg-1 col-md-1">
-                    <img src="/api/users/${userId}/avatar" alt="Аватарка профиля" class="rounded-4 img-fluid">
+                    <img src="/api/users/${userId}/avatar" alt="${data.user.name}" class="rounded-4 img-fluid">
                 </div>
                 <div class="col-xxl-6 col-xl-4 col-lg-5 col-md-11">
                     <h4 class="d-block">${data.user.name} <#if data.user.surname??>${data.user.surname}</#if></h4>
