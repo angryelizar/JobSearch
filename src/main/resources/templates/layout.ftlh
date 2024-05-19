@@ -1,4 +1,5 @@
 <#import "csrf_template.ftlh" as csrf>
+<#import '/spring.ftl' as spring>
 <#macro layout>
     <!doctype html>
     <html lang="ru">
@@ -28,17 +29,17 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/vacancies">Вакансии</a>
+                        <a class="nav-link active" aria-current="page" href="/vacancies"><@spring.message 'layout.vacancies'/></a>
                     </li>
                     <#if isEmployer??>
                         <#if isEmployer == true>
                             <li class="nav-item">
-                                <a class="nav-link" href="/resumes">Резюме</a>
+                                <a class="nav-link" href="/resumes"><@spring.message 'layout.resumes'/></a>
                             </li>
                         </#if>
                     </#if>
                     <li class="nav-item">
-                        <a class="nav-link" href="/employers">Работодатели</a>
+                        <a class="nav-link" href="/employers"><@spring.message 'layout.employers'/></a>
                     </li>
                 </ul>
                 <div class="text-secondary-emphasis d-flex justify-content-center align-items-center" style="gap: 10px">
@@ -60,8 +61,8 @@
                                 </form>
                             </#if>
                         <#else>
-                            <div class="nav-item"><a class="nav-link" href="/login">Войти</a></div>
-                            <div class="nav-item"><a class="nav-link" href="/registration">Регистрация</a></div>
+                            <div class="nav-item"><a class="nav-link" href="/login"><@spring.message 'layout.login'/></a></div>
+                            <div class="nav-item"><a class="nav-link" href="/registration"><@spring.message 'layout.registration'/></a></div>
                         </#if>
                     </#if>
                 </div>

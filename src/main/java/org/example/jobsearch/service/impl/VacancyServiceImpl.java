@@ -479,7 +479,13 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public Boolean isAuthor(Long id, Authentication auth) {
-        return vacancyRepository.findById(id).get().getAuthor().getEmail().equals(auth.getName());
+        Boolean result;
+        try {
+            result = vacancyRepository.findById(id).get().getAuthor().getEmail().equals(auth.getName());
+        } catch (NullPointerException e){
+            return false;
+        }
+        return result;
     }
 
     private Long getVacancyCategoryByVacancyId(Long vacancyId) {
