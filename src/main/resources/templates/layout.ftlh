@@ -6,6 +6,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="current-locale" content="${.locale}" id="locale">
         <meta name="csrf-header" content="${_csrf.headerName}" id="csrf-header">
         <meta name="csrf-parameter" content="${_csrf.parameterName}" id="csrf-parameter">
         <meta name="csrf-token" content="${_csrf.token}" id="csrf-token">
