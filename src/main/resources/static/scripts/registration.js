@@ -1,15 +1,46 @@
 let selectInput = document.getElementById('accountType');
+let locale = document.getElementById('locale').getAttribute('content');
 const EMPLOYER_VALUE = "Работодатель";
 const APPLICANT_VALUE = "Соискатель";
 const element = document.createElement('div')
 element.classList.add('mb-3')
 element.id = 'surname-input'
-element.innerHTML = '<label for="surname" class="form-label">Ваша фамилия</label>\n' +
-    '<input type="text" id="surname" name="surname" placeholder="Ваша фамилия" ' +
-    'class="form-control">'
+element.innerHTML = `<label for="surname" class="form-label">${getSurnameText()}</label> <input type="text" id="surname" name="surname" class="form-control">`
 
 selectInput.addEventListener('change', onChange)
 window.addEventListener('load', onLoadPage);
+
+
+function getCompanyNameText(){
+    let language = locale.substring(0, 2);
+    console.log(language)
+    if (language === 'ky') {
+        return 'Компаниянын аталышы'
+    } else {
+        return 'Название компании'
+    }
+}
+
+function getNameText(){
+    let language = locale.substring(0, 2);
+    console.log(language)
+    if (language === 'ky') {
+        return 'Сиздин атыңыз'
+    } else {
+        return 'Ваше имя'
+    }
+}
+
+
+function getSurnameText(){
+    let language = locale.substring(0, 2);
+    console.log(language)
+    if (language === 'ky') {
+        return 'Сиздин фамилияңыз'
+    } else {
+        return 'Ваша фамилия'
+    }
+}
 
 function onChange() {
     let surnameBlock = document.getElementById('surname-input');
@@ -31,15 +62,12 @@ function onLoadPage(){
 
 function addSurname(nameBlock, nameLabel){
     nameBlock.after(element);
-    nameLabel.innerText = 'Ваше имя'
-    document.getElementById('name').placeholder = 'Ваше имя'
+    nameLabel.innerText = `${getNameText()}`
     document.getElementById('surname').value = ''
-    console.log('done')
 }
 
 function deleteSurname(surnameBlock, nameLabel){
     surnameBlock.remove();
-    nameLabel.innerText = 'Название компании'
-    document.getElementById('name').placeholder = 'Название компании'
+    nameLabel.innerText = `${getCompanyNameText()}`
 }
 

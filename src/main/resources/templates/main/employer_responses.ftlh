@@ -1,21 +1,22 @@
 <#import "../layout.ftlh" as main>
+<#import "/spring.ftl" as spring>
 <@main.layout>
     <#if isByVacancy??>
         <#if isByVacancy == true>
             <h1><a href="/vacancies/${vacancy.id}" class="text-decoration-none text-dark">${vacancy.name}</a></h1>
         </#if>
     <#else>
-        <h1>Отклики на ваши вакансии</h1>
+        <h1><@spring.message 'employer.responses.title'/></h1>
     </#if>
     <#if responses?has_content>
         <table class="table">
             <thead>
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Вакансия</th>
-                <th scope="col">Резюме</th>
-                <th scope="col">ФИО</th>
-                <th scope="col">Статус</th>
+                <th scope="col"><@spring.message 'applicant.responses.vacancy'/></th>
+                <th scope="col"><@spring.message 'layout.resumes'/></th>
+                <th scope="col"><@spring.message 'employer.responses.name'/></th>
+                <th scope="col"><@spring.message 'employer.responses.status'/></th>
                 <th scope="col">#</th>
                 <th scope="col">#</th>
                 <th scope="col">#</th>
@@ -44,6 +45,6 @@
             </tbody>
         </table>
     <#else>
-        <p class="text-center mt-5">Здесь пока ничего нет :(</p>
+        <p class="text-center mt-5"><@spring.message 'employer.responses.noContent'/></p>
     </#if>
 </@main.layout>

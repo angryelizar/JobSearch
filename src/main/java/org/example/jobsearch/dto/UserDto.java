@@ -13,21 +13,21 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 public class UserDto {
     private Long id;
-    @NotBlank(message = "Имя (название компании) не может быть пустым!")
+    @NotBlank(message = "{registration.validation.name}")
     private String name;
     private String surname;
-    @Min(value = 18, message = "Вам должно быть как минимум 18 лет для регистрации!")
+    @Min(value = 18, message = "{registration.validation.age}")
     private Integer age;
-    @NotBlank(message = "Почта не может быть пустой!")
-    @Email(message = "Здесь нужно вводить только почту!")
+    @NotBlank(message = "{registration.validation.email.empty}")
+    @Email(message = "{registration.validation.email}")
     private String email;
-    @Size(min = 4, max = 24, message = "Длина пароля должна быть больше или равно 4 и не больше 24")
-    @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).+$", message = "Пароль должен содержать как минимум одну большую букву и цифру")
+    @Size(min = 4, max = 24, message = "{registration.validation.password.size}")
+    @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).+$", message = "{registration.validation.password.pattern}")
     private String password;
-    @Pattern(regexp = "\\+996\\d{9}", message = "Введите номер в формате +996XXXXXXXXX")
+    @Pattern(regexp = "\\+996\\d{9}", message = "{registration.validation.phone.pattern}")
     private String phoneNumber;
     private String avatar;
-    @Pattern(regexp = "^(Работодатель|Соискатель)$", message = "Должно быть 'Работодатель' или 'Соискатель'")
+    @Pattern(regexp = "^(Работодатель|Соискатель)$", message = "{registration.validation.role}")
     private String accountType;
     private MultipartFile avatarFile;
 }

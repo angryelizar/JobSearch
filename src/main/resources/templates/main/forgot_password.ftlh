@@ -1,5 +1,6 @@
 <#import "../layout.ftlh" as main>
 <#import "../csrf_template.ftlh" as csrf>
+<#import "/spring.ftl" as spring>
 <@main.layout>
 <section class="p-3 p-md-4 p-xl-5">
     <div class="container">
@@ -8,7 +9,7 @@
                 <div class="card border-light-subtle shadow-sm">
                     <div class="row g-0">
                         <div class="col-12 col-md-6">
-                            <img class="img-fluid rounded-start w-100 h-100 object-fit-cover" loading="lazy" src="./images/forgot_password.jpeg" alt="С возвращением, по вам скучали!">
+                            <img class="img-fluid rounded-start w-100 h-100 object-fit-cover" loading="lazy" src="./images/forgot_password.jpeg" alt="<@spring.message 'forgotPassword.imgAlt'/>">
                         </div>
                         <div class="col-12 col-md-6 d-flex align-items-center justify-content-center">
                             <div class="col-12 col-lg-11 col-xl-10">
@@ -19,8 +20,8 @@
                                                 <div class="text-center mb-4">
                                                     <a class="navbar-brand fs-1" href="/">Job Search</a>
                                                 </div>
-                                                <h2 class="h4 text-center">Восстановление пароля</h2>
-                                                <h3 class="fs-6 fw-normal text-secondary text-center m-0">Укажите адрес электронной почты, связанный с вашей учетной записью, чтобы восстановить пароль.</h3>
+                                                <h2 class="h4 text-center"><@spring.message 'forgotPassword.title'/></h2>
+                                                <h3 class="fs-6 fw-normal text-secondary text-center m-0"><@spring.message 'forgotPassword.email'/></h3>
                                                 <#if error??>
                                                     <b class="d-block text-danger fs-6 fw-normal text-secondary text-center m-0">${error}</b>
                                                 </#if>
@@ -41,7 +42,7 @@
                                             <div class="col-12">
                                                 <div class="d-grid">
                                                     <@csrf.csrf></@csrf.csrf>
-                                                    <button class="btn btn-dark btn-lg" type="submit">Сбросить пароль</button>
+                                                    <button class="btn btn-dark btn-lg" type="submit"><@spring.message 'forgotPassword.reset'/></button>
                                                 </div>
                                             </div>
                                         </div>
@@ -49,8 +50,8 @@
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="d-flex gap-2 gap-md-4 flex-column flex-md-row justify-content-md-center mt-5">
-                                                <a href="/login" class="link-secondary text-decoration-none">Вход</a>
-                                                <a href="/registration" class="link-secondary text-decoration-none">Регистрация</a>
+                                                <a href="/login" class="link-secondary text-decoration-none"><@spring.message 'layout.login'/></a>
+                                                <a href="/registration" class="link-secondary text-decoration-none"><@spring.message 'layout.registration'/></a>
                                             </div>
                                         </div>
                                     </div>

@@ -1,14 +1,15 @@
 <#import "../layout.ftlh" as main>
+<#import "/spring.ftl" as spring>
 <@main.layout>
-    <h1>Отклики на ваше резюме</h1>
+    <h1><@spring.message 'applicant.responses.title'/></h1>
     <#if responses?has_content>
         <table class="table">
             <thead>
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Резюме</th>
-                <th scope="col">Вакансия</th>
-                <th scope="col">Ответ</th>
+                <th scope="col"><@spring.message 'layout.resumes'/></th>
+                <th scope="col"><@spring.message 'applicant.responses.vacancy'/></th>
+                <th scope="col"><@spring.message 'applicant.responses.answer'/></th>
             </tr>
             </thead>
             <tbody>
@@ -23,6 +24,6 @@
             </tbody>
         </table>
         <#else>
-        <p class="text-center mt-5">Вы не оставляли откликов — продолжайте исследовать сайт!</p>
+        <p class="text-center mt-5"><@spring.message 'applicant.responses.noContent'/></p>
     </#if>
 </@main.layout>

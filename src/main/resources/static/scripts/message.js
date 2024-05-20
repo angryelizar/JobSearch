@@ -1,4 +1,15 @@
 let messagesBlock = document.querySelector('.messages-block');
+let locale = document.getElementById('locale').getAttribute('content');
+
+function getNoMessagesText(){
+    let language = locale.substring(0, 2);
+    console.log(language)
+    if (language === 'ky') {
+        return 'Бул чатта азырынча эч кандай билдирүүлөр жок - биринчи кадам таштаңыз!'
+    } else {
+        return 'В этом чате пока нет сообщений - сделайте первый шаг!:'
+    }
+}
 
 function fetchMessages() {
     let respondedApplicantId = parseInt(document.location.pathname.split("/").pop());
@@ -32,7 +43,7 @@ function fetchMessages() {
             } else {
                 let noMessagesText = document.createElement('p');
                 noMessagesText.classList.add('text-center', 'mb-5');
-                noMessagesText.textContent = 'В этом чате пока нет сообщений - сделайте первый шаг!';
+                noMessagesText.textContent = `${getNoMessagesText()}`
                 messagesBlock.appendChild(noMessagesText);
             }
         })

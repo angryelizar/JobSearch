@@ -1,8 +1,9 @@
 <#import "../layout.ftlh" as main>
 <#import "../pagination.ftlh" as pagination>
+<#import "/spring.ftl" as spring>
 <@main.layout>
     <div class="p-2">
-        <h1 class="text-center">Профиль работодателя</h1>
+        <h1 class="text-center"><@spring.message 'employer.title'/></h1>
         <div class="profile-block mt-2">
             <div class="row d-flex align-items-center">
                 <div class="col-xxl-2 col-xl-2 col-lg-1 col-md-1">
@@ -14,7 +15,7 @@
             </div>
         </div>
         <div class="posts-block container-fluid">
-            <h3 class="text-start mt-3">Резюме</h3>
+            <h3 class="text-start mt-3"><@spring.message 'layout.vacancies'/></h3>
             <#if vacancies?has_content>
                 <@pagination.pagination url vacancies></@pagination.pagination>
             </#if>
@@ -26,15 +27,15 @@
                                 <div class="card-body">
                                     <h5 class="card-title"><a class="text-decoration-none"
                                                               href="/vacancies/${vacancy.id}">${vacancy.name}</a></h5>
-                                    <h6 class="card-subtitle mb-2 text-body-secondary">Оклад: ${vacancy.salary}</h6>
-                                    <p class="card-text">Обновлено: ${vacancy.updateDate}</p>
+                                    <h6 class="card-subtitle mb-2 text-body-secondary"><@spring.message 'applicant.salary'/> ${vacancy.salary}</h6>
+                                    <p class="card-text"><@spring.message 'applicant.updated'/> ${vacancy.updateDate}</p>
                                 </div>
                             </div>
                         </div>
                     </#list>
                 </div>
-                <#else>
-                <p class="text-center">${employer.name} пока не набирает новых сотрудников</p>
+            <#else>
+                <p class="text-center">${employer.name} <@spring.message 'employer.noVacancies'/></p>
             </#if>
         </div>
     </div>
