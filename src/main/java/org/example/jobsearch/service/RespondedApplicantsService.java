@@ -1,5 +1,6 @@
 package org.example.jobsearch.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.example.jobsearch.dto.ResponseApplicantDto;
 import org.example.jobsearch.dto.ResponseEmployerDto;
 import org.springframework.security.core.Authentication;

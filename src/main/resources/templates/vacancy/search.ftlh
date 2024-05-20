@@ -1,8 +1,9 @@
 <#import "../layout.ftlh" as main>
+<#import '/spring.ftl' as spring>
 <@main.layout>
-    <h3 class="text-center mt-3">Поиск вакансий на JobSearch</h3>
+    <h3 class="text-center mt-3"><@spring.message 'vacancies.search'/></h3>
     <div class="input-group input-group-lg mt-3">
-        <input placeholder="Введите свой запрос здесь...."  id="search-block" type="text" class="form-control" aria-label="Поиск"
+        <input placeholder="<@spring.message 'vacancies.search.placeholder'/>"  id="search-block" type="text" class="form-control" aria-label="<@spring.message 'vacancies.search.placeholder'/>"
                aria-describedby="inputGroup-sizing-lg">
     </div>
     <div class="row mt-3">

@@ -1,5 +1,6 @@
 let workExperienceCounter = 0;
 let educationInfoCounter = 0;
+let locale = document.getElementById('locale').getAttribute('content');
 
 function deleteEducationOnClick() {
     event.preventDefault();
@@ -13,32 +14,30 @@ function deleteEducationOnClickElement(element) {
     module.remove();
 }
 
-function addEducationOnClick(){
+function addEducationOnClick() {
     event.preventDefault();
     educationInfoCounter = educationInfoCounter + 1;
     let index = educationInfoCounter;
     let educationInfoItem = `<div class="education-module-buttons d-flex justify-content-center gap-3">
-        <button class="education-delete-button mt-2 fs-6 rounded-4 btn btn-danger text-decoration-none">Удалить</button>
+        <button class="education-delete-button mt-2 fs-6 rounded-4 btn btn-danger text-decoration-none">${getDeleteText()}</button>
     </div>
-    <label for="EducationInfos[${index}].degree" class="form-label">Образование:</label>
+    <label for="EducationInfos[${index}].degree" class="form-label">${getEducationText()}</label>
     <input type="text" class="form-control" id="EducationInfos[${index}].degree"
            name="EducationInfos[${index}].degree">
-        <label for="EducationInfos[${index}].program" class="form-label">Специальность:</label>
+        <label for="EducationInfos[${index}].program" class="form-label">${getProgramText()}</label>
         <input type="text" class="form-control" id="EducationInfos[${index}].program"
                name="EducationInfos[${index}].program">
-            <label for="EducationInfos[${index}].institution" class="form-label">Где учились:</label>
+            <label for="EducationInfos[${index}].institution" class="form-label">${getInstitutionText()}</label>
             <input type="text" class="form-control" id="EducationInfos[${index}].institution"
                    name="EducationInfos[${index}].institution">
                 <div class="d-flex flex-column justify-content-start mt-3">
                     <div class="experience-item d-flex align-items-center">
-                        <label for="EducationInfos[${index}].startDate" class="form-text form-label me-2">Начало
-                            обучения</label>
+                        <label for="EducationInfos[${index}].startDate" class="form-text form-label me-2">${getStartDateText()}</label>
                         <input type="date" class="form-control" id="EducationInfos[${index}].startDate"
                                name="EducationInfos[${index}].startDate">
                     </div>
                     <div class="experience-item d-flex justify-content-between align-items-center">
-                        <label for="EducationInfos[${index}].endDate" class="form-text form-label me-2">Конец
-                            обучения</label>
+                        <label for="EducationInfos[${index}].endDate" class="form-text form-label me-2">${getEndDateText()}</label>
                         <input type="date" class="form-control" id="EducationInfos[${index}].endDate"
                                name="EducationInfos[${index}].endDate">
                     </div>
@@ -69,19 +68,18 @@ function addWorkOnClick() {
     workExperienceCounter = workExperienceCounter + 1;
     let index = workExperienceCounter;
     let workInfoItem = `<div class="work-module-buttons d-flex justify-content-center gap-3">
-    <button  class="work-delete-button mt-2 fs-6 rounded-4 btn btn-danger text-decoration-none">Удалить</button>
+    <button  class="work-delete-button mt-2 fs-6 rounded-4 btn btn-danger text-decoration-none">${getDeleteText()}</button>
 </div>
-<label for="WorkExperienceInfos[${index}].years" class="form-label">Опыт работы на предыдущем
-    месте:</label>
+<label for="WorkExperienceInfos[${index}].years" class="form-label">${getWorkExperienceInfoText()}</label>
 <input type="number" class="form-control" id="WorkExperienceInfos[${index}].years"
     name="WorkExperienceInfos[${index}].years">
-<label for="WorkExperienceInfos[${index}].companyName" class="form-label">Название компании:</label>
+<label for="WorkExperienceInfos[${index}].companyName" class="form-label">${getCompanyNameText()}</label>
 <input type="text" class="form-control" id="WorkExperienceInfos[${index}].companyName"
     name="WorkExperienceInfos[${index}].companyName">
-<label for="WorkExperienceInfos[${index}].position" class="form-label">Должность:</label>
+<label for="WorkExperienceInfos[${index}].position" class="form-label">${getPositionNameText()}</label>
 <input type="text" class="form-control" id="WorkExperienceInfos[${index}].position"
     name="WorkExperienceInfos[${index}].position">
-<label for="WorkExperienceInfos[${index}]responsibilities" class="form-label">Обязанности:</label>
+<label for="WorkExperienceInfos[${index}]responsibilities" class="form-label">${getResponsibilitiesText()}</label>
 <input type="text" class="form-control" id="WorkExperienceInfos[${index}].responsibilities"
     name="WorkExperienceInfos[${index}].responsibilities">`;
     let module = event.target.parentNode;
@@ -104,5 +102,100 @@ function onLoad() {
     educationInfoAddButton.onclick = addEducationOnClick;
 }
 
+function getDeleteText() {
+    let language = locale.substring(0, 2);
+    if (language === 'ky') {
+        return 'Өчүрүү'
+    } else {
+        return 'Удалить'
+    }
+}
+
+function getWorkExperienceInfoText() {
+    let language = locale.substring(0, 2);
+    if (language === 'ky') {
+        return 'Мурунку иш жериндеги иш тажрыйбасы:'
+    } else {
+        return 'Опыт работы на предыдущем месте:'
+    }
+}
+
+function getCompanyNameText() {
+    let language = locale.substring(0, 2);
+    if (language === 'ky') {
+        return 'Компаниянын аты:'
+    } else {
+        return 'Название компании:'
+    }
+}
+
+function getPositionNameText(){
+    let language = locale.substring(0, 2);
+    if (language === 'ky') {
+        return 'Позиция:'
+    } else {
+        return 'Должность:'
+    }
+}
+
+function getResponsibilitiesText(){
+    let language = locale.substring(0, 2);
+    console.log(language)
+    if (language === 'ky') {
+        return 'Милдеттер:'
+    } else {
+        return 'Обязанности'
+    }
+}
+
+function getEducationText(){
+    let language = locale.substring(0, 2);
+    console.log(language)
+    if (language === 'ky') {
+        return 'Билим:'
+    } else {
+        return 'Образование'
+    }
+}
+
+function getProgramText(){
+    let language = locale.substring(0, 2);
+    console.log(language)
+    if (language === 'ky') {
+        return 'Программа:'
+    } else {
+        return 'Специальность:'
+    }
+}
+
+function getInstitutionText(){
+    let language = locale.substring(0, 2);
+    console.log(language)
+    if (language === 'ky') {
+        return 'Окуган жериңиз:'
+    } else {
+        return 'Где учились:'
+    }
+}
+
+function getStartDateText(){
+    let language = locale.substring(0, 2);
+    console.log(language)
+    if (language === 'ky') {
+        return 'Окууну баштаган дата:'
+    } else {
+        return 'Начало обучения:'
+    }
+}
+
+function getEndDateText(){
+    let language = locale.substring(0, 2);
+    console.log(language)
+    if (language === 'ky') {
+        return 'Окууну аяктаган дата:'
+    } else {
+        return 'Конец обучения:'
+    }
+}
 
 window.addEventListener('load', onLoad);

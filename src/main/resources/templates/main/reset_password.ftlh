@@ -1,8 +1,9 @@
 <#import "../layout.ftlh" as main>
 <#import "../csrf_template.ftlh" as csrf>
+<#import "/spring.ftl" as spring>
 <@main.layout>
     <div class="text-center">
-        <h2>Сбросить пароль</h2>
+        <h2><@spring.message 'forgotPassword.reset'/></h2>
         <#if error??>
             <b class="text-danger">${error}</b>
         </#if>
@@ -14,9 +15,9 @@
                     <@csrf.csrf></@csrf.csrf>
                     <input type="hidden" name="token" value="${token!}">
                     <input type="password" name="password" class="form-control"
-                           placeholder="Введите новый пароль" required autofocus/>
+                           placeholder="<@spring.message 'resetPassword'/>" required autofocus/>
                     <p class="text-center">
-                        <button type="submit" class="btn btn-dark btn-lg mt-3">Изменить пароль</button>
+                        <button type="submit" class="btn btn-dark btn-lg mt-3"><@spring.message 'forgotPassword.reset'/></button>
                     </p>
                 </form>
             </div>
