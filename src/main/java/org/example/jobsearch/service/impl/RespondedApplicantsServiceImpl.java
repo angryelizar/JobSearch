@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jobsearch.dto.ResponseApplicantDto;
 import org.example.jobsearch.dto.ResponseEmployerDto;
+import org.example.jobsearch.enums.ResponseStatus;
 import org.example.jobsearch.exceptions.ResumeException;
 import org.example.jobsearch.exceptions.UserException;
 import org.example.jobsearch.exceptions.VacancyException;
@@ -179,11 +180,14 @@ public class RespondedApplicantsServiceImpl implements RespondedApplicantsServic
 
     private String getApplicantStatusByBoolean(Boolean confirmation) {
         if (confirmation == null) {
-            return "В обработке";
+            return ResponseStatus.IN_PROGRESS.getValue();
+//            return "В обработке";
         } else if (confirmation) {
-            return "Одобрено";
+            return ResponseStatus.APPROVED.getValue();
+//            return "Одобрено";
         } else {
-            return "Отклонено";
+            return ResponseStatus.REJECTED.getValue();
+//            return "Отклонено";
         }
     }
 

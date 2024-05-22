@@ -18,7 +18,7 @@
                     <th scope="row">${response?counter}</th>
                     <td><a class="text-decoration-none" href="/resumes/${response.resumedId}">${response.resumeName}</a></td>
                     <td><a class="text-decoration-none" href="/vacancies/${response.vacancyId}">${response.vacancyName}</a></td>
-                    <td>${response.status}</td>
+                    <td><@spring.message '${response.status}'/></td>
                 </tr>
             </#list>
             </tbody>

@@ -20,7 +20,6 @@ import javax.sql.DataSource;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final DataSource dataSource;
     public static final String EMPLOYER = "EMPLOYER";
     public static final String APPLICANT = "APPLICANT";
     public static final String ADMIN = "ADMIN";

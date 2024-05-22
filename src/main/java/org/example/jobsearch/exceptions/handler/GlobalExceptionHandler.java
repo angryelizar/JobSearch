@@ -1,6 +1,8 @@
 package org.example.jobsearch.exceptions.handler;
 
 import lombok.RequiredArgsConstructor;
+//import org.aspectj.bridge.MessageUtil;
+import org.aspectj.bridge.MessageUtil;
 import org.example.jobsearch.exceptions.*;
 import org.example.jobsearch.service.ErrorService;
 import org.example.jobsearch.util.AuthenticatedUserProvider;
