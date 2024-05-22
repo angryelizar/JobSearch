@@ -181,23 +181,20 @@ public class RespondedApplicantsServiceImpl implements RespondedApplicantsServic
     private String getApplicantStatusByBoolean(Boolean confirmation) {
         if (confirmation == null) {
             return ResponseStatus.IN_PROGRESS.getValue();
-//            return "В обработке";
         } else if (confirmation) {
             return ResponseStatus.APPROVED.getValue();
-//            return "Одобрено";
         } else {
             return ResponseStatus.REJECTED.getValue();
-//            return "Отклонено";
         }
     }
 
     private String getEmployerStatusByBoolean(Boolean confirmation) {
         if (confirmation == null) {
-            return "Новый отклик";
+            return ResponseStatus.IN_PROGRESS.getValue();
         } else if (confirmation) {
-            return "Одобрено";
+            return ResponseStatus.APPROVED.getValue();
         } else {
-            return "Отклонено";
+            return ResponseStatus.REJECTED.getValue();
         }
     }
 }

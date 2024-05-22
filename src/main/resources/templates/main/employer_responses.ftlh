@@ -32,7 +32,7 @@
                     </td>
                     <td><a class="text-decoration-none"
                            href="/applicant/${response.applicantId}">${response.applicantName}</a></td>
-                    <td>${response.status}</td>
+                    <td><@spring.message '${response.status}'/></td>
                     <td><a class="text-decoration-none"
                            href="/applicant/accept?resume=${response.resumeId}&vacancy=${response.vacancyId}"><i
                                     class="bi bi-check-lg"></i></a></td>
