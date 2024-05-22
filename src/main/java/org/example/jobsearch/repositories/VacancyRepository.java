@@ -19,9 +19,10 @@ public interface VacancyRepository extends JpaRepository<Vacancy, Long> {
     @Query(value = "select * from VACANCIES where AUTHOR_ID = :authorId and IS_ACTIVE = true", nativeQuery = true)
     List<Vacancy> getVacanciesByAuthorId(Long authorId);
 
-    @Query(value = "SELECT COUNT(*) FROM VACANCIES WHERE  AUTHOR_ID = :authorId", nativeQuery = true)
+    @Query(value = "SELECT COUNT(*) FROM VACANCIES WHERE  AUTHOR_ID = :authorId AND IS_ACTIVE = TRUE", nativeQuery = true)
     Integer getCountVacanciesByAuthorId(Long authorId);
 
     List<Vacancy> searchVacanciesByIsActiveEquals(Boolean isActive);
     List<Vacancy> findVacanciesByAuthorId(Long authorId);
+    List<Vacancy> findVacanciesByAuthorIdAndIsActiveEquals(Long authorId, Boolean isActive);
 }

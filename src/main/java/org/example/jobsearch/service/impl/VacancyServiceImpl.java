@@ -227,14 +227,20 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     @SneakyThrows
-    public void update(Long id) {
-        if (vacancyRepository.existsById(id)) {
-            Vacancy vacancy = vacancyRepository.findById(id).get();
-            vacancy.setUpdateTime(LocalDateTime.now());
-            vacancyRepository.save(vacancy);
-        } else {
-            log.error("Была запрошена несуществующая вакансия с ID " + id);
+    public void update(Long id, Authentication authentication) {
+        Optional<Vacancy> maybeVacancy = vacancyRepository.findById(id);
+        if (maybeVacancy.isEmpty()) {
+            log.error("Была запрошена несуществующая вакансия с ID {}", id);
             throw new VacancyException("Такой вакансии нет!");
+        }
+        Vacancy vacancy = maybeVacancy.get();
+        if (Boolean.FALSE.equals(vacancy.getIsActive())){
+            log.error("Попытка обновить неактивную вакансию с ID {}", vacancy.getId());
+            throw new VacancyException("Вакансия неактивна!");
+        }
+        User loggedUser = (User) authentication.getPrincipal();
+        if (!Objects.equals(vacancy.getAuthor().getId(), loggedUser.getId())){
+            throw new VacancyException("Это не ваша вакансия!");
         }
     }
 
@@ -288,25 +294,29 @@ public class VacancyServiceImpl implements VacancyService {
     @Override
     @SneakyThrows
     public PageVacancyDto getPageVacancyById(Long id) {
-        if (vacancyRepository.existsById(id)) {
-            Vacancy vacancy = vacancyRepository.findById(id).get();
-            User author = vacancy.getAuthor();
-            return PageVacancyDto
-                    .builder()
-                    .id(vacancy.getId())
-                    .name(vacancy.getName())
-                    .description(vacancy.getDescription())
-                    .author(author.getName())
-                    .category(vacancy.getCategory().getName())
-                    .salary(vacancy.getSalary())
-                    .expFrom(vacancy.getExpFrom())
-                    .expTo(vacancy.getExpTo())
-                    .updateTime(DateUtil.getFormattedLocalDateTime(vacancy.getUpdateTime()))
-                    .build();
-        } else {
-            log.error("Была запрошена несуществующая вакансия с ID " + id);
+        Optional<Vacancy> maybeVacancy = vacancyRepository.findById(id);
+        if (maybeVacancy.isEmpty()) {
+            log.error("Была запрошена несуществующая вакансия с ID {}", id);
             throw new VacancyException("Такой вакансии нет!");
         }
+        Vacancy vacancy = maybeVacancy.get();
+        if (Boolean.FALSE.equals(vacancy.getIsActive())){
+            log.error("Попытка просмотра неактивной вакансии с ID {}", vacancy.getId());
+            throw new VacancyException("Это вакансия неактивна!");
+        }
+        User author = vacancy.getAuthor();
+        return PageVacancyDto
+                .builder()
+                .id(vacancy.getId())
+                .name(vacancy.getName())
+                .description(vacancy.getDescription())
+                .author(author.getName())
+                .category(vacancy.getCategory().getName())
+                .salary(vacancy.getSalary())
+                .expFrom(vacancy.getExpFrom())
+                .expTo(vacancy.getExpTo())
+                .updateTime(DateUtil.getFormattedLocalDateTime(vacancy.getUpdateTime()))
+                .build();
     }
 
     @Override
@@ -439,7 +449,8 @@ public class VacancyServiceImpl implements VacancyService {
 
     @Override
     public Page<ProfilePageVacancyDto> getPageVacanciesByAuthorId(Long id, Pageable pageable) {
-        List<Vacancy> vacancyList = vacancyRepository.getVacanciesByAuthorId(id);
+        List<Vacancy> vacancyList = vacancyRepository.findVacanciesByAuthorIdAndIsActiveEquals(id, true);
+        vacancyList.sort(Comparator.comparing(Vacancy::getUpdateTime).reversed());
         List<ProfilePageVacancyDto> result = new ArrayList<>();
         for (Vacancy cur : vacancyList) {
             result.add(ProfilePageVacancyDto.builder()
@@ -482,7 +493,7 @@ public class VacancyServiceImpl implements VacancyService {
         Boolean result;
         try {
             result = vacancyRepository.findById(id).get().getAuthor().getEmail().equals(auth.getName());
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             return false;
         }
         return result;

@@ -42,7 +42,7 @@ public interface VacancyService {
 
     List<Vacancy> getVacanciesByEmployerId(Long id);
 
-    void update(Long id);
+    void update(Long id, Authentication authentication);
 
     Integer getCount();
 

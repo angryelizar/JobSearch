@@ -80,8 +80,8 @@ public class VacancyController {
     }
 
     @GetMapping("/update")
-    public String updateGet(@RequestParam Long id) {
-        vacancyService.update(id);
+    public String updateGet(@RequestParam Long id, Authentication authentication) {
+        vacancyService.update(id, authentication);
         return REDIRECT_TO_PROFILE;
     }
 

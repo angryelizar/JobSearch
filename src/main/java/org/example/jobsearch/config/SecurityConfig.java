@@ -57,6 +57,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/vacancies/add").hasAuthority(EMPLOYER)
                         .requestMatchers("/vacancies/edit").hasAuthority(EMPLOYER)
+                        .requestMatchers("/vacancies/update/**").hasAuthority(EMPLOYER)
                         .requestMatchers("/vacancies/delete").hasAuthority(EMPLOYER)
                         .requestMatchers("/employer/responses/**").hasAuthority(EMPLOYER)
 
