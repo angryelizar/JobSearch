@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/profile")
+                        .successHandler(new LoginSuccessHandler())
                         .failureUrl("/login-failed")
                         .permitAll())
                 .logout(logout -> logout

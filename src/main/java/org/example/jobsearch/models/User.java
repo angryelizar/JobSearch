@@ -35,6 +35,7 @@ public class User implements UserDetails {
     @JoinColumn(name = "AUTHORITY_ID")
     private Authority authority;
     private String resetPasswordToken;
+    private String preferredLocale;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "author")
     private List<Vacancy> vacancies;
