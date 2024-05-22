@@ -51,6 +51,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/resumes/add").hasAuthority(APPLICANT)
                         .requestMatchers("resumes/edit").hasAuthority(APPLICANT)
+                        .requestMatchers("resumes/update/**").hasAuthority(APPLICANT)
                         .requestMatchers("/resumes/delete").hasAuthority(APPLICANT)
                         .requestMatchers("/applicant/responses").hasAuthority(APPLICANT)
 
