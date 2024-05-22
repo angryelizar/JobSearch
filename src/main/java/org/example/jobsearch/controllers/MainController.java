@@ -11,6 +11,8 @@ import org.example.jobsearch.exceptions.VacancyNotFoundException;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.service.*;
 import org.example.jobsearch.util.AuthenticatedUserProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 @RequiredArgsConstructor
 @RequestMapping("/")
 public class MainController {
+    private static final Logger log = LoggerFactory.getLogger(MainController.class);
     private final UserService userService;
     private final ProfileService profileService;
     private final RespondedApplicantsService respondedApplicantsService;
@@ -197,7 +200,8 @@ public class MainController {
     }
 
     @GetMapping("/login")
-    public String loginGet(Model model) {
+    public String loginGet(Model model, HttpServletRequest request) {
+        log.error("Локаль - {}", request.getLocale());
         boolean isAuthenticated = authenticatedUserProvider.isAuthenticated();
         model.addAttribute(IS_EMPLOYER, authenticatedUserProvider.isEmployer());
         if (!isAuthenticated) {
@@ -211,7 +215,7 @@ public class MainController {
     }
 
     @PostMapping("/profile")
-    public String profilePost(UserDto userDto) {
+    public String profilePost(UserDto userDto, HttpServletRequest request) {
         userService.update(userDto);
         return "redirect:/profile";
     }

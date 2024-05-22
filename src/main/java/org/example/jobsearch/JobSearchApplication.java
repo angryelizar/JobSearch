@@ -8,11 +8,7 @@ import org.springframework.context.ApplicationContext;
 public class JobSearchApplication {
 
     public static void main(String[] args) {
-//        SpringApplication.run(JobSearchApplication.class, args);
-
-        ApplicationContext applicationContext = SpringApplication.run(JobSearchApplication.class, args);
-        CurrencyService bean = applicationContext.getBean(CurrencyService.class);
-        bean.calculate();
+        SpringApplication.run(JobSearchApplication.class, args);
     }
 
 
