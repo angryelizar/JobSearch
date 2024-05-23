@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/profile")
+                        .successHandler(new LoginSuccessHandler())
                         .failureUrl("/login-failed")
                         .permitAll())
                 .logout(logout -> logout
@@ -50,11 +51,13 @@ public class SecurityConfig {
 
                         .requestMatchers("/resumes/add").hasAuthority(APPLICANT)
                         .requestMatchers("resumes/edit").hasAuthority(APPLICANT)
+                        .requestMatchers("resumes/update/**").hasAuthority(APPLICANT)
                         .requestMatchers("/resumes/delete").hasAuthority(APPLICANT)
                         .requestMatchers("/applicant/responses").hasAuthority(APPLICANT)
 
                         .requestMatchers("/vacancies/add").hasAuthority(EMPLOYER)
                         .requestMatchers("/vacancies/edit").hasAuthority(EMPLOYER)
+                        .requestMatchers("/vacancies/update/**").hasAuthority(EMPLOYER)
                         .requestMatchers("/vacancies/delete").hasAuthority(EMPLOYER)
                         .requestMatchers("/employer/responses/**").hasAuthority(EMPLOYER)
 

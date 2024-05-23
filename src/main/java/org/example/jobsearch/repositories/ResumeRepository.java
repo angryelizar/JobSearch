@@ -18,6 +18,8 @@ public interface ResumeRepository extends JpaRepository<Resume, Long> {
     @Query(value = "select * from RESUMES where NAME like :query", nativeQuery = true)
     List<Resume> findByNameLike(String query);
 
-    @Query(value = "SELECT COUNT(*) FROM RESUMES WHERE APPLICANT_ID = :id", nativeQuery = true)
+    @Query(value = "SELECT COUNT(*) FROM RESUMES WHERE APPLICANT_ID = :id AND IS_ACTIVE = TRUE", nativeQuery = true)
     Integer countByApplicantId(Long id);
+
+    List<Resume> findResumesByApplicantIdAndIsActive(Long applicantId, Boolean isActive);
 }

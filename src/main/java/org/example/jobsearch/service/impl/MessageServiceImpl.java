@@ -79,10 +79,10 @@ public class MessageServiceImpl implements MessageService {
     public void sendMessage(SendMessageDto messageDto, Authentication auth) {
         User user = userRepository.getByEmail(auth.getName()).get();
         if (!Objects.equals(user.getId(), messageDto.getMessageAuthor())){
-            throw new UserException("Вы пытаетесь выдать себя за другого пользователя!");
+            throw new UserException("exception.message.not.user");
         }
         if (messageDto.getMessageText().isBlank() || messageDto.getMessageText().isEmpty()){
-            throw new EmptyMessageException("Нельзя отправлять пустой текст");
+            throw new EmptyMessageException("exception.message.empty");
         }
         Message message = Message.builder()
                 .content(messageDto.getMessageText())

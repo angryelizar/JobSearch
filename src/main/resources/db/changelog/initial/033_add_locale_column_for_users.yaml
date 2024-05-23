@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-locale-column-for-users
+      author: angryelizar
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: preferred_locale
+                  type: varchar(10)
+                  constraints:
+                    nullable: true

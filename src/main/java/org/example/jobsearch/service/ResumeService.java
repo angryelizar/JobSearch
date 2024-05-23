@@ -44,7 +44,7 @@ public interface ResumeService {
 
     void deleteResumeById(Long id, Authentication auth);
 
-    void update(Long id);
+    void update(Long id, Authentication authentication);
 
     PageResumeDto getPageResumeById(Long id);
 

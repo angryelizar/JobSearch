@@ -75,8 +75,8 @@ public class ResumeController {
     }
 
     @GetMapping("/update")
-    public String updateGet(@RequestParam Long id) {
-        resumeService.update(id);
+    public String updateGet(@RequestParam Long id, Authentication auth) {
+        resumeService.update(id, auth);
         return REDIRECT_TO_PROFILE;
     }
 
