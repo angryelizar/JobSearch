@@ -27,7 +27,6 @@ import java.io.UnsupportedEncodingException;
 @RequiredArgsConstructor
 @RequestMapping("/")
 public class MainController {
-    private static final Logger log = LoggerFactory.getLogger(MainController.class);
     private final UserService userService;
     private final ProfileService profileService;
     private final RespondedApplicantsService respondedApplicantsService;
@@ -98,7 +97,7 @@ public class MainController {
     @GetMapping("/login-failed")
     public String loginFailedGet(Model model) {
         model.addAttribute(IS_EMPLOYER, authenticatedUserProvider.isEmployer());
-        model.addAttribute(PAGE_TITLE, "Вход не удался");
+        model.addAttribute(PAGE_TITLE, "Job Search");
         model.addAttribute(AUTHENTICATED, authenticatedUserProvider.isAuthenticated());
         return "main/login-failed";
     }
@@ -200,22 +199,20 @@ public class MainController {
     }
 
     @GetMapping("/login")
-    public String loginGet(Model model, HttpServletRequest request) {
-        log.error("Локаль - {}", request.getLocale());
+    public String loginGet(Model model) {
         boolean isAuthenticated = authenticatedUserProvider.isAuthenticated();
         model.addAttribute(IS_EMPLOYER, authenticatedUserProvider.isEmployer());
+        model.addAttribute(PAGE_TITLE, "Job Search");
         if (!isAuthenticated) {
-            model.addAttribute(PAGE_TITLE, "Вход в JobSearch");
             model.addAttribute(AUTHENTICATED, isAuthenticated);
             return "main/login";
         }
-        model.addAttribute(PAGE_TITLE, "Что-то пошло не так");
         model.addAttribute(AUTHENTICATED, isAuthenticated);
         return "redirect:/error/403";
     }
 
     @PostMapping("/profile")
-    public String profilePost(UserDto userDto, HttpServletRequest request) {
+    public String profilePost(UserDto userDto) {
         userService.update(userDto);
         return "redirect:/profile";
     }
@@ -239,7 +236,7 @@ public class MainController {
     public String processForgotPassword(HttpServletRequest request, Model model) {
         try {
             userService.makeResetPasswordLink(request);
-            model.addAttribute("message", "Мы отправили ссылку для сброса пароля на вашу электронную почту.");
+            model.addAttribute("message", "resetPassword.sendLink");
         } catch (UsernameNotFoundException | UnsupportedEncodingException | MessagingException e) {
             model.addAttribute("error", e.getMessage());
         }
@@ -253,9 +250,9 @@ public class MainController {
         try {
             User user = userService.getByResetPasswordToken(token);
             userService.updatePassword(user, password);
-            model.addAttribute("message", "Вы успешно изменили ваш пароль.");
+            model.addAttribute("message", "resetPassword.successful");
         } catch (UsernameNotFoundException ex) {
-            model.addAttribute("message", "Неверный токен");
+            model.addAttribute("message", "resetPassword.invalidToken");
         } catch (IllegalArgumentException e){
             model.addAttribute("message", e.getMessage());
         }

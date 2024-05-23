@@ -133,10 +133,10 @@ public class UserServiceImpl implements UserService {
     @SneakyThrows
     public void createUser(UserDto userDto, HttpServletRequest request) {
         if (userRepository.existsByEmail(userDto.getEmail()) || userRepository.existsByPhoneNumber(userDto.getPhoneNumber())) {
-            throw new UserAlreadyRegisteredException("Пользователь уже зарегистрирован");
+            throw new UserAlreadyRegisteredException("exception.registration.alreadyRegistered");
         }
         if (userDto.getAge() < 18) {
-            throw new UserHaveTooLowAgeException("Пользователь слишком молод!");
+            throw new UserHaveTooLowAgeException("exception.registration.tooYoung");
         }
         User user = new User();
         user.setName(userDto.getName());
@@ -160,7 +160,7 @@ public class UserServiceImpl implements UserService {
         var user = userRepository.getByEmail(userDto.getEmail());
         if (user.isEmpty()) {
             log.error("Запрошен несуществующий пользователь с e-mail " + userDto.getEmail());
-            throw new ServiceException("Такого пользователя нет!");
+            throw new ServiceException("exception.profile.noUser");
         }
         User updateUser = user.get();
         updateUser.setName(userDto.getName());
@@ -172,13 +172,13 @@ public class UserServiceImpl implements UserService {
         userRepository.save(updateUser);
         MultipartFile file = userDto.getAvatarFile();
         if (file.isEmpty()) {
-            throw new AvatarException("Нельзя отправлять пустой файл!");
+            throw new AvatarException("exception.avatar.empty");
         }
         if (file.getSize() > 1000000) {
-            throw new AvatarException("Нельзя отправлять файл больше 1000 килобайт!");
+            throw new AvatarException("exception.avatar.tooMuchSize");
         }
         if (!file.getOriginalFilename().endsWith(".jpeg") && !file.getOriginalFilename().endsWith(".jpg") && !file.getOriginalFilename().endsWith(".png")) {
-            throw new AvatarException("Разрешены к загрузке только картинки .jpeg, .jpg и .png!");
+            throw new AvatarException("exception.avatar.allowedFiles");
         }
         avatarImageService.upload(user.get(), file);
     }
@@ -189,7 +189,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> maybeUser = userRepository.findById(id);
         if (maybeUser.isEmpty()) {
             log.error("Был запрошен несуществующий пользователь с ID " + id);
-            throw new UserException("Такого пользователя нет!");
+            throw new UserException("exception.profile.noUser");
         }
         User user = maybeUser.get();
         return UserDto.builder()
@@ -280,7 +280,7 @@ public class UserServiceImpl implements UserService {
 
     @SneakyThrows
     private void updateResetPassword(String token, String email) {
-        User user = userRepository.getByEmail(email).orElseThrow(() -> new ServiceException("Пользователь не найден!"));
+        User user = userRepository.getByEmail(email).orElseThrow(() -> new ServiceException("exception.profile.noUser"));
         user.setResetPasswordToken(token);
         userRepository.saveAndFlush(user);
     }
@@ -288,19 +288,19 @@ public class UserServiceImpl implements UserService {
     @Override
     @SneakyThrows
     public User getByResetPasswordToken(String token) {
-        return userRepository.getUserByResetPasswordToken(token).orElseThrow(() -> new ServiceException("Пользователь не найден!"));
+        return userRepository.getUserByResetPasswordToken(token).orElseThrow(() -> new ServiceException("exception.profile.noUser"));
     }
 
     @Override
     public void updatePassword(User user, String password) {
         if (password.isEmpty() || password.isBlank()){
-            throw new IllegalArgumentException("Пароль не может быть пустым!");
+            throw new IllegalArgumentException("exception.resetPassword.empty");
         }
         if (password.length() < 4 || password.length() > 24){
-            throw new IllegalArgumentException("Длина пароля должна быть больше или равно 4 и не больше 24!");
+            throw new IllegalArgumentException("exception.resetPassword.length");
         }
         if (!password.matches("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).+$")){
-            throw new IllegalArgumentException("Пароль должен содержать как минимум одну большую букву и цифру");
+            throw new IllegalArgumentException("exception.resetPassword.symbols");
         }
         String encodedPassword = encoder.encode(password);
         user.setPassword(encodedPassword);
