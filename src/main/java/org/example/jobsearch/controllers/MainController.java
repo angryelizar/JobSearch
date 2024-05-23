@@ -11,8 +11,6 @@ import org.example.jobsearch.exceptions.VacancyNotFoundException;
 import org.example.jobsearch.models.User;
 import org.example.jobsearch.service.*;
 import org.example.jobsearch.util.AuthenticatedUserProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

@@ -12,7 +12,7 @@
                 </div>
                 <div class="col-xxl-6 col-xl-4 col-lg-5 col-md-11">
                     <h4 class="d-block">${data.user.name} <#if data.user.surname??>${data.user.surname}</#if></h4>
-                    <p class="d-block"><@spring.message 'profile.age' /> ${data.user.age}</p>
+                    <#if isEmployer == false><p class="d-block"><@spring.message 'profile.age' /> ${data.user.age}</p></#if>
                     <button type="button" class="p-2 btn btn-secondary d-block" data-bs-toggle="modal"
                             data-bs-target="#exampleModal">
                         <@spring.message 'profile.edit' />
@@ -140,12 +140,12 @@
                                         <input type="text" class="form-control" id="surname" name="surname"
                                                aria-describedby="surnameHelp" required>
                                     </div>
+                                    <div class="mb-3">
+                                        <label for="age" class="form-label"><@spring.message 'profile.edit.modal.age' /></label>
+                                        <input type="number" class="form-control" id="age" name="age" aria-describedby="ageHelp"
+                                               value="${data.user.age}" required>
+                                    </div>
                             </#if>
-                            <div class="mb-3">
-                                <label for="age" class="form-label"><@spring.message 'profile.edit.modal.age' /></label>
-                                <input type="number" class="form-control" id="age" name="age" aria-describedby="ageHelp"
-                                       value="${data.user.age}" required>
-                            </div>
                             <div class="mb-3">
                                 <label for="email" class="form-label"><@spring.message 'profile.edit.modal.email' /></label>
                                 <input type="email" class="form-control" id="email" name="email"

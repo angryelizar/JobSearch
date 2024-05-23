@@ -42,14 +42,21 @@ function getSurnameText(){
     }
 }
 
+function deleteAge(ageBlock) {
+    ageBlock.remove();
+}
+
 function onChange() {
     let surnameBlock = document.getElementById('surname-input');
     let nameLabel = document.getElementById('name-label');
     let nameBlock = document.getElementById('name-input');
+    let ageBlock = document.getElementById('age-input');
     if (selectInput.value === (EMPLOYER_VALUE)){
         deleteSurname(surnameBlock, nameLabel)
+        deleteAge(ageBlock)
     } else if (!surnameBlock && selectInput.value === APPLICANT_VALUE){
         addSurname(nameBlock, nameLabel)
+        addAge(ageBlock, nameBlock)
     }
 
 }

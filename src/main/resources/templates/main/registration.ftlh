@@ -20,7 +20,7 @@
                 <@spring.formInput "userDto.surname" 'class="form-control" id="surname" name= "surname"'></@spring.formInput>
                 <@spring.showErrors "<br>" 'text-danger'/>
             </div>
-            <div class="mb-3">
+            <div class="mb-3" id="age-input">
                 <label for="age" class="form-label"><@spring.message 'profile.edit.modal.age'/></label>
                 <@spring.formInput "userDto.age" ' class="form-control" id="age" name="age"' "number"></@spring.formInput>
                 <@spring.showErrors "<br>" 'text-danger'/>

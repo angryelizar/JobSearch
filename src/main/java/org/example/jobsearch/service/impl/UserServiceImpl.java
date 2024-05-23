@@ -135,18 +135,17 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByEmail(userDto.getEmail()) || userRepository.existsByPhoneNumber(userDto.getPhoneNumber())) {
             throw new UserAlreadyRegisteredException("exception.registration.alreadyRegistered");
         }
-        if (userDto.getAge() < 18) {
-            throw new UserHaveTooLowAgeException("exception.registration.tooYoung");
-        }
         User user = new User();
         user.setName(userDto.getName());
         user.setSurname(userDto.getSurname());
-        user.setAge(userDto.getAge());
         user.setEmail(userDto.getEmail());
         user.setPhoneNumber(userDto.getPhoneNumber());
         user.setPassword(encoder.encode(userDto.getPassword()));
         user.setAvatar("default_avatar.jpeg");
         user.setAccountType(userDto.getAccountType());
+        if (user.getAccountType().equals("Соискатель")){
+            user.setAge(userDto.getAge());
+        }
         user.setEnabled(true);
         user.setAuthority(authorityService.getAccountAuthorityByTypeString(user.getAccountType()));
         userRepository.save(user);
