@@ -10,8 +10,8 @@
                     <img src="/api/users/${applicantId}/avatar" alt="${applicant.name}" class="rounded-4 img-fluid">
                 </div>
                 <div class="col-xxl-6 col-xl-4 col-lg-5 col-md-11">
-                    <h4 class="d-block">${applicant.name} ${applicant.surname}</h4>
-                    <p class="d-block"><@spring.message 'applicant.age'/> ${applicant.age}</p>
+                    <h4 class="d-block">${applicant.name} <#if applicant.surname??>${applicant.surname}</#if></h4>
+                    <#if applicant.surname??><p class="d-block"><@spring.message 'applicant.age'/> ${applicant.age}</p></#if>
                 </div>
             </div>
         </div>
