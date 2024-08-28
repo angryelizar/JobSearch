@@ -7,7 +7,7 @@ function getNoMessagesText(){
     if (language === 'ky') {
         return 'Бул чатта азырынча эч кандай билдирүүлөр жок - биринчи кадам таштаңыз!'
     } else {
-        return 'В этом чате пока нет сообщений - сделайте первый шаг!:'
+        return 'В этом чате пока нет сообщений - сделайте первый шаг!'
     }
 }
 
@@ -54,7 +54,6 @@ function fetchMessages() {
 
 function onLoadWindow() {
     fetchMessages();
-
     setInterval(fetchMessages, 30000);
 }
 

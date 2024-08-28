@@ -13,6 +13,21 @@
             <h5><@spring.message 'message.countOfResumes'/> ${applicantCountOfResumes}</h5>
         </div>
         <div class="col-12 col-md-8 messages-block" style="min-height: 400px; overflow: auto;">
+            <#if messages?has_content>
+                <#list messages as message>
+                    <div class="card w-100 text-bg-light mb-3">
+                        <div class="card-header">
+                            ${message.dateTime}
+                        </div>
+                        <div class="card-body">
+                            <h5>${message.author}</h5>
+                            <p class="card-text">${message.content}</p>
+                        </div>
+                    </div>
+                </#list>
+                <#else>
+                <p class="text-center"></p>
+            </#if>
         </div>
         <form  class="col-12" action="/message/response" method="post">
             <div class="mb-3">
