@@ -1,6 +1,10 @@
+const SOCKET_URL = '/ws';
+const TOPIC_URL = '/chat/response/';
+const SEND_MESSAGE_URL = '/chat/send/response/';
 let messagesBlock = document.querySelector('.messages-block');
+let respondApplicantId = document.querySelector("[name='respondApplicant']").value;
+let submitButton = document.querySelector('#submitButton');
 let stompClient = null;
-
 
 function addMessage(message) {
     let messageCard = document.createElement('div');
@@ -25,12 +29,36 @@ function addMessage(message) {
 
 function connectToChat() {
     // Подключаемся к нашему эндпоинту, создаем сокет
-    var socket = new SockJS("/ws");
+    let socket = new SockJS(SOCKET_URL);
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function(frame) {
         console.log('Connected!');
-        console.log('Frame:' + frame);
+        // Подписываемся на необходимый нам "топик" (в нашем случае, это топик для определенного отклика)
+        stompClient.subscribe(TOPIC_URL + respondApplicantId, function (messageOutput) {
+            addMessage(JSON.parse(messageOutput));
+        });
     });
 }
 
+function sendMessage() {
+    const messageText = document.querySelector('#messageText').value;
+    const fromTo = parseInt(document.querySelector("[name='messageAuthor']").value, 10);
+    const toFrom = parseInt(document.querySelector("[name='messageRecipient']").value, 10);
+    const id = parseInt(document.querySelector("[name='respondApplicant']").value, 10);
+
+    const message = {
+        messageAuthor: fromTo,
+        messageRecipient: toFrom,
+        respondApplicant: id,
+        messageText: messageText
+    };
+
+    console.log(message);  // Проверка, что значения чисел правильные
+    stompClient.send(SEND_MESSAGE_URL + id, {}, JSON.stringify(message));
+}
+
+
 window.addEventListener('load', connectToChat);
+
+
+submitButton.addEventListener('click', sendMessage)
