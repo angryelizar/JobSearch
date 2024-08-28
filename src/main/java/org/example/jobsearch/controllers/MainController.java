@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.jobsearch.dto.MessageDto;
 import org.example.jobsearch.dto.SendMessageDto;
 import org.example.jobsearch.dto.UserDto;
 import org.example.jobsearch.exceptions.UserNotFoundException;
@@ -12,6 +13,8 @@ import org.example.jobsearch.models.User;
 import org.example.jobsearch.service.*;
 import org.example.jobsearch.util.AuthenticatedUserProvider;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
@@ -107,6 +110,12 @@ public class MainController {
         model.addAttribute("contacts", messageService.messagesGet(auth));
         model.addAttribute(AUTHENTICATED, authenticatedUserProvider.isAuthenticated());
         return "main/messages";
+    }
+
+    @MessageMapping("/response/{id}")
+    @SendTo("/response/{id}")
+    public MessageDto sendMessage(@PathVariable Long id, SendMessageDto sendMessageDto) {
+       return messageService.sendMessage(sendMessageDto, id);
     }
 
     @GetMapping("/message/response/{id}")

@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -73,6 +74,14 @@ public class MessageServiceImpl implements MessageService {
         }
         return result;
     }
+    
+    private MessageDto makeMessageDto(Message message) {
+        return MessageDto.builder()
+                .author(message.getFromTo().getName() + " " + message.getFromTo().getSurname())
+                .dateTime(message.getDateTime())
+                .content(message.getContent())
+                .build();
+    }
 
     @Override
     @SneakyThrows
@@ -81,16 +90,30 @@ public class MessageServiceImpl implements MessageService {
         if (!Objects.equals(user.getId(), messageDto.getMessageAuthor())){
             throw new UserException("exception.message.not.user");
         }
+        Message message = validateAndBuildMessage(messageDto);
+        messageRepository.save(message);
+    }
+
+    @Override
+    public MessageDto sendMessage(SendMessageDto messageDto, Long id) {
+        Optional<RespondApplicant> respondApplicant =  respondedApplicantRepository.findById(id);
+        if (respondApplicant.isEmpty()) {
+            throw new EmptyMessageException("exception.response.notFound");
+        }
+        Message message = validateAndBuildMessage(messageDto);
+        return makeMessageDto(messageRepository.save(message));
+    }
+
+    private Message validateAndBuildMessage(SendMessageDto messageDto) {
         if (messageDto.getMessageText().isBlank() || messageDto.getMessageText().isEmpty()){
             throw new EmptyMessageException("exception.message.empty");
         }
-        Message message = Message.builder()
+        return Message.builder()
                 .content(messageDto.getMessageText())
                 .fromTo(userRepository.findById(messageDto.getMessageAuthor()).get())
                 .toFrom(userRepository.findById(messageDto.getMessageRecipient()).get())
                 .dateTime(LocalDateTime.now())
                 .respondedApplicants(respondedApplicantRepository.findById(messageDto.getRespondApplicant()).get())
                 .build();
-        messageRepository.save(message);
     }
 }
