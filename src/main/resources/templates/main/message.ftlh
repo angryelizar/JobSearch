@@ -41,4 +41,6 @@
         </form>
     </div>
     <script src="../../scripts/message.js"></script>
+    <script src="../../scripts/stomp.js"></script>
+    <script src="../../scripts/sockjs-0.3.4.js"></script>
 </@main.layout>
