@@ -11,7 +11,7 @@ function addMessage(message) {
     messageCard.classList.add('card', 'w-100', 'text-bg-light', 'mb-3');
     let cardHeader = document.createElement('div');
     cardHeader.classList.add('card-header');
-    cardHeader.textContent = formatDate(message.dateTime);
+    cardHeader.textContent = message.dateTime;
     messageCard.appendChild(cardHeader);
     let cardBody = document.createElement('div');
     cardBody.classList.add('card-body');
@@ -25,6 +25,8 @@ function addMessage(message) {
     cardBody.appendChild(content);
     messageCard.appendChild(cardBody);
     messagesBlock.appendChild(messageCard);
+    let messageText = document.querySelector('#messageText');
+    messageText.value = '';
 }
 
 function connectToChat() {
@@ -35,25 +37,25 @@ function connectToChat() {
         console.log('Connected!');
         // Подписываемся на необходимый нам "топик" (в нашем случае, это топик для определенного отклика)
         stompClient.subscribe(TOPIC_URL + respondApplicantId, function (messageOutput) {
-            addMessage(JSON.parse(messageOutput));
+            addMessage(JSON.parse(messageOutput.body));
         });
     });
 }
 
 function sendMessage() {
-    const messageText = document.querySelector('#messageText').value;
-    const fromTo = parseInt(document.querySelector("[name='messageAuthor']").value, 10);
-    const toFrom = parseInt(document.querySelector("[name='messageRecipient']").value, 10);
-    const id = parseInt(document.querySelector("[name='respondApplicant']").value, 10);
+    let messageText = document.querySelector('#messageText').value;
+    let fromTo = parseInt(document.querySelector("[name='messageAuthor']").value, 10);
+    let toFrom = parseInt(document.querySelector("[name='messageRecipient']").value, 10);
+    let id = parseInt(document.querySelector("[name='respondApplicant']").value, 10);
 
     const message = {
-        messageAuthor: fromTo,
-        messageRecipient: toFrom,
-        respondApplicant: id,
-        messageText: messageText
+        'messageAuthor': fromTo,
+        'messageRecipient': toFrom,
+        'respondApplicant': id,
+        'messageText': messageText
     };
 
-    console.log(message);  // Проверка, что значения чисел правильные
+    console.log(message);
     stompClient.send(SEND_MESSAGE_URL + id, {}, JSON.stringify(message));
 }
 
